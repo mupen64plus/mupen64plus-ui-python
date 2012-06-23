@@ -1,0 +1,4 @@
+include setup.py m64py AUTHORS README ChangeLog COPYING
+include test/mupen64plus.v64
+recursive-include src/ *.py *.ui
+recursive-include xdg/ *.desktop *.png *.xml

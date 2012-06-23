@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Author: Milan Nikolic <gen2brain@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import signal
+from optparse import OptionParser
+
+if os.path.isdir(os.path.join(".","src")) and os.path.isfile(
+        os.path.join(".","setup.py")):
+    sys.path.append(os.path.realpath("src"))
+
+try:
+    from PyQt4.QtGui import QApplication
+    from PyQt4.QtCore import Qt
+except ImportError, err:
+    sys.stderr.write("This application needs PyQt4 module%sError:%s%s" % (
+        os.linesep, str(err), os.linesep))
+    sys.exit(1)
+
+try:
+    from m64py.core.defs import FRONTEND_VERSION
+    from m64py.frontend.mainwindow import MainWindow
+    from m64py.loader import load_library
+except ImportError, err:
+    sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
+        os.linesep, str(err), os.linesep))
+    sys.exit(1)
+
+LOGO  = " __  __                         __   _  _   ____  _            \n"
+LOGO += "|  \/  |_   _ _ __   ___ _ __  / /_ | || | |  _ \| |_   _ ___  \n"
+LOGO += "| |\/| | | | | '_ \ / _ \ '_ \| '_ \| || |_| |_) | | | | / __| \n"
+LOGO += "| |  | | |_| | |_) |  __/ | | | (_) |__   _|  __/| | |_| \__ \ \n"
+LOGO += "|_|  |_|\__,_| .__/ \___|_| |_|\___/   |_| |_|   |_|\__,_|___/ \n"
+LOGO += "             |_|                                               \n"
+
+def main():
+    usage = 'usage: %prog <file>'
+    parser = OptionParser(usage=usage,
+            version="M64Py Version %s" % FRONTEND_VERSION)
+
+    try:
+        QApplication.setAttribute(Qt.AA_X11InitThreads)
+    except AttributeError:
+        try:
+            Xlib = load_library('X11')
+            Xlib.XInitThreads()
+        except Exception:
+            pass
+
+    app = QApplication(sys.argv)
+    opts, args = parser.parse_args()
+    sys.stderr.write("%s\nM64Py - A frontend for Mupen64Plus version %s\n\n" % (
+        LOGO, FRONTEND_VERSION))
+    window = MainWindow((opts, args))
+    window.show()
+    window.raise_()
+
+    try:
+        try:
+            signal.siginterrupt(signal.SIGCHLD, False)
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
+        except AttributeError:
+            pass
+        sys.exit(app.exec_())
+    except KeyboardInterrupt:
+        pass
+
+if __name__ == "__main__":
+    main()

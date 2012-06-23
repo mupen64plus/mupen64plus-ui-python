@@ -1,0 +1,28 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/action_about.png</file>
+    <file>icons/action_cheats.png</file>
+    <file>icons/action_clear.png</file>
+    <file>icons/action_emulator.png</file>
+    <file>icons/action_fullscreen.png</file>
+    <file>icons/action_license.png</file>
+    <file>icons/action_open_from_list.png</file>
+    <file>icons/action_open_manually.png</file>
+    <file>icons/action_paths.png</file>
+    <file>icons/action_plugins.png</file>
+    <file>icons/action_quit.png</file>
+    <file>icons/action_reset.png</file>
+    <file>icons/action_rom_info.png</file>
+    <file>icons/action_rom.png</file>
+    <file>icons/action_screenshot.png</file>
+    <file>icons/action_speed_down.png</file>
+    <file>icons/action_speed_up.png</file>
+    <file>icons/action_state_load.png</file>
+    <file>icons/action_state_save.png</file>
+    <file>icons/action_stop.png</file>
+    <file>icons/plugins_audio.png</file>
+    <file>icons/plugins_input.png</file>
+    <file>icons/plugins_rsp.png</file>
+    <file>icons/plugins_video.png</file>
+  </qresource>
+</RCC>

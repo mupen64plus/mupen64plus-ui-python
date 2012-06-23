@@ -1,0 +1,13 @@
+Source: m64py
+Section: games
+Priority: optional
+Maintainer: Milan Nikolic <gen2brain@gmail.com>
+Build-Depends: debhelper
+Standards-Version: 3.8.4
+Homepage: http://m64py.sourceforge.net/
+
+Package: m64py
+Architecture: all
+Depends: python-qt4, libsdl1.2-dev
+Suggests: p7zip, unrar
+Description: A frontend for Mupen64Plus

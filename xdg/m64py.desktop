@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=M64Py
+Exec=m64py %f
+Terminal=false
+Type=Application
+Icon=m64py
+Comment=A frontend for Mupen64Plus
+Categories=Game;Emulator;
+MimeType=application/x-m64py
