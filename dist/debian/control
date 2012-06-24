@@ -8,6 +8,6 @@ Homepage: http://m64py.sourceforge.net/
 
 Package: m64py
 Architecture: all
-Depends: python-qt4, libsdl1.2-dev
+Depends: python-qt4, python-qt4-gl, libsdl1.2-dev
 Suggests: p7zip, unrar
 Description: A frontend for Mupen64Plus

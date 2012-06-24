@@ -1,3 +1,9 @@
+m64py (0.1.0-2) unstable; urgency=low
+
+  * Add python-qt4-gl dependency
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Sun, 24 Jun 2012 12:49:57 +0200
+
 m64py (0.1.0-1) unstable; urgency=low
 
   * Initial release
