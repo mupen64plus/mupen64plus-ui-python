@@ -20,7 +20,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="7zip rar"
 
 RDEPEND="media-libs/libsdl
-	dev-python/PyQt4
+	dev-python/PyQt4[opengl]
 	>=games-emulation/mupen64plus-1.99.5
 	7zip? ( || ( dev-python/pylzma app-arch/p7zip ) )
 	rar? ( || ( app-arch/unrar app-arch/rar ) )"
