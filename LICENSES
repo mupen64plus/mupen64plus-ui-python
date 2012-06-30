@@ -1,0 +1,44 @@
+- Included SDL ctypes code is Copyright: Alex Holkner
+
+    This code is licensed under the LGPL license, as found here:
+
+        http://www.gnu.org/licenses/lgpl.html
+
+
+- joystick.py is a Python port of Qt SDL joystick wrapper by René Reucher:
+
+        http://www.batcom-it.net/?p=59
+
+    This code is licensed under the GPL-2 license, as found here:
+
+        http://www.gnu.org/licenses/gpl-2.0.html
+
+
+- loader.py is Copyright: pyglet project
+
+    Copyright (c) 2008 David James
+    Copyright (c) 2006-2008 Alex Holkner
+
+    This code is licensed under the BSD 3-Clause license
+
+
+- Icons are Copyright: Tango! Desktop Project
+
+    This work has been released into the public domain by its author, The Tango! Desktop Project
+
+
+- Mupen64Plus logo and cart icon are Copyright: The Mupen64plus Team
+
+    Copyright (C) 2008 Tillin9
+
+    You may copy them under the Creative Common Attribution-ShareAlike 3.0
+    license, as found here:
+
+        http://creativecommons.org/licenses/by-sa/3.0/
+
+
+- Python snake logo is from WxPython, Copyright: Robin Dunn
+
+    This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license, as found here:
+
+        http://creativecommons.org/licenses/by-sa/3.0/deed.en
