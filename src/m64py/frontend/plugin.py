@@ -14,20 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.utils import format_label, format_options
-    from m64py.ui.plugin_ui import Ui_PluginDialog
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import format_label, format_options
+from m64py.ui.plugin_ui import Ui_PluginDialog
 
 class Plugin(QDialog, Ui_PluginDialog):
     """Plugin settings dialog"""
@@ -103,8 +95,7 @@ class Plugin(QDialog, Ui_PluginDialog):
                         opts[key] = (idx, value)
                         data = (idx, key, value)
                         widget.addItem(value)
-                        widget.setItemData(
-                                idx, QVariant(data))
+                        widget.setItemData(idx, data)
                 self.gridLayout.addWidget(
                         QLabel(format_label(param_name)), row2, 3)
                 self.gridLayout.addWidget(widget, row2, 4)
@@ -121,13 +112,11 @@ class Plugin(QDialog, Ui_PluginDialog):
         for param_name, item in self.widgets.items():
             widget, widget_class, opts = item
             if widget_class == QLineEdit:
-                widget.setText(
-                        str(self.config.get_parameter(param_name)))
+                widget.setText(str(self.config.get_parameter(param_name)))
             elif widget_class == QSpinBox:
                 param = self.config.get_parameter(param_name)
                 if param is not None:
-                    widget.setValue(
-                            int(self.config.get_parameter(param_name)))
+                    widget.setValue(int(self.config.get_parameter(param_name)))
             elif widget_class == QComboBox:
                 key = self.config.get_parameter(param_name)
                 try:
@@ -136,8 +125,7 @@ class Plugin(QDialog, Ui_PluginDialog):
                     idx = 0
                 widget.setCurrentIndex(int(idx))
             elif widget_class == QCheckBox:
-                widget.setChecked(
-                        bool(self.config.get_parameter(param_name)))
+                widget.setChecked(bool(self.config.get_parameter(param_name)))
 
     def save_items(self):
         for param_name, item in self.widgets.items():
@@ -147,8 +135,7 @@ class Plugin(QDialog, Ui_PluginDialog):
             elif widget_class == QSpinBox:
                 param_value = int(widget.value())
             elif widget_class == QComboBox:
-                data = widget.itemData(
-                        widget.currentIndex()).toPyObject()
+                data = widget.itemData(widget.currentIndex())
                 idx, key, value = data
                 param_value = key
             elif widget_class == QCheckBox:

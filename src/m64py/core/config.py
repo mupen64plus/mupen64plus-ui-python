@@ -15,16 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import ctypes as C
 
-try:
-    from m64py.core.defs import *
-    from m64py.utils import log
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import log
 
 SECTIONS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p)
 PARAMETERS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p, C.c_int)

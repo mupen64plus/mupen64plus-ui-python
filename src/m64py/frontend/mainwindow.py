@@ -20,33 +20,29 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.frontend.dialogs import *
-    from m64py.archive import EXT_FILTER
-    from m64py.ui.mainwindow_ui import Ui_MainWindow
-    from m64py.frontend.worker import Worker
-    from m64py.frontend.rominfo import RomInfo
-    from m64py.frontend.romlist import ROMList
-    from m64py.frontend.recentfiles import RecentFiles
-    from m64py.frontend.glwidget import GLWidget
-    from m64py.frontend.cheat import Cheat
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.frontend.dialogs import *
+from m64py.archive import EXT_FILTER
+from m64py.ui.mainwindow_ui import Ui_MainWindow
+from m64py.frontend.worker import Worker
+from m64py.frontend.rominfo import RomInfo
+from m64py.frontend.romlist import ROMList
+from m64py.frontend.recentfiles import RecentFiles
+from m64py.frontend.glwidget import GLWidget
+from m64py.frontend.cheat import Cheat
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Frontend main window"""
 
     rom_opened = pyqtSignal()
     rom_closed = pyqtSignal()
-    file_open = pyqtSignal(str)
+    file_open = pyqtSignal(str, str)
     file_opening = pyqtSignal(str)
     set_caption = pyqtSignal(str)
     state_changed = pyqtSignal(tuple)
     save_image = pyqtSignal(bool)
     info_dialog = pyqtSignal(str)
+    archive_dialog = pyqtSignal(list)
 
     def __init__(self, optparse):
         """Constructor"""
@@ -92,8 +88,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def showEvent(self, event):
         if not self.widgets_height:
-            width, height = self.settings.qset.value(
-                    "size", SIZE_1X).toPyObject()
+            width, height = self.settings.qset.value("size", SIZE_1X)
             menubar_height = self.menubar.size().height()
             statusbar_height = self.statusbar.size().height()
             self.widgets_height = menubar_height + statusbar_height
@@ -148,7 +143,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_rom_opened)
         self.connect(self, SIGNAL("rom_closed()"),
                 self.on_rom_closed)
-        self.connect(self, SIGNAL("file_open(PyQt_PyObject)"),
+        self.connect(self, SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"),
                 self.file_open)
         self.connect(self, SIGNAL("file_opening(PyQt_PyObject)"),
                 self.on_file_opening)
@@ -160,6 +155,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_save_image)
         self.connect(self, SIGNAL("info_dialog(PyQt_PyObject)"),
                 self.on_info_dialog)
+        self.connect(self, SIGNAL("archive_dialog(PyQt_PyObject)"),
+                self.on_archive_dialog)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -202,8 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             action.setToolTip("%sx%s" % (width, height))
             action.setActionGroup(group )
 
-        size = self.settings.qset.value(
-                "size", SIZE_1X).toPyObject()
+        size = self.settings.qset.value("size", SIZE_1X)
         if size in self.sizes.keys():
             self.sizes[size].setChecked(True)
 
@@ -213,15 +209,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connect(action, SIGNAL("triggered()"),
                     lambda w=w,h=h:self.resize(w, h))
 
-    def file_open(self, filepath=None):
+    def file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
         if not filepath:
             action = self.sender()
-            filepath = str(action.data().toString())
-        self.worker.core_state_query()
+            filepath = action.data()
+        self.worker.core_state_query(M64CORE_EMU_STATE)
         if self.worker.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
             self.worker.stop()
-        self.worker.set_filepath(filepath)
+        self.worker.set_filepath(filepath, filename)
         self.worker.start()
         self.raise_()
 
@@ -247,6 +243,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.show_page(0)
         self.settings.raise_()
         InfoDialog(self.settings, info)
+
+    def on_archive_dialog(self, files):
+        """Shows archive dialog."""
+        archive = ArchiveDialog(self, files)
+        rval = archive.exec_()
+        if rval == QDialog.Accepted:
+            curr_item = archive.listWidget.currentItem()
+            fname = curr_item.data(Qt.UserRole)
+            self.worker.filename = fname
 
     def on_state_changed(self, states):
         """Toggles actions state."""
@@ -280,10 +285,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QTimer.singleShot(2000, self.worker.toggle_actions)
 
     def on_rom_closed(self):
-        if self.worker.is_firstrun:
-            self.worker.m64p.config.save_file()
-            self.settings.set_config()
-            self.settings.save_config()
         if self.worker.use_vidext and self.isFullScreen():
             self.glwidget.emit(SIGNAL("toggle_fs()"))
         self.stack.setCurrentWidget(self.view)
@@ -299,12 +300,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Shows ROM file dialog."""
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
-        last_dir = self.settings.qset.value("last_dir").toString()
+        last_dir = self.settings.qset.value("last_dir")
         filepath = dialog.getOpenFileName(
                 self, "Load ROM Image", last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
         if filepath:
-            self.emit(SIGNAL("file_open(PyQt_PyObject)"), str(filepath))
+            self.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), filepath, None)
             last_dir = QFileInfo(filepath).path()
             self.settings.qset.setValue("last_dir", last_dir)
 

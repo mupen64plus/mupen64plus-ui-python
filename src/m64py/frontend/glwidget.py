@@ -14,23 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtOpenGL import *
 
-#from OpenGL.GL import glViewport,glMatrixMode,glLoadIdentity,GL_PROJECTION
-#from OpenGL.error import GLError
-
-try:
-    from m64py.core.defs import *
-    #from m64py.utils import log
-    from m64py.frontend.keymap import SDL_KEYMAP
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.frontend.keymap import SDL_KEYMAP
 
 class GLWidget(QGLWidget):
 
@@ -57,14 +46,6 @@ class GLWidget(QGLWidget):
 
     def paintEvent(self, event):
         pass
-
-    #def resizeGL(self, width, height):
-        #try:
-            #glViewport(0, 0, width, height)
-            #glMatrixMode(GL_PROJECTION)
-            #glLoadIdentity()
-        #except GLError, err:
-            #log.warn(str(err))
 
     def keyPressEvent(self, event):
         if self.worker.state == M64EMU_RUNNING:

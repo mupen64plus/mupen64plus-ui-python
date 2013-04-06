@@ -14,22 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import re
-import sys
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.frontend.joystick import Joystick
-    from m64py.frontend.keymap import SDL_KEYMAP, QT_MODIFIERS, QT_KEYSTRING
-    from m64py.ui.input_ui import Ui_InputDialog
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import format_tooltip
+from m64py.frontend.joystick import Joystick
+from m64py.frontend.keymap import SDL_KEYMAP, QT_MODIFIERS, QT_KEYSTRING
+from m64py.ui.input_ui import Ui_InputDialog
 
 KEY_RE = re.compile("([a-z]+)\((.*)\)")
 AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
@@ -88,19 +82,17 @@ class Input(QDialog, Ui_InputDialog):
         self.save_opts()
         self.save_keys()
         self.config.save_file()
-    
+
     def on_device_changed(self, index):
-        self.device = self.comboDevice.itemData(
-                self.comboDevice.currentIndex()).toInt()[0]
+        self.device = self.comboDevice.itemData(self.comboDevice.currentIndex())
         self.is_joystick = bool(self.device >= 0)
 
     def on_controller_changed(self, index):
         self.save_config()
-        self.controller = self.comboController.itemData(
-                index).toInt()[0]
+        self.controller = self.comboController.itemData(index)
         self.set_section("Input-SDL-Control%d" % self.controller)
         self.config.open_section(self.section)
-        
+
         self.is_joystick = bool(self.config.get_parameter("device") >= 0)
         if not self.config.parameters[self.section]:
             self.set_default()
@@ -171,8 +163,8 @@ class Input(QDialog, Ui_InputDialog):
                         spin1, spin2 = widget
                         spin1.setValue(int(paramX))
                         spin2.setValue(int(paramY))
-                        spin1.setToolTip(tooltip)
-                        spin2.setToolTip(tooltip)
+                        spin1.setToolTip(format_tooltip(tooltip))
+                        spin2.setToolTip(format_tooltip(tooltip))
                 else:
                     widget.setText(param)
             if key not in ["AnalogDeadzone", "AnalogPeak"] and tooltip:
@@ -186,8 +178,7 @@ class Input(QDialog, Ui_InputDialog):
                         widget.isChecked())
             elif ptype == M64TYPE_INT:
                 self.config.set_parameter(key,
-                        widget.itemData(
-                            widget.currentIndex()).toInt()[0])
+                        widget.itemData(widget.currentIndex()))
             elif ptype == M64TYPE_STRING:
                 if key in ["AnalogDeadzone", "AnalogPeak"]:
                     spin1, spin2 = widget

@@ -15,16 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 
 from PyQt4.QtGui import QMessageBox
 
-try:
-    from m64py.utils import sl
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.utils import sl
 
 class RomInfo():
     """ROM information dialog"""

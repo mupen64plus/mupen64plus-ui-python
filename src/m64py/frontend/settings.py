@@ -15,23 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.loader import find_library
-    from m64py.core.vidext import MODES
-    from m64py.platform import DLL_FILTER
-    from m64py.frontend.plugin import Plugin
-    from m64py.frontend.input import Input
-    from m64py.ui.settings_ui import Ui_Settings
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.loader import find_library
+from m64py.core.vidext import MODES
+from m64py.platform import DLL_FILTER
+from m64py.frontend.plugin import Plugin
+from m64py.frontend.input import Input
+from m64py.ui.settings_ui import Ui_Settings
 
 class Settings(QDialog, Ui_Settings):
     """Settings dialog"""
@@ -124,18 +118,18 @@ class Settings(QDialog, Ui_Settings):
         if directory:
             dialog.setFileMode(QFileDialog.Directory)
             path = dialog.getExistingDirectory(
-                    self, groupbox.title(), QString(), QFileDialog.ShowDirsOnly)
+                    self, groupbox.title(), "", QFileDialog.ShowDirsOnly)
         else:
             dialog.setFileMode(QFileDialog.ExistingFile)
             path = dialog.getOpenFileName(
-                    self, groupbox.title(), QString(),
+                    self, groupbox.title(), "",
                     "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
 
         if not path: return
-        widget.setText(str(path))
+        widget.setText(path)
         if widget == self.pathLibrary:
             if not self.m64p_handle:
-                self.parent.worker.core_load(str(path))
+                self.parent.worker.core_load(path)
                 if self.parent.worker.m64p.get_handle():
                     self.m64p = self.parent.worker.m64p
                     self.m64p_handle = self.m64p.get_handle()
@@ -143,7 +137,7 @@ class Settings(QDialog, Ui_Settings):
                     self.set_core()
                     self.set_video()
                     self.set_default_general()
-                    size = self.qset.value("size", SIZE_1X).toPyObject()
+                    size = self.qset.value("size", SIZE_1X)
                     self.parent.window_size_triggered(size)
                     self.qset.setValue("firstrun", False)
 
@@ -153,13 +147,13 @@ class Settings(QDialog, Ui_Settings):
         elif widget == self.pathPlugins:
             if self.m64p_handle:
                 self.m64p.plugins_unload()
-                self.parent.worker.plugin_load_try(str(path))
+                self.parent.worker.plugin_load_try(path)
                 self.set_plugins()
 
     def get_section(self, combo):
-        plugin = str(combo.currentText())
+        plugin = combo.currentText()
         index = combo.findText(plugin)
-        desc = str(combo.itemData(index).toString())
+        desc = combo.itemData(index)
         name = os.path.splitext(plugin)[0][12:]
         section = "-".join([n.capitalize() for n in name.split("-")])
         return (section, desc)
@@ -194,14 +188,13 @@ class Settings(QDialog, Ui_Settings):
         self.m64p.config.list_parameters()
 
     def set_paths(self):
-        path_library = self.qset.value("Paths/Library",
-                find_library(CORE_NAME)).toString()
+        path_library = self.qset.value("Paths/Library", find_library(CORE_NAME))
         path_data = self.qset.value("Paths/Data",
-                self.m64p.config.get_path("SharedData")).toString()
-        path_roms = self.qset.value("Paths/ROM").toString()
+                self.m64p.config.get_path("SharedData"))
+        path_roms = self.qset.value("Paths/ROM")
         try:
             path_plugins = self.qset.value("Paths/Plugins", os.path.realpath(
-                os.path.dirname(self.m64p.plugin_files[0]))).toString()
+                os.path.dirname(self.m64p.plugin_files[0])))
         except IndexError:
             path_plugins = ""
 
@@ -217,8 +210,7 @@ class Settings(QDialog, Ui_Settings):
             self.comboResolution.addItem(
                     "%sx%s" % (width, height), (width, height))
         self.comboResolution.setCurrentIndex(0)
-        self.comboResolution.setEnabled(
-                not self.parent.worker.use_vidext)
+        self.comboResolution.setEnabled(not self.parent.worker.use_vidext)
 
         self.m64p.config.open_section("Video-General")
         width = self.m64p.config.get_parameter("ScreenWidth")
@@ -233,8 +225,7 @@ class Settings(QDialog, Ui_Settings):
         if tooltip:
             self.checkFullscreen.setToolTip(tooltip)
 
-        enable_vidext = self.qset.value(
-                "enable_vidext", True).toBool()
+        enable_vidext = bool(self.qset.value("enable_vidext", 1))
         self.checkEnableVidExt.setChecked(enable_vidext)
 
     def set_core(self):
@@ -268,7 +259,7 @@ class Settings(QDialog, Ui_Settings):
                 combo.setItemData(index, plugin_desc)
                 combo.setItemData(index, plugin_desc, Qt.ToolTipRole)
             current = self.qset.value("Plugins/%s" %
-                    PLUGIN_NAME[plugin_type]).toString()
+                    PLUGIN_NAME[plugin_type])
             index = combo.findText(current)
             if index == -1: index = 0
             combo.setCurrentIndex(index)
@@ -287,13 +278,12 @@ class Settings(QDialog, Ui_Settings):
     def save_video(self):
         self.m64p.config.open_section("Video-General")
         if not self.parent.worker.use_vidext:
-            width, height = str(self.comboResolution.currentText()).split("x")
+            width, height = self.comboResolution.currentText().split("x")
             self.m64p.config.set_parameter("ScreenWidth", int(width))
             self.m64p.config.set_parameter("ScreenHeight", int(height))
         self.m64p.config.set_parameter("Fullscreen",
                 self.checkFullscreen.isChecked())
-        self.qset.setValue("enable_vidext",
-                self.checkEnableVidExt.isChecked())
+        self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
 
     def save_core(self):
         self.m64p.config.open_section("Core")
@@ -307,7 +297,7 @@ class Settings(QDialog, Ui_Settings):
         self.m64p.config.set_parameter("DisableExtraMem",
                 self.checkDisableExtraMem.isChecked())
         self.m64p.config.set_parameter("SharedDataPath",
-                str(self.pathData.text()))
+                self.pathData.text())
 
     def save_plugins(self):
         for plugin_type in self.combomap:

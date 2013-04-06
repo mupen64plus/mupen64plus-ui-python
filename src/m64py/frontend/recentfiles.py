@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import QAction, QIcon, QPixmap
-from PyQt4.QtCore import QFileInfo, QVariant, SIGNAL
+from PyQt4.QtCore import QFileInfo, SIGNAL
 
 class RecentFiles():
     """Keeps track of last opened files."""
@@ -52,13 +52,12 @@ class RecentFiles():
 
     def update(self):
         """Updates list of recent files."""
-        self.recent_files = self.parent.settings.qset.value(
-                "recent_files").toStringList()
-        num_files = min(self.recent_files.count(), self.max_recent)
+        self.recent_files = self.parent.settings.qset.value("recent_files", [])
+        num_files = min(len(self.recent_files), self.max_recent)
         for i in range(num_files):
             text = QFileInfo(self.recent_files[i]).fileName()
             self.recent_actions[i].setText(text)
-            self.recent_actions[i].setData(QVariant(self.recent_files[i]))
+            self.recent_actions[i].setData(self.recent_files[i])
             self.recent_actions[i].setVisible(True)
             self.recent_actions[i].setToolTip(QFileInfo(
                 self.recent_files[i]).filePath())
@@ -68,12 +67,13 @@ class RecentFiles():
 
     def add(self, filepath):
         """Adds file to recent files list."""
-        self.recent_files.removeAll(filepath)
-        self.recent_files.prepend(filepath)
-        while self.recent_files.count() > 5:
-            self.recent_files.removeAt(self.recent_files.count() - 1)
+        if filepath in self.recent_files:
+            self.recent_files.remove(filepath)
+        self.recent_files.insert(0, filepath)
+        while len(self.recent_files) > 5:
+            self.recent_files.pop(len(self.recent_files) - 1)
         self.parent.settings.qset.setValue(
-                "recent_files", QVariant(self.recent_files))
+                "recent_files", self.recent_files)
         self.update()
 
     def clear(self):

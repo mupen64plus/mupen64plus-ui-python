@@ -17,24 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
-
 from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer, SIGNAL
 
-try:
-    from SDL import *
-except ImportError, err:
-    sys.stderr.write("Error: Can't import SDL module%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from SDL import *
 
-try:
-    from m64py.utils import log
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.utils import log
 
 JOYSTICK_DEADZONE = 0
 JOYSTICK_SENSITIVITY = 0

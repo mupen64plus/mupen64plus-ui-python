@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtCore import Qt
+
 from SDL.constants import *
 
 SDL_KEYMAP = {

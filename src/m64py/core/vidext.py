@@ -14,22 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
-import ctypes as C
-
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
 from SDL import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.utils import log
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import log
 
 try:
     if not SDL_WasInit(SDL_INIT_VIDEO):
@@ -157,41 +148,6 @@ class Video():
         rendering an output video frame. """
         self.widget.swapBuffers()
         return M64ERR_SUCCESS
-
-m64p_error = C.c_int
-m64p_GLattr = C.c_int
-
-class m64p_2d_size(C.Structure):
-    _fields_ = [
-        ('uiWidth', C.c_uint),
-        ('uiHeight', C.c_uint)
-        ]
-
-FuncInit =C.CFUNCTYPE(m64p_error)
-FuncQuit = C.CFUNCTYPE(m64p_error)
-FuncListModes = C.CFUNCTYPE(m64p_error, C.POINTER(m64p_2d_size), C.POINTER(C.c_int))
-FuncSetMode = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int)
-FuncGLGetProc = C.CFUNCTYPE(C.c_void_p, C.c_char_p)
-FuncGLSetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.c_int)
-FuncGLGetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.POINTER(C.c_int))
-FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
-FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
-FuncToggleFS= C.CFUNCTYPE(m64p_error)
-
-class m64p_video_extension_functions(C.Structure):
-    _fields_ = [
-        ('Functions', C.c_uint),
-        ('VidExtFuncInit', FuncInit),
-        ('VidExtFuncQuit', FuncQuit),
-        ('VidExtFuncListModes', FuncListModes),
-        ('VidExtFuncSetMode', FuncSetMode),
-        ('VidExtFuncGLGetProc', FuncGLGetProc),
-        ('VidExtFuncGLSetAttr', FuncGLSetAttr),
-        ('VidExtFuncGLGetAttr', FuncGLGetAttr),
-        ('VidExtFuncGLSwapBuf', FuncGLSwapBuf),
-        ('VidExtFuncSetCaption', FuncSetCaption),
-        ('VidExtFuncToggleFS', FuncToggleFS),
-    ]
 
 video = Video()
 vidext = m64p_video_extension_functions()

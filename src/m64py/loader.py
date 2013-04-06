@@ -181,8 +181,9 @@ class PosixLibraryLoader(LibraryLoader):
         try: directories.extend([dir.strip() for dir in open('/etc/ld.so.conf')])
         except IOError: pass
 
-        directories.extend(['/lib', '/usr/lib', '/lib64', '/usr/lib64',
-            '/usr/games/lib', '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
+        directories.extend(['/lib', '/usr/lib', '/lib64',
+            '/usr/lib64', '/usr/games/lib', '/usr/games/lib64',
+            '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
 
         cache = {}
         lib_re = re.compile(r'lib(.*)\.s[ol]')

@@ -16,21 +16,15 @@
 
 import os
 import re
-import sys
 from collections import defaultdict
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.utils import sl, log
-    from m64py.ui.cheat_ui import Ui_CheatDialog
-    from m64py.ui.choices_ui import Ui_ChoicesDialog
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import sl, log
+from m64py.ui.cheat_ui import Ui_CheatDialog
+from m64py.ui.choices_ui import Ui_ChoicesDialog
 
 class Cheat(QDialog, Ui_CheatDialog):
     """Cheats dialog"""
@@ -93,7 +87,7 @@ class Cheat(QDialog, Ui_CheatDialog):
         """Sets description"""
         items = self.treeWidget.selectedItems()
         for item in items:
-            data = item.data(0, Qt.UserRole).toPyObject()
+            data = item.data(0, Qt.UserRole)
             if data:
                 for cheat in data:
                     cd, address, value, choices = cheat
@@ -102,7 +96,7 @@ class Cheat(QDialog, Ui_CheatDialog):
 
     def on_item_clicked(self, item, column):
         """Sets description"""
-        data = item.data(column, Qt.UserRole).toPyObject()
+        data = item.data(column, Qt.UserRole)
         if data:
             for cheat in data:
                 cd, address, value, choices = cheat
@@ -122,14 +116,14 @@ class Cheat(QDialog, Ui_CheatDialog):
     def activate_cheat(self, item, column):
         """Activates selected cheat"""
         state = item.checkState(column)
-        name = str(item.text(column))
+        name = item.text(column)
         parent = item.parent()
         if parent:
             name = "%s\\%s" % (parent.text(column), name)
             parent = parent.parent()
             if parent:
                 name = "%s\\%s" % (parent.text(column), name)
-        data = item.data(column, Qt.UserRole).toPyObject()
+        data = item.data(column, Qt.UserRole)
         if state == Qt.Checked:
             codes_type = m64p_cheat_code * len(data)
             codes = codes_type()
@@ -140,12 +134,12 @@ class Cheat(QDialog, Ui_CheatDialog):
                     rval = choices.exec_()
                     if rval == QDialog.Accepted:
                         curr_item = choices.listWidget.currentItem()
-                        value = curr_item.data(Qt.UserRole).toPyObject()
+                        value = curr_item.data(Qt.UserRole)
                     else:
                         #item.setCheckState(0, Qt.Unchecked)
                         return
-                codes[num].address = int(str(address), 16)
-                codes[num].value = int(str(value), 16)
+                codes[num].address = int(address, 16)
+                codes[num].value = int(value, 16)
             self.parent.worker.add_cheat(name, codes)
         else:
             self.parent.worker.cheat_enabled(name, False)

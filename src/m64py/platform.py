@@ -24,6 +24,7 @@ if sys.platform.startswith("linux"):
     SEARCH_DIRS = [
             "/usr/local/lib/mupen64plus",
             "/usr/lib/mupen64plus",
+            "/usr/games/lib64/mupen64plus",
             "/usr/games/lib/mupen64plus",
             "/usr/lib/x86_64-linux-gnu/mupen64plus",
             "/usr/lib/i386-linux-gnu/mupen64plus",
@@ -34,6 +35,7 @@ elif sys.platform == "darwin":
     DLL_FILTER = ".dylib"
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
     SEARCH_DIRS = [
+            os.path.join(".", "M64Py", "Contents", "MacOS"),
             "/usr/local/lib/mupen64plus",
             "/usr/lib/mupen64plus",
             "."
@@ -42,7 +44,4 @@ elif sys.platform == "win32":
     DLL_EXT = ".dll"
     DLL_FILTER = ".dll"
     DEFAULT_DYNLIB = "mupen64plus.dll"
-    SEARCH_DIRS = [
-            os.path.join(".", "M64Py", "Contents", "MacOS"),
-            "."
-            ]
+    SEARCH_DIRS = ["."]
