@@ -58,6 +58,16 @@ def sl(mot):
             ((mot & 0x00FF0000) >>  8) |\
             ((mot & 0xFF000000) >> 24)
 
+def format_tooltip(tooltip):
+    if len(tooltip) > 80:
+        lines = tooltip.split(". ")
+        tooltip = ""
+        for line in lines:
+            tooltip += "%s. " % line.lstrip()
+            if len(line) > 40:
+                tooltip += "\n"
+    return tooltip
+
 def format_label(label):
     words = label.split("_")
     if len(words) > 1:
