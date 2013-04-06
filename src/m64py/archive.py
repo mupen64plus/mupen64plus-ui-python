@@ -132,8 +132,7 @@ class Archive():
             namelist = [os.path.basename(self.file)]
         elif self.filetype == RAR:
             if HAS_RAR:
-                for filename in self.fd.infoiter():
-                    namelist.append(filename.filename)
+                namelist = [name.filename for name in self.fd.infoiter()]
             elif RAR_CMD:
                 namelist = self.fd.namelist
         elif self.filetype == LZMA:
