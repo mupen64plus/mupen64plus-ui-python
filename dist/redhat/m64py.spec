@@ -1,6 +1,6 @@
 %define name m64py
-%define version 0.1.0
-%define unmangled_version 0.1.0
+%define version 0.1.1
+%define unmangled_version 0.1.1
 %define release 1
 
 Summary: M64Py - A frontend for Mupen64Plus
