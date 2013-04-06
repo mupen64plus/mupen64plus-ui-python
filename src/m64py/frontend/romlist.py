@@ -15,21 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import fnmatch
 import ConfigParser
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.utils import log, md5sum
-    from m64py.archive import Archive, EXT_FILTER
-    from m64py.ui.romlist_ui import Ui_ROMList
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.utils import log, md5sum
+from m64py.archive import Archive, EXT_FILTER
+from m64py.ui.romlist_ui import Ui_ROMList
 
 try:
     from m64py.ui import title_rc
@@ -75,8 +69,8 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def init(self):
         self.read_rom_list()
-        self.roms = self.qset.value("rom_list", []).toPyObject()
-        if self.qset.value("show_available", 0).toInt()[0]:
+        self.roms = self.qset.value("rom_list", [])
+        if bool(self.qset.value("show_available", 0)):
             self.add_available_items(self.roms)
         else:
             self.add_items()
@@ -119,7 +113,7 @@ class ROMList(QMainWindow, Ui_ROMList):
             except KeyError:
                 md5 = key
             list_item = QListWidgetItem(rom['goodname'])
-            list_item.setData(Qt.UserRole, (md5, None))
+            list_item.setData(Qt.UserRole, (md5, None, None))
             list_item.setFlags(Qt.ItemIsEnabled)
             self.listWidget.addItem(list_item)
         self.pushOpen.setEnabled(False)
@@ -135,11 +129,11 @@ class ROMList(QMainWindow, Ui_ROMList):
             self.qset.setValue("rom_list", self.roms)
             self.qset.sync()
         self.listWidget.clear()
-        for md5, path in self.roms:
+        for md5, path, fname in self.roms:
             if md5 in self.romlist:
                 goodname = self.romlist[md5]['goodname']
                 list_item = QListWidgetItem(goodname)
-                list_item.setData(Qt.UserRole, (md5, path))
+                list_item.setData(Qt.UserRole, (md5, path, fname))
                 self.listWidget.addItem(list_item)
         self.progressBar.setValue(0)
         self.progressBar.hide()
@@ -150,7 +144,7 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def refresh_items(self):
         """Refreshes available ROMs list"""
-        path_roms = self.qset.value("Paths/ROM").toString()
+        path_roms = self.qset.value("Paths/ROM")
         if not path_roms:
             self.parent.emit(SIGNAL(
                 "info_dialog(PyQt_PyObject)"),
@@ -162,31 +156,31 @@ class ROMList(QMainWindow, Ui_ROMList):
             self.reader.set_path(path_roms)
             self.reader.start()
 
-    def file_open(self, path):
+    def file_open(self, path, fname):
         """Opens ROM file."""
         self.close()
         if self.parent.isMinimized():
             self.parent.activateWindow()
         self.parent.emit(SIGNAL(
-            "file_open(PyQt_PyObject)"), str(path))
+            "file_open(PyQt_PyObject, PyQt_PyObject)"), path, fname)
 
     def on_progress_bar_changed(self, value):
         self.progressBar.setValue(value)
 
     def on_item_open(self):
         item = self.listWidget.currentItem()
-        md5, path = item.data(Qt.UserRole).toPyObject()
+        md5, path, fname = item.data(Qt.UserRole)
         if path:
-            self.file_open(path)
+            self.file_open(path, fname)
 
     def on_item_activated(self, item):
-        md5, path = item.data(Qt.UserRole).toPyObject()
+        md5, path, fname = item.data(Qt.UserRole)
         if path:
-            self.file_open(path)
+            self.file_open(path, fname)
 
     def on_item_changed(self, current, previous):
         if not current: return
-        md5, path = current.data(Qt.UserRole).toPyObject()
+        md5, path, fname = current.data(Qt.UserRole)
 
         title = QPixmap(os.path.join(
             self.user_data_path, "title", "%s.png") % md5)
@@ -241,7 +235,7 @@ class ROMReader(QThread):
 
     def set_path(self, path):
         """Sets ROM directory path."""
-        self.rom_path = str(path)
+        self.rom_path = path
 
     def get_roms(self):
         """Returns ROM list."""
@@ -265,13 +259,14 @@ class ROMReader(QThread):
             fullpath = os.path.join(self.rom_path, filename)
             try:
                 archive = Archive(fullpath)
-                romfile = archive.read()
-                archive.close()
+                for fname in archive.namelist:
+                    romfile = archive.read(fname)
+                    archive.close()
+                    rom_md5 = md5sum(filedata=romfile)
+                    self.roms.append((rom_md5.upper(), fullpath, fname))
             except Exception, err:
                 log.warn(str(err))
                 continue
-            rom_md5 = md5sum(filedata=romfile)
-            self.roms.append((rom_md5.upper(), fullpath))
             percent = float(filenum) / float(num_files) * 100
             self.parent.progressBar.emit(
                     SIGNAL("valueChanged(int)"), percent)

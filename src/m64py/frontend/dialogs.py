@@ -14,28 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
+from PyQt4.QtCore import *
+from PyQt4.QtGui import QDialog, QMessageBox, QListWidgetItem
 
-from PyQt4.QtGui import QDialog, QMessageBox
-
-try:
-    from m64py.core.defs import FRONTEND_VERSION
-    from m64py.ui.about_ui import Ui_AboutDialog
-    from m64py.ui.license_ui import Ui_LicenseDialog
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.utils import version_split
+from m64py.core.defs import FRONTEND_VERSION
+from m64py.ui.about_ui import Ui_AboutDialog
+from m64py.ui.license_ui import Ui_LicenseDialog
+from m64py.ui.archive_ui import Ui_ArchiveDialog
 
 class AboutDialog(QDialog, Ui_AboutDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setupUi(self)
         text = self.labelAbout.text()
-        text.replace("FRONTEND_VERSION", FRONTEND_VERSION)
-        text.replace("CORE_VERSION",
-                str(parent.worker.m64p.core_version))
+        text = text.replace("FRONTEND_VERSION", FRONTEND_VERSION)
+        text = text.replace("CORE_VERSION",
+                version_split(parent.worker.m64p.core_version))
         self.labelAbout.setText(text)
         self.show()
 
@@ -51,3 +46,17 @@ class InfoDialog(QMessageBox):
         self.setText(text)
         self.setWindowTitle("Info")
         self.show()
+
+class ArchiveDialog(QDialog, Ui_ArchiveDialog):
+    def __init__(self, parent, files):
+        QDialog.__init__(self, parent)
+        self.setupUi(self)
+        self.build_list(files)
+
+    def build_list(self, files):
+        self.listWidget.clear()
+        for fname in files:
+            item = QListWidgetItem(fname)
+            item.setData(Qt.UserRole, fname)
+            self.listWidget.addItem(item)
+        self.listWidget.setCurrentRow(0)

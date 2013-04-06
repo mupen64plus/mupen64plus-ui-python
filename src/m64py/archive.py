@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import bz2
 import gzip
 import zipfile
@@ -23,12 +22,7 @@ import shutil
 import tempfile
 from subprocess import Popen, PIPE
 
-try:
-    from m64py.utils import which
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.utils import which
 
 try:
     import UnRAR2
@@ -64,12 +58,11 @@ class Archive():
     def __init__(self, filename):
         """Opens archive."""
         self.file = os.path.realpath(filename)
-        if not os.path.isfile(self.file) \
-                or not os.access(self.file, os.R_OK):
-            raise IOError("Cannot open %s. No such file." % (
-                self.file))
+        if not os.path.isfile(self.file) or not os.access(self.file, os.R_OK):
+            raise IOError("Cannot open %s. No such file." % (self.file))
 
         self.filetype = self.get_filetype()
+
         if self.filetype == ZIP:
             self.fd = zipfile.ZipFile(self.file, 'r')
         elif self.filetype == GZIP:
@@ -84,41 +77,39 @@ class Archive():
             elif RAR_CMD:
                 self.fd = RarCmd(self.file)
             else:
-                raise IOError("UnRAR2 module or rar/unrar is needed for %s." % (
-                    self.file))
+                raise IOError("UnRAR2 module or rar/unrar is needed for %s." % (self.file))
         elif self.filetype == LZMA:
             if HAS_7Z:
                 self.fd = Archive7z(open(self.file, 'rb'))
             elif LZMA_CMD:
                 self.fd = LzmaCmd(self.file)
             else:
-                raise IOError("lzma module or 7z is needed for %s." % (
-                    self.file))
+                raise IOError("lzma module or 7z is needed for %s." % (self.file))
         else:
-            raise IOError("File %s is not a N64 ROM file." % (
-                self.file))
+            raise IOError("File %s is not a N64 ROM file." % (self.file))
 
-    def read(self):
-        """Reads data. If archive has more then one
-        file the first one is used."""
+        self.namelist = self.get_namelist()
+
+    def read(self, filename=None):
+        """Reads data."""
         data = None
+        fname = self.namelist[0] if not filename else filename
         if self.filetype == ZIP:
-            data = self.fd.read(self.fd.infolist()[0])
+            data = self.fd.read(fname)
         elif self.filetype == GZIP:
             data = self.fd.read()
         elif self.filetype == BZIP:
             data = self.fd.read()
         elif self.filetype == RAR:
             if HAS_RAR:
-                data = self.fd.read_files()[0][1]
+                data = self.fd.read_files(fname)[0][1]
             elif RAR_CMD:
-                data = self.fd.read()
+                data = self.fd.read(fname)
         elif self.filetype == LZMA:
             if HAS_7Z:
-                data = self.fd.getmember(
-                        self.fd.getnames()[0]).read()
+                data = self.fd.getmember(fname).read()
             elif LZMA_CMD:
-                data = self.fd.read()
+                data = self.fd.read(fname)
         elif self.filetype == ROM:
             data = self.fd.read()
         return data
@@ -130,6 +121,29 @@ class Archive():
                 self.fd.close()
         else:
             self.fd.close()
+
+    def get_namelist(self):
+        """Gets list of files in archive."""
+        if self.filetype == ZIP:
+            namelist = [name.filename for name in self.fd.infolist()]
+        elif self.filetype == GZIP:
+            namelist = [os.path.basename(self.file)]
+        elif self.filetype == BZIP:
+            namelist = [os.path.basename(self.file)]
+        elif self.filetype == RAR:
+            if HAS_RAR:
+                for filename in self.fd.infoiter():
+                    namelist.append(filename.filename)
+            elif RAR_CMD:
+                namelist = self.fd.namelist
+        elif self.filetype == LZMA:
+            if HAS_7Z:
+                namelist = self.fd.getnames()
+            elif LZMA_CMD:
+                namelist = self.fd.namelist
+        elif self.filetype == ROM:
+            namelist = [os.path.basename(self.file)]
+        return namelist
 
     def get_filetype(self):
         """Gets archive type."""
@@ -155,13 +169,10 @@ class RarCmd:
 
     def __init__(self, archive):
         """Opens archive."""
+        self.fd = None
         self.file = archive
         self.namelist = self.namelist()
-        self.filename = self.namelist[0]
-        self.tempdir = tempfile.mkdtemp(self.file)
-        self.extract()
-        self.fd = open(os.path.join(
-            self.tempdir, self.filename), "rb")
+        self.tempdir = tempfile.mkdtemp()
 
     def namelist(self):
         """Returns list of filenames in archive."""
@@ -170,21 +181,24 @@ class RarCmd:
 
     def extract(self):
         """Extracts archive to temp dir."""
-        proc = Popen([RAR_CMD, 'x', '-kb', '-p-', '-o-', '-inul', '--',
-                self.file, self.filename, self.tempdir],
-                stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        cmd = [RAR_CMD, 'x', '-kb', '-p-', '-o-', '-inul', '--',
+                self.file, self.filename, self.tempdir]
+        proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
         if out[1] != '':
-            raise IOError("Error extracting file %s: %s." % (
-                self.file, out[1]))
+            raise IOError("Error extracting file %s: %s." % (self.file, out[1]))
 
-    def read(self):
+    def read(self, filename=None):
         """Reads data."""
+        self.filename = self.namelist[0] if not filename else filename
+        self.extract()
+        self.fd = open(os.path.join(self.tempdir, self.filename), "rb")
         return self.fd.read()
 
     def close(self):
         """Closes file descriptor and clean resources."""
-        self.fd.close()
+        if self.fd:
+            self.fd.close()
         shutil.rmtree(self.tempdir)
 
 class LzmaCmd:
@@ -192,35 +206,35 @@ class LzmaCmd:
 
     def __init__(self, archive):
         """Opens archive."""
+        self.fd = None
         self.file = archive
         self.namelist = self.namelist()
-        self.filename = self.namelist[0]
-        self.tempdir = tempfile.mkdtemp(self.filename)
-        self.extract()
-        self.fd = open(os.path.join(
-            self.tempdir, self.filename), "rb")
+        self.tempdir = tempfile.mkdtemp()
 
     def namelist(self):
         """Returns list of filenames in archive."""
-        proc1 = Popen([LZMA_CMD, 'l', self.file], stdout=PIPE)
-        proc2 = Popen(['grep', '-F', '...A'], stdin=proc1.stdout, stdout=PIPE)
-        lines = [name.rstrip(os.linesep) for name in proc2.stdout.readlines()]
+        proc = Popen([LZMA_CMD, 'l', self.file], stdout=PIPE)
+        lines = [name.rstrip(os.linesep) for name in proc.stdout.readlines() if '...A' in name]
         return [name[53:] for name in lines]
 
     def extract(self):
         """Extracts archive to temp dir."""
-        proc = Popen([LZMA_CMD, 'x', '-o'+self.tempdir, self.file, self.filename],
-                stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        cmd = [LZMA_CMD, 'x', '-o'+self.tempdir, self.file, self.filename]
+        proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
         if "Error" in out[0]:
             raise IOError("Error extracting file %s: %s." % (
                 self.file, out[0]))
 
-    def read(self):
+    def read(self, filename=None):
         """Reads data."""
+        self.filename = self.namelist[0] if not filename else filename
+        self.extract()
+        self.fd = open(os.path.join(self.tempdir, self.filename), "rb")
         return self.fd.read()
 
     def close(self):
         """Closes file descriptor and clean resources."""
-        self.fd.close()
+        if self.fd:
+            self.fd.close()
         shutil.rmtree(self.tempdir)
