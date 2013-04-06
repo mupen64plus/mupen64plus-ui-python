@@ -15,24 +15,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import shutil
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-try:
-    from m64py.core.defs import *
-    from m64py.utils import log
-    from m64py.loader import find_library
-    from m64py.core.core import Core
-    from m64py.core.vidext import video
-    from m64py.archive import Archive
-    from m64py.frontend.settings import Settings
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.utils import log
+from m64py.loader import find_library
+from m64py.core.core import Core
+from m64py.core.vidext import video
+from m64py.archive import Archive
+from m64py.frontend.settings import Settings
 
 class Worker(QThread):
     """Mupen64Plus thread worker"""
@@ -41,13 +35,12 @@ class Worker(QThread):
         """Constructor."""
         QThread.__init__(self, parent)
         self.parent = parent
-        self.state = 0
+        self.state = M64EMU_STOPPED
         self.m64p = Core()
         self.video = video
-        self.muted = False
         self.settings = Settings(self.parent)
-        self.use_vidext = self.settings.qset.value("enable_vidext").toBool()
-        self.is_firstrun = self.first_run()
+        self.use_vidext = bool(
+                self.settings.qset.value("enable_vidext", 1))
         self.core_load()
 
     def init(self):
@@ -57,37 +50,23 @@ class Worker(QThread):
             self.settings.m64p = self.m64p
             self.settings.m64p_handle = self.m64p.get_handle()
 
-            if self.is_firstrun:
-                self.settings.set_default_general()
-                self.settings.qset.setValue("firstrun", False)
-                self.parent.emit(SIGNAL("file_open(PyQt_PyObject)"),
-                        self.test_rom)
-            elif self.parent.args:
+            if self.parent.args:
                 self.parent.emit(SIGNAL("file_open(PyQt_PyObject)"),
                         self.parent.args[0])
         else:
-            self.parent.emit(SIGNAL(
-                "state_changed(PyQt_PyObject)"),
+            self.parent.emit(SIGNAL("state_changed(PyQt_PyObject)"),
                 (False, False, False, False))
-            self.parent.emit(SIGNAL(
-                "info_dialog(PyQt_PyObject)"),
+            self.parent.emit(SIGNAL("info_dialog(PyQt_PyObject)"),
                 "Mupen64Plus library not found.")
 
-    def first_run(self):
-        """Checks if this is first run."""
-        firstrun = self.settings.qset.value(
-                "firstrun", True).toBool()
-        self.test_rom = os.path.realpath(
-                os.path.join("test", "mupen64plus.v64"))
-        if firstrun and os.path.isfile(self.test_rom) \
-                and os.access(self.test_rom, os.R_OK):
-            self.use_vidext = True
-            return True
-        return False
-
-    def set_filepath(self, filepath):
+    def set_filepath(self, filepath, filename=None):
         """Sets rom file path."""
         self.filepath = filepath
+        self.filename = filename
+        self.archive = Archive(self.filepath)
+        if len(self.archive.namelist) > 1 and not self.filename:
+            self.parent.emit(SIGNAL(
+                "archive_dialog(PyQt_PyObject)"), self.archive.namelist)
 
     def core_load(self, path=None):
         """Loads core library."""
@@ -97,8 +76,8 @@ class Worker(QThread):
             path_library = path
         else:
             path_library = self.settings.qset.value(
-                    "Paths/Library", find_library(CORE_NAME)).toString()
-        self.m64p.core_load(str(path_library), self.use_vidext)
+                    "Paths/Library", find_library(CORE_NAME))
+        self.m64p.core_load(path_library, self.use_vidext)
 
     def core_shutdown(self):
         """Shutdowns core library."""
@@ -115,8 +94,8 @@ class Worker(QThread):
         plugins = {}
         for plugin_type in PLUGIN_ORDER:
             text = self.settings.qset.value("Plugins/%s" % (
-                PLUGIN_NAME[plugin_type])).toString()
-            plugins[plugin_type] = str(text)
+                PLUGIN_NAME[plugin_type]))
+            plugins[plugin_type] = text
         return plugins
 
     def plugin_load_try(self, path=None):
@@ -125,8 +104,8 @@ class Worker(QThread):
             plugins_path = path
         else:
             plugins_path = self.settings.qset.value(
-                    "Paths/Plugins", path).toString()
-        self.m64p.plugin_load_try(str(plugins_path))
+                    "Paths/Plugins", path)
+        self.m64p.plugin_load_try(plugins_path)
 
     def attach_plugins(self):
         """Attaches plugins."""
@@ -136,10 +115,9 @@ class Worker(QThread):
         """Opens ROM."""
         try:
             self.parent.emit(SIGNAL(
-                "file_opening(PyQt_PyObject)"), str(self.filepath))
-            archive = Archive(self.filepath)
-            romfile = archive.read()
-            archive.close()
+                "file_opening(PyQt_PyObject)"), self.filepath)
+            romfile = self.archive.read(self.filename)
+            self.archive.close()
         except Exception:
             log.exception("couldn't open ROM file '%s' for reading." % (
                 self.filepath))
@@ -160,20 +138,24 @@ class Worker(QThread):
         self.m64p.rom_close()
         self.parent.emit(SIGNAL("rom_closed()"))
 
-    def core_state_query(self):
+    def core_state_query(self, state):
         """Query emulator state."""
-        self.state = self.m64p.core_state_query()
+        return self.m64p.core_state_query(state)
+
+    def core_state_set(self, state, value):
+        """Sets emulator state."""
+        return self.m64p.core_state_set(state, value)
 
     def save_screenshot(self):
         """Saves screenshot."""
         self.m64p.take_next_screenshot()
 
-    def get_screenshot(self, screenshots_path):
+    def get_screenshot(self, path):
         """Gets last saved screenshot."""
         rom_name = str(self.m64p.rom_header.Name).replace(
                 ' ', '_').lower()
         screenshots = []
-        for filename in os.listdir(screenshots_path):
+        for filename in os.listdir(path):
             if filename.startswith(rom_name):
                 screenshots.append(os.path.join(
                     screenshots_path, filename))
@@ -184,12 +166,8 @@ class Worker(QThread):
     def save_image(self, title=True):
         """Saves snapshot or title image."""
         data_path = self.m64p.config.get_path("UserData")
-        if title:
-            capture = "title"
-            dst_path = os.path.join(data_path, capture)
-        else:
-            capture = "snapshot"
-            dst_path = os.path.join(data_path, capture)
+        capture = "title" if title else "snapshot"
+        dst_path = os.path.join(data_path, capture)
         if not os.path.isdir(dst_path):
             os.makedirs(dst_path)
         screenshot = self.get_screenshot(
@@ -201,7 +179,7 @@ class Worker(QThread):
                         os.path.join(dst_path, image_name))
                 log.info("Captured %s" % capture)
             except IOError:
-                log.exception("Couldn't save image %s" % image)
+                log.exception("couldn't save image %s" % image)
 
     def save_title(self):
         """Saves title."""
@@ -243,24 +221,17 @@ class Worker(QThread):
 
     def reset(self):
         """Resets emulator."""
-        self.m64p.config.open_section("CoreEvents")
-        keysym = self.m64p.config.get_parameter(
-                "Kbd Mapping Reset")
-        self.send_sdl_keydown(int(keysym))
+        self.m64p.reset()
 
     def speed_up(self):
         """Speeds up emulator."""
-        self.m64p.config.open_section("CoreEvents")
-        keysym = self.m64p.config.get_parameter(
-                "Kbd Mapping Speed Up")
-        self.send_sdl_keydown(int(keysym))
+        speed = self.core_state_query(M64CORE_SPEED_FACTOR)
+        self.core_state_set(M64CORE_SPEED_FACTOR, speed + 5)
 
     def speed_down(self):
         """Speeds down emulator."""
-        self.m64p.config.open_section("CoreEvents")
-        keysym = self.m64p.config.get_parameter(
-                "Kbd Mapping Speed Down")
-        self.send_sdl_keydown(int(keysym))
+        speed = self.core_state_query(M64CORE_SPEED_FACTOR)
+        self.core_state_set(M64CORE_SPEED_FACTOR, speed - 5)
 
     def add_cheat(self, cheat_name, cheat_code):
         """Adds a cheat"""
@@ -272,10 +243,11 @@ class Worker(QThread):
 
     def toggle_fs(self):
         """Toggles fullscreen."""
-        self.m64p.config.open_section("CoreEvents")
-        keysym = self.m64p.config.get_parameter(
-                "Kbd Mapping Fullscreen")
-        self.send_sdl_keydown(int(keysym))
+        mode = self.core_state_query(M64CORE_VIDEO_MODE)
+        if mode == M64VIDEO_WINDOWED:
+            self.core_state_set(M64CORE_VIDEO_MODE, M64VIDEO_FULLSCREEN)
+        elif mode == M64VIDEO_FULLSCREEN:
+            self.core_state_set(M64CORE_VIDEO_MODE, M64VIDEO_WINDOWED)
 
     def toggle_pause(self):
         """Toggles pause."""
@@ -287,19 +259,15 @@ class Worker(QThread):
 
     def toggle_mute(self):
         """Toggles mute."""
-        self.m64p.config.open_section("CoreEvents")
-        keysym = self.m64p.config.get_parameter(
-                "Kbd Mapping Mute")
-        self.send_sdl_keydown(keysym)
-        self.muted = not self.muted
+        if self.core_state_query(M64CORE_AUDIO_MUTE):
+            self.core_state_set(M64CORE_AUDIO_MUTE, 0)
+        else:
+            self.core_state_set(M64CORE_AUDIO_MUTE, 1)
 
     def toggle_actions(self):
         """Toggles actions state."""
-        self.core_state_query()
-        if self.parent.cheats:
-            cheat = bool(self.parent.cheats.cheats)
-        else:
-            cheat = False
+        self.state = self.core_state_query(M64CORE_EMU_STATE)
+        cheat = bool(self.parent.cheats.cheats) if self.parent.cheats else False
         if self.state == M64EMU_STOPPED:
             (load,pause,action,cheats) = True,False,False,False
         elif self.state == M64EMU_PAUSED:
