@@ -17,8 +17,10 @@
 import ctypes as C
 
 CORE_NAME = "mupen64plus"
-API_VERSION = 0x20001
-FRONTEND_VERSION = "0.1.0"
+CORE_API_VERSION = 0x20001
+CONFIG_API_VERSION = 0x20000
+MINIMUM_CORE_VERSION = 0x016300
+FRONTEND_VERSION = "0.1.1"
 
 SIZE_1X = (320, 240)
 SIZE_2X = (640, 480)
@@ -70,6 +72,12 @@ M64CORE_VIDEO_MODE = 2
 M64CORE_SAVESTATE_SLOT = 3
 M64CORE_SPEED_FACTOR = 4
 M64CORE_SPEED_LIMITER = 5
+M64CORE_VIDEO_SIZE = 6
+M64CORE_AUDIO_VOLUME = 7
+M64CORE_AUDIO_MUTE = 8
+M64CORE_INPUT_GAMESHARK = 9
+M64CORE_STATE_LOADCOMPLETE = 10
+M64CORE_STATE_SAVECOMPLETE = 11
 
 M64CMD_NOP = 0
 M64CMD_ROM_OPEN = 1
@@ -89,6 +97,9 @@ M64CMD_SEND_SDL_KEYUP = 14
 M64CMD_SET_FRAME_CALLBACK = 15
 M64CMD_TAKE_NEXT_SCREENSHOT = 16
 M64CMD_CORE_STATE_SET = 17
+M64CMD_READ_SCREEN = 18
+M64CMD_RESET = 19
+M64CMD_ADVANCE_FRAME = 20
 
 M64P_GL_DOUBLEBUFFER = 1
 M64P_GL_BUFFER_SIZE = 2
@@ -128,6 +139,9 @@ PLUGIN_NAME = {
         M64PLUGIN_INPUT: "Input"
         }
 
+m64p_error = C.c_int
+m64p_GLattr = C.c_int
+
 class m64p_rom_header(C.Structure):
     _fields_ = [
         ('init_PI_BSB_DOM1_LAT_REG', C.c_ubyte),
@@ -162,3 +176,35 @@ class m64p_cheat_code(C.Structure):
         ('address', C.c_uint),
         ('value', C.c_int),
         ]
+
+class m64p_2d_size(C.Structure):
+    _fields_ = [
+        ('uiWidth', C.c_uint),
+        ('uiHeight', C.c_uint)
+        ]
+
+FuncInit =C.CFUNCTYPE(m64p_error)
+FuncQuit = C.CFUNCTYPE(m64p_error)
+FuncListModes = C.CFUNCTYPE(m64p_error, C.POINTER(m64p_2d_size), C.POINTER(C.c_int))
+FuncSetMode = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int)
+FuncGLGetProc = C.CFUNCTYPE(C.c_void_p, C.c_char_p)
+FuncGLSetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.c_int)
+FuncGLGetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.POINTER(C.c_int))
+FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
+FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
+FuncToggleFS= C.CFUNCTYPE(m64p_error)
+
+class m64p_video_extension_functions(C.Structure):
+    _fields_ = [
+        ('Functions', C.c_uint),
+        ('VidExtFuncInit', FuncInit),
+        ('VidExtFuncQuit', FuncQuit),
+        ('VidExtFuncListModes', FuncListModes),
+        ('VidExtFuncSetMode', FuncSetMode),
+        ('VidExtFuncGLGetProc', FuncGLGetProc),
+        ('VidExtFuncGLSetAttr', FuncGLSetAttr),
+        ('VidExtFuncGLGetAttr', FuncGLGetAttr),
+        ('VidExtFuncGLSwapBuf', FuncGLSwapBuf),
+        ('VidExtFuncSetCaption', FuncSetCaption),
+        ('VidExtFuncToggleFS', FuncToggleFS),
+    ]

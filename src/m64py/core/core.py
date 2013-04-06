@@ -18,31 +18,37 @@ import os
 import sys
 import ctypes as C
 
-try:
-    from m64py.core.defs import *
-    from m64py.core.config import Config
-    from m64py.loader import load, unload_library
-    from m64py.utils import log, version_split
-    from m64py.archive import ROM_TYPE
-    from m64py.platform import DLL_EXT, DEFAULT_DYNLIB, SEARCH_DIRS
-    from m64py.core.vidext import vidext
-except ImportError, err:
-    sys.stderr.write("Error: Can't import m64py modules%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.core.defs import *
+from m64py.core.config import Config
+from m64py.loader import load, unload_library
+from m64py.utils import log, version_split
+from m64py.opts import VERBOSE
+from m64py.archive import ROM_TYPE
+from m64py.platform import DLL_EXT, DEFAULT_DYNLIB, SEARCH_DIRS
+from m64py.core.vidext import vidext
 
-def py_debug_callback(context, level, message):
-    if level <= 1:
+def debug_callback(context, level, message):
+    if level <= M64MSG_ERROR:
         sys.stderr.write("%s: %s\n" % (context, message))
-    elif level == 2:
+    elif level == M64MSG_WARNING:
         sys.stderr.write("%s: %s\n" % (context, message))
-    elif level == 3 or level == 4:
+    elif level == M64MSG_INFO or level == M64MSG_STATUS:
         sys.stderr.write("%s: %s\n" % (context, message))
-    elif level > 4:
-        pass
+    elif level == M64MSG_VERBOSE:
+        if VERBOSE:
+            sys.stderr.write("%s: %s\n" % (context, message))
+
+def state_callback(context, param, value):
+    if param == M64CORE_VIDEO_SIZE:
+        sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_SIZE", value))
+    elif param == M64CORE_VIDEO_MODE:
+        sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_MODE", value))
 
 DEBUGFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_char_p)
-DEBUG_CALLBACK = DEBUGFUNC(py_debug_callback)
+STATEFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_int)
+
+DEBUG_CALLBACK = DEBUGFUNC(debug_callback)
+STATE_CALLBACK = STATEFUNC(state_callback)
 
 class Core:
     """Mupen64Plus Core library"""
@@ -61,54 +67,129 @@ class Core:
         self.core_name = "Mupen64Plus Core"
         self.core_version = "Unknown"
 
+    def get_handle(self):
+        """Retrieves core library handle."""
+        return self.m64p
+
     def core_load(self, path=None, vidext=False):
         """Loads core library."""
         try:
-            if path is not None:
+            if path is None:
+                raise Exception("'%s' library not found." % self.core_name)
+            else:
                 self.m64p = load(path)
-            else:
-                self.m64p = None
-                raise IOError("'%s' library not found." % self.core_name)
-
-            rval = self.m64p.CoreStartup(C.c_int(API_VERSION), None,
-                    C.c_char_p(os.path.dirname(path)),
-                    "Core", DEBUG_CALLBACK, None, None)
-            if rval != M64ERR_SUCCESS:
-                log.debug("core_load()")
-                log.warn("error starting '%s' library" % self.core_name)
-                self.core_shutdown()
-                unload_library(self.m64p)
-                del self.m64p
-                sys.exit(1)
-
-            ver_ptr = C.pointer(C.c_int())
-            name_ptr = C.pointer(C.c_char_p())
-            rval = self.m64p.PluginGetVersion(None, ver_ptr, None, name_ptr, None)
-            if rval == M64ERR_SUCCESS:
-                self.config = Config(self)
-                self.core_name = name_ptr.contents.value
-                self.core_version = version_split(ver_ptr.contents.value)
-                log.info("attached to library '%s' version %s" %
-                        (self.core_name, self.core_version))
-                if vidext:
-                    self.override_vidext()
-            else:
-                self.m64p = None
-                log.debug("core_load()")
-                log.warn(self.error_message(rval))
+                self.core_path = path
+                self.check_version()
+                self.core_startup(path, vidext)
         except Exception, err:
             self.m64p = None
             log.exception(str(err))
 
-    def get_handle(self):
-        """Retrieves core library handle."""
-        return self.m64p
+    def check_version(self):
+        """Checks core API version."""
+        version = self.plugin_get_version(self.m64p, self.core_path)
+        if version:
+            plugin_type, plugin_version, plugin_api, plugin_name, plugin_cap = version
+            if plugin_type != M64PLUGIN_CORE:
+                raise Exception("library '%s' is invalid, this is not the emulator core." % (
+                    os.path.basename(self.core_path)))
+            elif plugin_version < MINIMUM_CORE_VERSION:
+                raise Exception("library '%s' is incompatible, core version %s is below minimum supported %s." % (
+                    os.path.basename(self.core_path), version_split(plugin_version), version_split(MINIMUM_CORE_VERSION)))
+            elif plugin_api & 0xffff0000 != CORE_API_VERSION & 0xffff0000:
+                raise Exception("library '%s' is incompatible, core API major version %s doesn't match application (%s)." % (
+                    os.path.basename(core_path), version_split(plugin_version), version_split(CORE_API_VERSION)))
+            else:
+                config_ver, debug_ver, vidext_ver = self.core_get_api_versions()
+                if config_ver & 0xffff0000 != CONFIG_API_VERSION & 0xffff0000:
+                    raise Exception("emulator core '%s' is incompatible, config API major version %s doesn't match application: (%s)" % (
+                        os.path.basename(self.core_path), version_split(self.config_version), version_split(CONFIG_API_VERSION)))
+
+                self.core_name = plugin_name
+                self.core_version = plugin_version
+
+                log.info("attached to library '%s' version %s" %
+                        (self.core_name, version_split(self.core_version)))
+                if plugin_cap & M64CAPS_DYNAREC:
+                    log.info("includes support for Dynamic Recompiler.")
+                if plugin_cap & M64CAPS_DEBUGGER:
+                    log.info("includes support for MIPS r4300 Debugger.")
+                if plugin_cap & M64CAPS_CORE_COMPARE:
+                    log.info("includes support for r4300 Core Comparison.")
 
     def error_message(self, return_code):
         """Returns description of the error"""
         self.m64p.CoreErrorMessage.restype = C.c_char_p
         rval = self.m64p.CoreErrorMessage(return_code)
         return rval
+
+    def core_startup(self, path, vidext):
+        """Initializes libmupen64plus for use by allocating memory,
+        creating data structures, and loading the configuration file."""
+        rval = self.m64p.CoreStartup(C.c_int(CORE_API_VERSION), None,
+                C.c_char_p(os.path.dirname(path)),
+                "Core", DEBUG_CALLBACK, "State", STATE_CALLBACK)
+        if rval == M64ERR_SUCCESS:
+            if vidext: self.override_vidext()
+            self.config = Config(self)
+        else:
+            log.debug("core_startup()")
+            log.warn("error starting '%s' library" % self.core_name)
+            self.core_shutdown()
+            unload_library(self.m64p)
+            del self.m64p
+            sys.exit(1)
+
+    def core_shutdown(self):
+        """Saves the config file, then destroys
+        data structures and releases allocated memory."""
+        if self.m64p:
+            self.m64p.CoreShutdown()
+            unload_library(self.m64p)
+            del self.m64p
+            self.m64p = None
+        return M64ERR_SUCCESS
+
+    def plugin_get_version(self, handle, path):
+        """Retrieves version information from the plugin."""
+        try:
+            type_ptr = C.pointer(C.c_int())
+            ver_ptr = C.pointer(C.c_int())
+            api_ptr = C.pointer(C.c_int())
+            name_ptr = C.pointer(C.c_char_p())
+            cap_ptr = C.pointer(C.c_int())
+            rval = handle.PluginGetVersion(
+                    type_ptr, ver_ptr, api_ptr, name_ptr, cap_ptr)
+        except AttributeError:
+            unload_library(handle)
+            log.warn("library '%s' is invalid, no PluginGetVersion() function found." % (
+                os.path.basename(path)))
+        except OSError, err:
+            log.debug("plugin_get_version()")
+            log.warn(str(err))
+        else:
+            if rval == M64ERR_SUCCESS:
+                return (type_ptr.contents.value, ver_ptr.contents.value, api_ptr.contents.value,
+                        name_ptr.contents.value, cap_ptr.contents.value)
+            else:
+                log.debug("plugin_get_version()")
+                log.warn(self.error_message(rval))
+        return None
+
+    def core_get_api_versions(self):
+        """Retrieves API version information from the core library."""
+        config_ver_ptr = C.pointer(C.c_int())
+        debug_ver_ptr = C.pointer(C.c_int())
+        vidext_ver_ptr = C.pointer(C.c_int())
+        rval = self.m64p.CoreGetAPIVersions(
+                config_ver_ptr, debug_ver_ptr, vidext_ver_ptr, None)
+        if rval == M64ERR_SUCCESS:
+            return (config_ver_ptr.contents.value, debug_ver_ptr.contents.value,
+                    vidext_ver_ptr.contents.value)
+        else:
+            log.debug("core_get_api_versions()")
+            log.warn(self.error_message(rval))
+            return None
 
     def find_plugins(self, path=None):
         """Searches for plugins in defined directories."""
@@ -132,58 +213,41 @@ class Core:
                 M64PLUGIN_INPUT: {}
                 }
         for plugin_path in self.plugin_files:
-            try:
-                plugin_handle = C.cdll.LoadLibrary(plugin_path)
-                type_ptr = C.pointer(C.c_int())
-                ver_ptr = C.pointer(C.c_int())
-                api_ptr = C.pointer(C.c_int())
-                name_ptr = C.pointer(C.c_char_p())
-                rval = plugin_handle.PluginGetVersion(
-                        type_ptr, ver_ptr, api_ptr, name_ptr, None)
-                if rval != M64ERR_SUCCESS:
-                    log.debug("plugin_load_try()")
-                    log.warn(self.error_message(rval))
-                    continue
-            except AttributeError:
-                unload_library(plugin_handle)
-                continue
-            except OSError, err:
-                log.debug("plugin_load_try()")
-                log.warn(str(err))
-                continue
-            else:
-                plugin_type = type_ptr.contents.value
-                plugin_version = version_split(ver_ptr.contents.value)
-                plugin_desc = name_ptr.contents.value
+            plugin_handle = C.cdll.LoadLibrary(plugin_path)
+            version = self.plugin_get_version(plugin_handle, plugin_path)
+            if version:
+                plugin_type, plugin_version, plugin_api, plugin_desc, plugin_cap = version
                 plugin_name = os.path.basename(plugin_path)
                 self.plugin_map[plugin_type][plugin_name] = (plugin_handle, plugin_path,
                         PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
+                self.plugin_startup(plugin_handle, PLUGIN_NAME[plugin_type])
 
-    def core_shutdown(self):
-        """Saves the config file, then destroys
-        data structures and releases allocated memory."""
-        if self.m64p:
-            self.m64p.CoreShutdown()
-            unload_library(self.m64p)
-            del self.m64p
-            self.m64p = None
-        return M64ERR_SUCCESS
+    def plugin_startup(self, handle, name):
+        """This function initializes plugin for use by allocating memory,
+        creating data structures, and loading the configuration data."""
+        rval = handle.PluginStartup(C.c_void_p(self.m64p._handle),
+                name, DEBUG_CALLBACK)
+        if rval not in [M64ERR_SUCCESS, M64ERR_ALREADY_INIT]:
+            log.debug("plugin_startup()")
+            log.warn(self.error_message(rval))
+            log.warn("%s plugin failed to start." % (name))
+
+    def plugin_shutdown(self, handle):
+        """This function destroys data structures and releases
+        memory allocated by the plugin library. """
+        rval = handle.PluginShutdown()
+        if rval != M64ERR_SUCCESS:
+            log.debug("plugin_shutdown()")
+            log.warn(self.error_message(rval))
 
     def plugins_shutdown(self):
         """Destroys data structures and releases allocated memory."""
-        for plugin_type in PLUGIN_ORDER:
-            plugin = self.plugins[plugin_type]
-            if not plugin:
-                plugin_map = self.plugin_map[plugin_type].values()[0]
-            else:
-                plugin_map = self.plugin_map[plugin_type][plugin]
-            (plugin_handle, plugin_path, plugin_name,
-                    plugin_desc, plugin_version) = plugin_map
-
-            rval = plugin_handle.PluginShutdown()
-            if rval != M64ERR_SUCCESS:
-                log.debug("plugins_shutdown()")
-                log.warn(self.error_message(rval))
+        if self.plugin_map:
+            for plugin_type in self.plugin_map.keys():
+                for plugin_map in self.plugin_map[plugin_type].values():
+                    (plugin_handle, plugin_path, plugin_name,
+                            plugin_desc, plugin_version) = plugin_map
+                    self.plugin_shutdown(plugin_handle)
 
     def plugins_unload(self):
         """Unloads plugins from plugin_map."""
@@ -207,16 +271,7 @@ class Core:
             (plugin_handle, plugin_path, plugin_name,
                     plugin_desc, plugin_version) = plugin_map
 
-            rval = plugin_handle.PluginStartup(
-                    C.c_void_p(self.m64p._handle),
-                    plugin_name,
-                    DEBUG_CALLBACK)
-            if rval != M64ERR_SUCCESS:
-                log.debug("attach_plugins()")
-                log.warn(self.error_message(rval))
-                log.warn("%s plugin library '%s' failed to start." % (
-                    plugin_name, plugin_path))
-
+            self.plugin_startup(plugin_handle, plugin_name)
             rval = self.m64p.CoreAttachPlugin(
                     C.c_int(plugin_type),
                     C.c_void_p(plugin_handle._handle))
@@ -227,7 +282,7 @@ class Core:
                     plugin_name))
             else:
                 log.info("using %s plugin: '%s' v%s" % (
-                    plugin_name, plugin_desc, plugin_version))
+                    plugin_name, plugin_desc, version_split(plugin_version)))
 
     def detach_plugins(self):
         """Detaches plugins from the emulator core,
@@ -331,17 +386,29 @@ class Core:
             log.warn(self.error_message(rval))
         return rval
 
-    def core_state_query(self):
+    def core_state_query(self, state):
         """Query the emulator core for the
         value of a state parameter."""
         state_ptr = C.pointer(C.c_int())
         rval = self.m64p.CoreDoCommand(
                 M64CMD_CORE_STATE_QUERY,
-                C.c_int(M64CORE_EMU_STATE), state_ptr)
+                C.c_int(state), state_ptr)
         if rval != M64ERR_SUCCESS:
             log.debug("core_state_query()")
             log.warn(self.error_message(rval))
         return state_ptr.contents.value
+
+    def core_state_set(self, state, value):
+        """Sets the value of a state
+        parameter in the emulator core."""
+        value_ptr = C.pointer(C.c_int(value))
+        rval = self.m64p.CoreDoCommand(
+                M64CMD_CORE_STATE_SET,
+                C.c_int(state), value_ptr)
+        if rval != M64ERR_SUCCESS:
+            log.debug("core_state_set()")
+            log.warn(self.error_message(rval))
+        return value_ptr.contents.value
 
     def state_load(self):
         """Loads a saved state file from the current slot."""
@@ -396,6 +463,15 @@ class Core:
                 M64CMD_TAKE_NEXT_SCREENSHOT)
         if rval != M64ERR_SUCCESS:
             log.debug("take_next_screenshot()")
+            log.warn(self.error_message(rval))
+        return rval
+
+    def reset(self):
+        """Reset the emulated machine."""
+        rval = self.m64p.CoreDoCommand(
+                M64CMD_RESET, C.c_int(1))
+        if rval != M64ERR_SUCCESS:
+            log.debug("reset()")
             log.warn(self.error_message(rval))
         return rval
 
