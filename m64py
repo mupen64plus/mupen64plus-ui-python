@@ -36,20 +36,13 @@ except ImportError, err:
     sys.exit(1)
 
 try:
-    from m64py.core.defs import FRONTEND_VERSION
+    from m64py.core.defs import FRONTEND_VERSION, LOGO
     from m64py.frontend.mainwindow import MainWindow
     from m64py.loader import load_library
 except ImportError, err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
     sys.exit(1)
-
-LOGO  = " __  __                         __   _  _   ____  _            \n"
-LOGO += "|  \/  |_   _ _ __   ___ _ __  / /_ | || | |  _ \| |_   _ ___  \n"
-LOGO += "| |\/| | | | | '_ \ / _ \ '_ \| '_ \| || |_| |_) | | | | / __| \n"
-LOGO += "| |  | | |_| | |_) |  __/ | | | (_) |__   _|  __/| | |_| \__ \ \n"
-LOGO += "|_|  |_|\__,_| .__/ \___|_| |_|\___/   |_| |_|   |_|\__,_|___/ \n"
-LOGO += "             |_|                                               \n"
 
 def main():
     try:

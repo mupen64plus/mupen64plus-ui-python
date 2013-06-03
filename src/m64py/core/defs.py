@@ -210,3 +210,10 @@ class m64p_video_extension_functions(C.Structure):
         ('VidExtFuncToggleFS', FuncToggleFS),
         ('VidExtFuncResizeWindow', FuncResizeWindow)
     ]
+
+LOGO  = " __  __                         __   _  _   ____  _            \n"
+LOGO += "|  \/  |_   _ _ __   ___ _ __  / /_ | || | |  _ \| |_   _ ___  \n"
+LOGO += "| |\/| | | | | '_ \ / _ \ '_ \| '_ \| || |_| |_) | | | | / __| \n"
+LOGO += "| |  | | |_| | |_) |  __/ | | | (_) |__   _|  __/| | |_| \__ \ \n"
+LOGO += "|_|  |_|\__,_| .__/ \___|_| |_|\___/   |_| |_|   |_|\__,_|___/ \n"
+LOGO += "             |_|                                               \n"
