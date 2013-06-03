@@ -101,10 +101,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.worker.use_vidext and self.worker.m64p.get_handle():
             # FIXME event.ignore() doesn't work on windows
             if not sys.platform == "win32":
-                width, height = self.keep_aspect(size)
+                if not self.window().isFullScreen():
+                    width, height = self.keep_aspect(size)
             self.worker.m64p.config.open_section("Video-General")
             self.worker.m64p.config.set_parameter("ScreenWidth", width)
             self.worker.m64p.config.set_parameter("ScreenHeight", height)
+            if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
+                self.worker.core_state_set(
+                        M64CORE_VIDEO_SIZE, (width << 16) + height)
         self.set_sizes((width, height))
         self.settings.qset.setValue("size", (width, height))
         self.resize(width, height + self.widgets_height)

@@ -40,9 +40,11 @@ def debug_callback(context, level, message):
 
 def state_callback(context, param, value):
     if param == M64CORE_VIDEO_SIZE:
-        sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_SIZE", value))
+        #sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_SIZE", value))
+        pass
     elif param == M64CORE_VIDEO_MODE:
-        sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_MODE", value))
+        #sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_MODE", value))
+        pass
 
 DEBUGFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_char_p)
 STATEFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_int)
@@ -220,9 +222,9 @@ class Core:
                 plugin_name = os.path.basename(plugin_path)
                 self.plugin_map[plugin_type][plugin_name] = (plugin_handle, plugin_path,
                         PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
-                self.plugin_startup(plugin_handle, PLUGIN_NAME[plugin_type])
+                self.plugin_startup(plugin_handle, PLUGIN_NAME[plugin_type], plugin_desc)
 
-    def plugin_startup(self, handle, name):
+    def plugin_startup(self, handle, name, desc):
         """This function initializes plugin for use by allocating memory,
         creating data structures, and loading the configuration data."""
         rval = handle.PluginStartup(C.c_void_p(self.m64p._handle),
@@ -230,7 +232,7 @@ class Core:
         if rval not in [M64ERR_SUCCESS, M64ERR_ALREADY_INIT]:
             log.debug("plugin_startup()")
             log.warn(self.error_message(rval))
-            log.warn("%s plugin failed to start." % (name))
+            log.warn("%s failed to start." % (desc))
 
     def plugin_shutdown(self, handle):
         """This function destroys data structures and releases
@@ -271,7 +273,7 @@ class Core:
             (plugin_handle, plugin_path, plugin_name,
                     plugin_desc, plugin_version) = plugin_map
 
-            self.plugin_startup(plugin_handle, plugin_name)
+            self.plugin_startup(plugin_handle, plugin_name, plugin_desc)
             rval = self.m64p.CoreAttachPlugin(
                     C.c_int(plugin_type),
                     C.c_void_p(plugin_handle._handle))

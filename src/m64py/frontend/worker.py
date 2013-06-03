@@ -39,8 +39,8 @@ class Worker(QThread):
         self.m64p = Core()
         self.video = video
         self.settings = Settings(self.parent)
-        self.use_vidext = bool(
-                self.settings.qset.value("enable_vidext", 1))
+        self.use_vidext = bool(int(
+            self.settings.qset.value("enable_vidext", 1)))
         self.core_load()
 
     def init(self):

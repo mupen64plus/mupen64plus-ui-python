@@ -225,7 +225,7 @@ class Settings(QDialog, Ui_Settings):
         if tooltip:
             self.checkFullscreen.setToolTip(tooltip)
 
-        enable_vidext = bool(self.qset.value("enable_vidext", 1))
+        enable_vidext = bool(int(self.qset.value("enable_vidext", 1)))
         self.checkEnableVidExt.setChecked(enable_vidext)
 
     def set_core(self):
@@ -281,8 +281,7 @@ class Settings(QDialog, Ui_Settings):
             width, height = self.comboResolution.currentText().split("x")
             self.m64p.config.set_parameter("ScreenWidth", int(width))
             self.m64p.config.set_parameter("ScreenHeight", int(height))
-        self.m64p.config.set_parameter("Fullscreen",
-                self.checkFullscreen.isChecked())
+        self.m64p.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
 
     def save_core(self):

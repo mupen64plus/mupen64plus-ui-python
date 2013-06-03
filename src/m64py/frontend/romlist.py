@@ -70,7 +70,7 @@ class ROMList(QMainWindow, Ui_ROMList):
     def init(self):
         self.read_rom_list()
         self.roms = self.qset.value("rom_list", [])
-        if bool(self.qset.value("show_available", 0)):
+        if bool(int(self.qset.value("show_available", 0))):
             self.add_available_items(self.roms)
         else:
             self.add_items()

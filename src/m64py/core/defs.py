@@ -20,7 +20,7 @@ CORE_NAME = "mupen64plus"
 CORE_API_VERSION = 0x20001
 CONFIG_API_VERSION = 0x20000
 MINIMUM_CORE_VERSION = 0x016300
-FRONTEND_VERSION = "0.1.1"
+FRONTEND_VERSION = "0.1.2"
 
 SIZE_1X = (320, 240)
 SIZE_2X = (640, 480)
@@ -183,7 +183,7 @@ class m64p_2d_size(C.Structure):
         ('uiHeight', C.c_uint)
         ]
 
-FuncInit =C.CFUNCTYPE(m64p_error)
+FuncInit = C.CFUNCTYPE(m64p_error)
 FuncQuit = C.CFUNCTYPE(m64p_error)
 FuncListModes = C.CFUNCTYPE(m64p_error, C.POINTER(m64p_2d_size), C.POINTER(C.c_int))
 FuncSetMode = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int)
@@ -192,7 +192,8 @@ FuncGLSetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.c_int)
 FuncGLGetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.POINTER(C.c_int))
 FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
 FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
-FuncToggleFS= C.CFUNCTYPE(m64p_error)
+FuncToggleFS = C.CFUNCTYPE(m64p_error)
+FuncResizeWindow = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int)
 
 class m64p_video_extension_functions(C.Structure):
     _fields_ = [
@@ -207,4 +208,5 @@ class m64p_video_extension_functions(C.Structure):
         ('VidExtFuncGLSwapBuf', FuncGLSwapBuf),
         ('VidExtFuncSetCaption', FuncSetCaption),
         ('VidExtFuncToggleFS', FuncToggleFS),
+        ('VidExtFuncResizeWindow', FuncResizeWindow)
     ]

@@ -149,9 +149,14 @@ class Video():
         self.widget.swapBuffers()
         return M64ERR_SUCCESS
 
+    def resize_window(self, width, height):
+        """Called when the video plugin has resized its OpenGL
+        output viewport in response to a ResizeVideoOutput() call"""
+        return M64ERR_SUCCESS
+
 video = Video()
 vidext = m64p_video_extension_functions()
-vidext.Functions = 10
+vidext.Functions = 11
 vidext.VidExtFuncInit = FuncInit(video.init)
 vidext.VidExtFuncQuit = FuncQuit(video.quit)
 vidext.VidExtFuncListModes = FuncListModes(video.list_fullscreen_modes)
@@ -162,3 +167,4 @@ vidext.VidExtFuncGLGetAttr = FuncGLGetAttr(video.gl_get_attr)
 vidext.VidExtFuncGLSwapBuf = FuncGLSwapBuf(video.gl_swap_buf)
 vidext.VidExtFuncSetCaption = FuncSetCaption(video.set_caption)
 vidext.VidExtFuncToggleFS = FuncToggleFS(video.toggle_fs)
+vidext.VidExtFuncResizeWindow = FuncResizeWindow(video.resize_window)
