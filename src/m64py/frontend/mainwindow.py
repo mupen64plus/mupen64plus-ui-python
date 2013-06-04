@@ -104,9 +104,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not sys.platform == "win32":
                 if not fullscreen:
                     width, height = self.keep_aspect(size)
-            #self.worker.m64p.config.open_section("Video-General")
-            #self.worker.m64p.config.set_parameter("ScreenWidth", width)
-            #self.worker.m64p.config.set_parameter("ScreenHeight", height)
+            self.worker.m64p.config.open_section("Video-General")
+            self.worker.m64p.config.set_parameter("ScreenWidth", width)
+            self.worker.m64p.config.set_parameter("ScreenHeight", height)
             if not fullscreen:
                 video_size = (width << 16) + height
             else:

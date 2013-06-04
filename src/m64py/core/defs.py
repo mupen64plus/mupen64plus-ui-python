@@ -16,6 +16,8 @@
 
 import ctypes as C
 
+from m64py.platform import DLL_EXT
+
 CORE_NAME = "mupen64plus"
 CORE_API_VERSION = 0x20001
 CONFIG_API_VERSION = 0x20000
@@ -137,6 +139,14 @@ PLUGIN_NAME = {
         M64PLUGIN_GFX: "Video",
         M64PLUGIN_AUDIO: "Audio",
         M64PLUGIN_INPUT: "Input"
+        }
+
+PLUGIN_DEFAULT = {
+        M64PLUGIN_NULL: "NULL",
+        M64PLUGIN_RSP: "mupen64plus-rsp-hle%s" % DLL_EXT,
+        M64PLUGIN_GFX: "mupen64plus-video-rice%s" % DLL_EXT,
+        M64PLUGIN_AUDIO: "mupen64plus-audio-sdl%s" % DLL_EXT,
+        M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT
         }
 
 m64p_error = C.c_int

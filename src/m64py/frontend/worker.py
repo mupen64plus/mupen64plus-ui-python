@@ -94,7 +94,7 @@ class Worker(QThread):
         plugins = {}
         for plugin_type in PLUGIN_ORDER:
             text = self.settings.qset.value("Plugins/%s" % (
-                PLUGIN_NAME[plugin_type]))
+                PLUGIN_NAME[plugin_type]), PLUGIN_DEFAULT[plugin_type])
             plugins[plugin_type] = text
         return plugins
 
