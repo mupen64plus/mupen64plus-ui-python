@@ -234,13 +234,14 @@ class Core:
             log.warn(self.error_message(rval))
             log.warn("%s failed to start." % (desc))
 
-    def plugin_shutdown(self, handle):
+    def plugin_shutdown(self, handle, desc):
         """This function destroys data structures and releases
         memory allocated by the plugin library. """
         rval = handle.PluginShutdown()
         if rval != M64ERR_SUCCESS:
             log.debug("plugin_shutdown()")
             log.warn(self.error_message(rval))
+            log.warn("%s failed to stop." % (desc))
 
     def plugins_shutdown(self):
         """Destroys data structures and releases allocated memory."""
@@ -249,7 +250,7 @@ class Core:
                 for plugin_map in self.plugin_map[plugin_type].values():
                     (plugin_handle, plugin_path, plugin_name,
                             plugin_desc, plugin_version) = plugin_map
-                    self.plugin_shutdown(plugin_handle)
+                    self.plugin_shutdown(plugin_handle, plugin_desc)
 
     def plugins_unload(self):
         """Unloads plugins from plugin_map."""
