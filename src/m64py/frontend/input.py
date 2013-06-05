@@ -72,9 +72,14 @@ class Input(QDialog, Ui_InputDialog):
         for plugin, ptype in [("None", 1), ("Mem pak", 2), ("Rumble pak", 5)]:
             self.comboPlugin.addItem(plugin, ptype)
 
-        devices = [("Keyboard/Mouse", -2), ("Auto config", -1)]
+        for mode, mtype in [("Fully Manual", 0),
+                ("Auto with named SDL device", 1), ("Fully Automatic", 2)]:
+            self.comboMode.addItem(mode, mtype)
+
+        devices = [("Keyboard/Mouse", -1)]
         for num, joy in enumerate(self.joystick.joystick_names):
             devices.append(("Joystick %s (%s)" % (num, joy), num))
+
         for device, dtype in devices:
             self.comboDevice.addItem(device, dtype)
 
@@ -136,6 +141,10 @@ class Input(QDialog, Ui_InputDialog):
                 self.config.get_parameter("device"),
                 self.config.get_parameter_help("device"),
                 self.comboDevice, M64TYPE_INT),
+            "mode": (
+                self.config.get_parameter("mode"),
+                self.config.get_parameter_help("mode"),
+                self.comboMode, M64TYPE_INT),
             "AnalogDeadzone": (
                 self.config.get_parameter("AnalogDeadzone"),
                 self.config.get_parameter_help("AnalogDeadzone"),
