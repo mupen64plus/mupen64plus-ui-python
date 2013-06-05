@@ -47,6 +47,9 @@ class GLWidget(QGLWidget):
     def paintEvent(self, event):
         pass
 
+    def mouseDoubleClickEvent(self, event):
+        self.toggle_fs()
+
     def keyPressEvent(self, event):
         if self.worker.state == M64EMU_RUNNING:
             key = event.key()
@@ -79,8 +82,8 @@ class GLWidget(QGLWidget):
         if window.isFullScreen():
             self.parent.menubar.show()
             self.parent.statusbar.show()
-            window.showNormal()
+            window.setWindowState(Qt.WindowActive)
         else:
             self.parent.menubar.hide()
             self.parent.statusbar.hide()
-            window.showFullScreen()
+            window.setWindowState(Qt.WindowFullScreen)
