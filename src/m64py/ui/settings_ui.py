@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'settings.ui'
 #
-# Created: Sat Jun 23 10:26:18 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Wed Jun  5 09:01:17 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
@@ -448,37 +457,38 @@ class Ui_Settings(object):
         QtCore.QMetaObject.connectSlotsByName(Settings)
 
     def retranslateUi(self, Settings):
-        Settings.setWindowTitle(QtGui.QApplication.translate("Settings", "Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupLibrary.setTitle(QtGui.QApplication.translate("Settings", "Library file", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseLibrary.setText(QtGui.QApplication.translate("Settings", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupPlugins.setTitle(QtGui.QApplication.translate("Settings", "Plugins directory", None, QtGui.QApplication.UnicodeUTF8))
-        self.browsePlugins.setText(QtGui.QApplication.translate("Settings", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupData.setTitle(QtGui.QApplication.translate("Settings", "Data directory", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseData.setText(QtGui.QApplication.translate("Settings", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupROM.setTitle(QtGui.QApplication.translate("Settings", "ROMs directory", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseROM.setText(QtGui.QApplication.translate("Settings", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QtGui.QApplication.translate("Settings", "Paths", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupGraphics.setTitle(QtGui.QApplication.translate("Settings", "Graphics", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkFullscreen.setText(QtGui.QApplication.translate("Settings", "Fullscreen", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkOSD.setText(QtGui.QApplication.translate("Settings", "On Screen Display", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkEnableVidExt.setToolTip(QtGui.QApplication.translate("Settings", "<html><head/><body><p>Enable embedding of OpenGL window. This option needs restart.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkEnableVidExt.setText(QtGui.QApplication.translate("Settings", "Enable Video Extension", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupResolution.setTitle(QtGui.QApplication.translate("Settings", "Resolution", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboResolution.setToolTip(QtGui.QApplication.translate("Settings", "Used only when video extension is not enabled", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupEmuMode.setTitle(QtGui.QApplication.translate("Settings", "CPU Core", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupEmuMode_2.setTitle(QtGui.QApplication.translate("Settings", "Compatibility", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkNoCompiledJump.setText(QtGui.QApplication.translate("Settings", "No Compiled Jump", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkDisableExtraMem.setText(QtGui.QApplication.translate("Settings", "Disable Extra Memory", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("Settings", "Emulator", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupVideo.setTitle(QtGui.QApplication.translate("Settings", "Video", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButtonVideo.setText(QtGui.QApplication.translate("Settings", "Configure", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupAudio.setTitle(QtGui.QApplication.translate("Settings", "Audio", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButtonAudio.setText(QtGui.QApplication.translate("Settings", "Configure", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupInput.setTitle(QtGui.QApplication.translate("Settings", "Input", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButtonInput.setText(QtGui.QApplication.translate("Settings", "Configure", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupRSP.setTitle(QtGui.QApplication.translate("Settings", "Rsp", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButtonRSP.setText(QtGui.QApplication.translate("Settings", "Configure", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("Settings", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
-        self.closeButton.setText(QtGui.QApplication.translate("Settings", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+        Settings.setWindowTitle(_translate("Settings", "Settings", None))
+        self.groupLibrary.setTitle(_translate("Settings", "Library file", None))
+        self.browseLibrary.setText(_translate("Settings", "Browse", None))
+        self.groupPlugins.setTitle(_translate("Settings", "Plugins directory", None))
+        self.browsePlugins.setText(_translate("Settings", "Browse", None))
+        self.groupData.setTitle(_translate("Settings", "Data directory", None))
+        self.browseData.setText(_translate("Settings", "Browse", None))
+        self.groupROM.setTitle(_translate("Settings", "ROMs directory", None))
+        self.browseROM.setText(_translate("Settings", "Browse", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("Settings", "Paths", None))
+        self.groupGraphics.setTitle(_translate("Settings", "Graphics", None))
+        self.checkFullscreen.setToolTip(_translate("Settings", "Used only when video extension is disabled", None))
+        self.checkFullscreen.setText(_translate("Settings", "Fullscreen", None))
+        self.checkOSD.setText(_translate("Settings", "On Screen Display", None))
+        self.checkEnableVidExt.setToolTip(_translate("Settings", "<html><head/><body><p>Enable embedding of OpenGL window. This option needs restart.</p></body></html>", None))
+        self.checkEnableVidExt.setText(_translate("Settings", "Enable Video Extension", None))
+        self.groupResolution.setTitle(_translate("Settings", "Resolution", None))
+        self.comboResolution.setToolTip(_translate("Settings", "Used only when video extension is disabled", None))
+        self.groupEmuMode.setTitle(_translate("Settings", "CPU Core", None))
+        self.groupEmuMode_2.setTitle(_translate("Settings", "Compatibility", None))
+        self.checkNoCompiledJump.setText(_translate("Settings", "No Compiled Jump", None))
+        self.checkDisableExtraMem.setText(_translate("Settings", "Disable Extra Memory", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Settings", "Emulator", None))
+        self.groupVideo.setTitle(_translate("Settings", "Video", None))
+        self.pushButtonVideo.setText(_translate("Settings", "Configure", None))
+        self.groupAudio.setTitle(_translate("Settings", "Audio", None))
+        self.pushButtonAudio.setText(_translate("Settings", "Configure", None))
+        self.groupInput.setTitle(_translate("Settings", "Input", None))
+        self.pushButtonInput.setText(_translate("Settings", "Configure", None))
+        self.groupRSP.setTitle(_translate("Settings", "Rsp", None))
+        self.pushButtonRSP.setText(_translate("Settings", "Configure", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Settings", "Plugins", None))
+        self.closeButton.setText(_translate("Settings", "&Close", None))
 
 import icons_rc

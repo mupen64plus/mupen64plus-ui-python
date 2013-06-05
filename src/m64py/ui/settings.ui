@@ -260,6 +260,9 @@ QGroupBox::title {
              <layout class="QVBoxLayout" name="verticalLayout_15">
               <item>
                <widget class="QCheckBox" name="checkFullscreen">
+                <property name="toolTip">
+                 <string>Used only when video extension is disabled</string>
+                </property>
                 <property name="text">
                  <string>Fullscreen</string>
                 </property>
@@ -330,7 +333,7 @@ QGroupBox::title {
                       </sizepolicy>
                      </property>
                      <property name="toolTip">
-                      <string>Used only when video extension is not enabled</string>
+                      <string>Used only when video extension is disabled</string>
                      </property>
                     </widget>
                    </item>

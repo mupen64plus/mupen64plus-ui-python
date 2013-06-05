@@ -40,10 +40,8 @@ def debug_callback(context, level, message):
 
 def state_callback(context, param, value):
     if param == M64CORE_VIDEO_SIZE:
-        #sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_SIZE", value))
         pass
     elif param == M64CORE_VIDEO_MODE:
-        #sys.stderr.write("%s: %s: %s\n" % (context, "M64CORE_VIDEO_MODE", value))
         pass
 
 DEBUGFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_char_p)

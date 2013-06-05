@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Sat Jun 23 10:26:18 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Wed Jun  5 09:01:17 2013
+#      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -33,7 +42,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 320, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 320, 22))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -230,7 +239,6 @@ class Ui_MainWindow(object):
         self.actionCheats.setIcon(icon18)
         self.actionCheats.setObjectName(_fromUtf8("actionCheats"))
         self.actionCustom = QtGui.QAction(MainWindow)
-        self.actionCustom.setCheckable(False)
         self.actionCustom.setObjectName(_fromUtf8("actionCustom"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
@@ -278,63 +286,63 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "M64Py", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuLoad.setTitle(QtGui.QApplication.translate("MainWindow", "&Open ROM", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRecent.setTitle(QtGui.QApplication.translate("MainWindow", "Open &Recent", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuStateSlot.setTitle(QtGui.QApplication.translate("MainWindow", "Change State Slot", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuSettings.setTitle(QtGui.QApplication.translate("MainWindow", "&Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuEmulation.setTitle(QtGui.QApplication.translate("MainWindow", "&Emulation", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuWindowSize.setTitle(QtGui.QApplication.translate("MainWindow", "Window Size", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionManually.setText(QtGui.QApplication.translate("MainWindow", "&Manually...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFromList.setText(QtGui.QApplication.translate("MainWindow", "From &list...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionKeyboard.setText(QtGui.QApplication.translate("MainWindow", "&Keyboard", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "&About", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionClearHistory.setText(QtGui.QApplication.translate("MainWindow", "&Clear history", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPaths.setText(QtGui.QApplication.translate("MainWindow", "Paths", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionGraphic.setText(QtGui.QApplication.translate("MainWindow", "Graphics", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionEmulator.setText(QtGui.QApplication.translate("MainWindow", "Emulator", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPlugins.setText(QtGui.QApplication.translate("MainWindow", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLicense.setText(QtGui.QApplication.translate("MainWindow", "&License", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoadState.setText(QtGui.QApplication.translate("MainWindow", "Load State", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoadState.setShortcut(QtGui.QApplication.translate("MainWindow", "F7", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSaveState.setText(QtGui.QApplication.translate("MainWindow", "Save State", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSaveState.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot0.setText(QtGui.QApplication.translate("MainWindow", "0", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot1.setText(QtGui.QApplication.translate("MainWindow", "1", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot2.setText(QtGui.QApplication.translate("MainWindow", "2", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot3.setText(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot4.setText(QtGui.QApplication.translate("MainWindow", "4", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot5.setText(QtGui.QApplication.translate("MainWindow", "5", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot6.setText(QtGui.QApplication.translate("MainWindow", "6", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot7.setText(QtGui.QApplication.translate("MainWindow", "7", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot8.setText(QtGui.QApplication.translate("MainWindow", "8", None, QtGui.QApplication.UnicodeUTF8))
-        self.slot9.setText(QtGui.QApplication.translate("MainWindow", "9", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSaveScreenshot.setText(QtGui.QApplication.translate("MainWindow", "&Save Screenshot", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSaveScreenshot.setShortcut(QtGui.QApplication.translate("MainWindow", "F12", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionResume.setText(QtGui.QApplication.translate("MainWindow", "&Resume", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPause.setText(QtGui.QApplication.translate("MainWindow", "&Pause", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPause.setShortcut(QtGui.QApplication.translate("MainWindow", "P", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStop.setText(QtGui.QApplication.translate("MainWindow", "&Stop", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStop.setShortcut(QtGui.QApplication.translate("MainWindow", "Esc", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShowROMInfo.setText(QtGui.QApplication.translate("MainWindow", "Show ROM Info...", None, QtGui.QApplication.UnicodeUTF8))
-        self.action960x720.setText(QtGui.QApplication.translate("MainWindow", "960x720", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFullscreen.setText(QtGui.QApplication.translate("MainWindow", "Fullscreen", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFullscreen.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Return", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStatusBar.setText(QtGui.QApplication.translate("MainWindow", "Status Bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionReset.setText(QtGui.QApplication.translate("MainWindow", "&Reset", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionReset.setShortcut(QtGui.QApplication.translate("MainWindow", "F9", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMute.setText(QtGui.QApplication.translate("MainWindow", "&Mute", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMute.setShortcut(QtGui.QApplication.translate("MainWindow", "M", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSlowDown.setText(QtGui.QApplication.translate("MainWindow", "Slow Down", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSlowDown.setShortcut(QtGui.QApplication.translate("MainWindow", "F10", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSpeedUp.setText(QtGui.QApplication.translate("MainWindow", "Speed Up", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSpeedUp.setShortcut(QtGui.QApplication.translate("MainWindow", "F11", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCheats.setText(QtGui.QApplication.translate("MainWindow", "Cheats...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCheats.setShortcut(QtGui.QApplication.translate("MainWindow", "F2", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(_translate("MainWindow", "M64Py", None))
+        self.menuFile.setTitle(_translate("MainWindow", "&File", None))
+        self.menuLoad.setTitle(_translate("MainWindow", "&Open ROM", None))
+        self.menuRecent.setTitle(_translate("MainWindow", "Open &Recent", None))
+        self.menuStateSlot.setTitle(_translate("MainWindow", "Change State Slot", None))
+        self.menuSettings.setTitle(_translate("MainWindow", "&Settings", None))
+        self.menuHelp.setTitle(_translate("MainWindow", "&Help", None))
+        self.menuEmulation.setTitle(_translate("MainWindow", "&Emulation", None))
+        self.menuView.setTitle(_translate("MainWindow", "&View", None))
+        self.menuWindowSize.setTitle(_translate("MainWindow", "Window Size", None))
+        self.actionManually.setText(_translate("MainWindow", "&Manually...", None))
+        self.actionFromList.setText(_translate("MainWindow", "From &List...", None))
+        self.actionKeyboard.setText(_translate("MainWindow", "&Keyboard", None))
+        self.actionAbout.setText(_translate("MainWindow", "&About", None))
+        self.actionClearHistory.setText(_translate("MainWindow", "&Clear history", None))
+        self.actionPaths.setText(_translate("MainWindow", "Paths", None))
+        self.actionGraphic.setText(_translate("MainWindow", "Graphics", None))
+        self.actionEmulator.setText(_translate("MainWindow", "Emulator", None))
+        self.actionPlugins.setText(_translate("MainWindow", "Plugins", None))
+        self.actionLicense.setText(_translate("MainWindow", "&License", None))
+        self.actionLoadState.setText(_translate("MainWindow", "Load State", None))
+        self.actionLoadState.setShortcut(_translate("MainWindow", "F7", None))
+        self.actionSaveState.setText(_translate("MainWindow", "Save State", None))
+        self.actionSaveState.setShortcut(_translate("MainWindow", "F5", None))
+        self.slot0.setText(_translate("MainWindow", "0", None))
+        self.slot1.setText(_translate("MainWindow", "1", None))
+        self.slot2.setText(_translate("MainWindow", "2", None))
+        self.slot3.setText(_translate("MainWindow", "3", None))
+        self.slot4.setText(_translate("MainWindow", "4", None))
+        self.slot5.setText(_translate("MainWindow", "5", None))
+        self.slot6.setText(_translate("MainWindow", "6", None))
+        self.slot7.setText(_translate("MainWindow", "7", None))
+        self.slot8.setText(_translate("MainWindow", "8", None))
+        self.slot9.setText(_translate("MainWindow", "9", None))
+        self.actionQuit.setText(_translate("MainWindow", "&Quit", None))
+        self.actionSaveScreenshot.setText(_translate("MainWindow", "&Save Screenshot", None))
+        self.actionSaveScreenshot.setShortcut(_translate("MainWindow", "F12", None))
+        self.actionResume.setText(_translate("MainWindow", "&Resume", None))
+        self.actionPause.setText(_translate("MainWindow", "&Pause", None))
+        self.actionPause.setShortcut(_translate("MainWindow", "P", None))
+        self.actionStop.setText(_translate("MainWindow", "&Stop", None))
+        self.actionStop.setShortcut(_translate("MainWindow", "Esc", None))
+        self.actionShowROMInfo.setText(_translate("MainWindow", "Show ROM Info...", None))
+        self.action960x720.setText(_translate("MainWindow", "960x720", None))
+        self.actionFullscreen.setText(_translate("MainWindow", "Fullscreen", None))
+        self.actionFullscreen.setShortcut(_translate("MainWindow", "Alt+Return", None))
+        self.actionStatusBar.setText(_translate("MainWindow", "Status Bar", None))
+        self.actionReset.setText(_translate("MainWindow", "&Reset", None))
+        self.actionReset.setShortcut(_translate("MainWindow", "F9", None))
+        self.actionMute.setText(_translate("MainWindow", "&Mute", None))
+        self.actionMute.setShortcut(_translate("MainWindow", "M", None))
+        self.actionSlowDown.setText(_translate("MainWindow", "Slow Down", None))
+        self.actionSlowDown.setShortcut(_translate("MainWindow", "F10", None))
+        self.actionSpeedUp.setText(_translate("MainWindow", "Speed Up", None))
+        self.actionSpeedUp.setShortcut(_translate("MainWindow", "F11", None))
+        self.actionCheats.setText(_translate("MainWindow", "Cheats...", None))
+        self.actionCheats.setShortcut(_translate("MainWindow", "F2", None))
 
 import images_rc
 import icons_rc

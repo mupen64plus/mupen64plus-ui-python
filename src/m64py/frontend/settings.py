@@ -219,11 +219,10 @@ class Settings(QDialog, Ui_Settings):
                 "%sx%s" % (width, height))
         if index == -1: index = 0
         self.comboResolution.setCurrentIndex(index)
+
         self.checkFullscreen.setChecked(
                 bool(self.m64p.config.get_parameter("Fullscreen")))
-        tooltip = self.m64p.config.get_parameter_help("Fullscreen")
-        if tooltip:
-            self.checkFullscreen.setToolTip(tooltip)
+        self.checkFullscreen.setEnabled(not self.parent.worker.use_vidext)
 
         enable_vidext = bool(int(self.qset.value("enable_vidext", 1)))
         self.checkEnableVidExt.setChecked(enable_vidext)
@@ -258,8 +257,8 @@ class Settings(QDialog, Ui_Settings):
                 index = combo.findText(name)
                 combo.setItemData(index, plugin_desc)
                 combo.setItemData(index, plugin_desc, Qt.ToolTipRole)
-            current = self.qset.value("Plugins/%s" %
-                    PLUGIN_NAME[plugin_type])
+            current = self.qset.value("Plugins/%s" % (
+                PLUGIN_NAME[plugin_type]), PLUGIN_DEFAULT[plugin_type])
             index = combo.findText(current)
             if index == -1: index = 0
             combo.setCurrentIndex(index)

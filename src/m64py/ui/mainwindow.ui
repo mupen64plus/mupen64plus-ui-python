@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -164,7 +164,7 @@ QStatusBar { margin:0px; }</string>
      <normaloff>:/icons/action_open_from_list.png</normaloff>:/icons/action_open_from_list.png</iconset>
    </property>
    <property name="text">
-    <string>From &amp;list...</string>
+    <string>From &amp;List...</string>
    </property>
   </action>
   <action name="actionKeyboard">
@@ -548,11 +548,7 @@ QStatusBar { margin:0px; }</string>
     <string>F2</string>
    </property>
   </action>
-  <action name="actionCustom">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-  </action>
+  <action name="actionCustom"/>
  </widget>
  <resources>
   <include location="images.qrc"/>
