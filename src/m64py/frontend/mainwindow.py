@@ -56,9 +56,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_status("Welcome to M64Py version %s." % FRONTEND_VERSION)
 
         self.sizes = {
-                SIZE_1X: self.action1X,
-                SIZE_2X: self.action2X,
-                SIZE_3X: self.action3X}
+            SIZE_1X: self.action1X,
+            SIZE_2X: self.action2X,
+            SIZE_3X: self.action3X}
 
         self.cheats = None
         self.widgets_height = None
@@ -104,6 +104,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not sys.platform == "win32":
                 if not fullscreen:
                     width, height = self.keep_aspect(size)
+
             self.worker.m64p.config.open_section("Video-General")
             self.worker.m64p.config.set_parameter("ScreenWidth", width)
             self.worker.m64p.config.set_parameter("ScreenHeight", height)
@@ -120,7 +121,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def set_sizes(self, size):
         """Sets 'Window Size' radio buttons on resize event."""
-        if not size in self.sizes.keys():
+        width, height = size
+        if size in self.sizes.keys():
+            self.sizes[(width, height)].setChecked(True)
+        else:
             for action in self.sizes.values():
                 action.setChecked(False)
 
@@ -200,21 +204,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Creates window size actions."""
         group = QActionGroup(self)
         group.setExclusive(True)
-        for num, action_size in enumerate(
+        size = self.settings.qset.value("size", SIZE_1X)
+        for num, size in enumerate(
                 sorted(self.sizes.keys()), 1):
-            action = self.sizes[action_size]
-            width, height = action_size
+            width, height = size
+            action = self.sizes[size]
+            action.setActionGroup(group)
+            w, h = width, height+self.widgets_height
             action.setText("%dX" % num)
             action.setToolTip("%sx%s" % (width, height))
-            action.setActionGroup(group )
-
-        size = self.settings.qset.value("size", SIZE_1X)
-        if size in self.sizes.keys():
-            self.sizes[size].setChecked(True)
-
-        for size, action in self.sizes.items():
-            width, height = size
-            w, h = width, height+self.widgets_height
             self.connect(action, SIGNAL("triggered()"),
                     lambda w=w,h=h:self.resize(w, h))
 
