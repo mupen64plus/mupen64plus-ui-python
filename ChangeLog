@@ -1,3 +1,10 @@
+v0.1.4  Jun 05, 2013:
+
+    * window resizing (needs Mupen64Plus v2.0-rc2)
+    * switched to PyQt API ver2
+    * support multiple files in archives
+    * icons used are now from Tango! project
+
 v0.1.0  Jun 23, 2012:
 
     * First public release

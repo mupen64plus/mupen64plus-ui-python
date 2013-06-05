@@ -1,7 +1,7 @@
 [Setup]
 AppName=M64Py
-AppVerName=M64Py 0.1.4
-VersionInfoVersion=0.1.4
+AppVerName=M64Py {VERSION}
+VersionInfoVersion={VERSION}
 AppPublisher=
 AppPublisherURL=http://m64py.sourceforge.net/
 AppSupportURL=
@@ -13,7 +13,7 @@ OutputDir=.
 Uninstallable=yes
 WindowVisible=no
 AppCopyright=Author: Milan Nikolic <gen2brain@gmail.com>
-OutputBaseFilename=m64py-0.1.4-setup
+OutputBaseFilename=m64py-{VERSION}-setup
 UninstallDisplayIcon={app}\m64py.exe
 LicenseFile=m64py\COPYING
 DisableStartupPrompt=yes

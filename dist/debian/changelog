@@ -1,3 +1,12 @@
+m64py (0.1.4-1) unstable; urgency=low
+
+  * window resizing (needs Mupen64Plus v2.0-rc2)
+  * switched to PyQt API ver2
+  * support multiple files in archives
+  * icons used are now from Tango! project
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Wed, 05 Jun 2013 10:37:37 +0200
+
 m64py (0.1.0-2) unstable; urgency=low
 
   * Add python-qt4-gl dependency
