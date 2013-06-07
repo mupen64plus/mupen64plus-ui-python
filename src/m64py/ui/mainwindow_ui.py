@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Jun  5 09:01:17 2013
+# Created: Fri Jun  7 14:15:00 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -240,6 +240,14 @@ class Ui_MainWindow(object):
         self.actionCheats.setObjectName(_fromUtf8("actionCheats"))
         self.actionCustom = QtGui.QAction(MainWindow)
         self.actionCustom.setObjectName(_fromUtf8("actionCustom"))
+        self.actionLoadFrom = QtGui.QAction(MainWindow)
+        self.actionLoadFrom.setEnabled(False)
+        self.actionLoadFrom.setIcon(icon8)
+        self.actionLoadFrom.setObjectName(_fromUtf8("actionLoadFrom"))
+        self.actionSaveAs = QtGui.QAction(MainWindow)
+        self.actionSaveAs.setEnabled(False)
+        self.actionSaveAs.setIcon(icon9)
+        self.actionSaveAs.setObjectName(_fromUtf8("actionSaveAs"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
         self.menuFile.addAction(self.menuLoad.menuAction())
@@ -248,6 +256,9 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionLoadState)
         self.menuFile.addAction(self.actionSaveState)
         self.menuFile.addAction(self.menuStateSlot.menuAction())
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionLoadFrom)
+        self.menuFile.addAction(self.actionSaveAs)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSaveScreenshot)
         self.menuFile.addSeparator()
@@ -343,6 +354,8 @@ class Ui_MainWindow(object):
         self.actionSpeedUp.setShortcut(_translate("MainWindow", "F11", None))
         self.actionCheats.setText(_translate("MainWindow", "Cheats...", None))
         self.actionCheats.setShortcut(_translate("MainWindow", "F2", None))
+        self.actionLoadFrom.setText(_translate("MainWindow", "Load From...", None))
+        self.actionSaveAs.setText(_translate("MainWindow", "Save As...", None))
 
 import images_rc
 import icons_rc

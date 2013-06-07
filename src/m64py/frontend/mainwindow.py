@@ -268,6 +268,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menuStateSlot.setEnabled(load)
         self.actionLoadState.setEnabled(action)
         self.actionSaveState.setEnabled(action)
+        self.actionLoadFrom.setEnabled(action)
+        self.actionSaveAs.setEnabled(action)
         self.actionSaveScreenshot.setEnabled(action)
         self.actionShowROMInfo.setEnabled(action)
         self.actionMute.setEnabled(action)
@@ -335,6 +337,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionSaveState_triggered(self):
         """Saves state."""
         self.worker.state_save()
+
+    @pyqtSignature("")
+    def on_actionLoadFrom_triggered(self):
+        """Loads state from file."""
+        dialog = QFileDialog()
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        file_path = dialog.getOpenFileName(
+                self, "Load State From File",
+                os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
+                "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
+        if file_path:
+            self.worker.state_load(file_path)
+
+    @pyqtSignature("")
+    def on_actionSaveAs_triggered(self):
+        """Saves state to file."""
+        dialog = QFileDialog()
+        file_path, file_filter = dialog.getSaveFileNameAndFilter(
+                self, "Save State To File",
+                os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
+                ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
+                M64P_SAVES[M64SAV_M64P][0])
+        if file_path:
+            for save_type, filters in M64P_SAVES.items():
+                save_filter, save_ext = filters
+                if file_filter == save_filter:
+                    if not file_path.endswith(save_ext):
+                        file_path = "%s.%s" % (file_path, save_ext)
+                    self.worker.state_save(file_path, save_type)
+
 
     @pyqtSignature("")
     def on_actionSaveScreenshot_triggered(self):

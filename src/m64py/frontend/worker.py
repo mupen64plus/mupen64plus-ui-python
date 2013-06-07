@@ -199,13 +199,13 @@ class Worker(QThread):
         self.parent.emit(SIGNAL(
             "save_image(PyQt_PyObject)"), False)
 
-    def state_load(self):
+    def state_load(self, state_path=None):
         """Loads state."""
-        self.m64p.state_load()
+        self.m64p.state_load(state_path)
 
-    def state_save(self):
+    def state_save(self, state_path=None, state_type=1):
         """Saves state."""
-        self.m64p.state_save()
+        self.m64p.state_save(state_path, state_type)
 
     def state_set_slot(self, slot):
         """Sets save slot."""

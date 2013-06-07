@@ -411,19 +411,21 @@ class Core:
             log.warn(self.error_message(rval))
         return value_ptr.contents.value
 
-    def state_load(self):
+    def state_load(self, state_path=None):
         """Loads a saved state file from the current slot."""
+        path = C.c_char_p(state_path) if state_path else None
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STATE_LOAD, C.c_int(1), None)
+                M64CMD_STATE_LOAD, C.c_int(1), path)
         if rval != M64ERR_SUCCESS:
             log.debug("state_load()")
             log.warn(self.error_message(rval))
         return rval
 
-    def state_save(self):
+    def state_save(self, state_path=None, state_type=1):
         """Saves a state file to the current slot."""
+        path = C.c_char_p(state_path) if state_path else None
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STATE_SAVE, C.c_int(1), None)
+                M64CMD_STATE_SAVE, C.c_int(state_type), path)
         if rval != M64ERR_SUCCESS:
             log.debug("state_save()")
             log.warn(self.error_message(rval))

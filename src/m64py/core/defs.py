@@ -149,6 +149,16 @@ PLUGIN_DEFAULT = {
         M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT
         }
 
+M64SAV_M64P = 1
+M64SAV_PJ64C = 2
+M64SAV_PJ64 = 3
+
+M64P_SAVES = {
+        M64SAV_M64P: ("M64P (*.mp)", "mp"),
+        M64SAV_PJ64C: ("PJ64 compressed (*.zip)", "zip"),
+        M64SAV_PJ64: ("PJ64 (*.pj)", "pj")
+        }
+
 m64p_error = C.c_int
 m64p_GLattr = C.c_int
 

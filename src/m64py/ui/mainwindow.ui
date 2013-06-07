@@ -79,6 +79,9 @@
     <addaction name="actionSaveState"/>
     <addaction name="menuStateSlot"/>
     <addaction name="separator"/>
+    <addaction name="actionLoadFrom"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
     <addaction name="actionSaveScreenshot"/>
     <addaction name="separator"/>
     <addaction name="actionShowROMInfo"/>
@@ -549,6 +552,30 @@ QStatusBar { margin:0px; }</string>
    </property>
   </action>
   <action name="actionCustom"/>
+  <action name="actionLoadFrom">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/action_state_load.png</normaloff>:/icons/action_state_load.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load From...</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/action_state_save.png</normaloff>:/icons/action_state_save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="images.qrc"/>
