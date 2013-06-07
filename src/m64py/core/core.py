@@ -469,10 +469,10 @@ class Core:
             log.warn(self.error_message(rval))
         return rval
 
-    def reset(self):
+    def reset(self, soft=False):
         """Reset the emulated machine."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_RESET, C.c_int(1))
+                M64CMD_RESET, C.c_int(int(soft)))
         if rval != M64ERR_SUCCESS:
             log.debug("reset()")
             log.warn(self.error_message(rval))

@@ -275,6 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionMute.setEnabled(action)
         self.actionStop.setEnabled(action)
         self.actionReset.setEnabled(action)
+        self.actionSoftReset.setEnabled(action)
         self.actionLimitFPS.setEnabled(action)
         self.actionSlowDown.setEnabled(action)
         self.actionSpeedUp.setEnabled(action)
@@ -394,6 +395,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionReset_triggered(self):
         """Resets emulator."""
         self.worker.reset()
+
+    @pyqtSignature("")
+    def on_actionSoftReset_triggered(self):
+        """Resets emulator."""
+        self.worker.reset(True)
 
     @pyqtSignature("")
     def on_actionLimitFPS_triggered(self):

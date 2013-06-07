@@ -118,6 +118,7 @@
     <addaction name="separator"/>
     <addaction name="actionStop"/>
     <addaction name="actionReset"/>
+    <addaction name="actionSoftReset"/>
     <addaction name="separator"/>
     <addaction name="actionLimitFPS"/>
     <addaction name="separator"/>
@@ -563,7 +564,7 @@ QStatusBar { margin:0px; }</string>
      <normaloff>:/icons/action_state_load.png</normaloff>:/icons/action_state_load.png</iconset>
    </property>
    <property name="text">
-    <string>Load From...</string>
+    <string>Load State...</string>
    </property>
   </action>
   <action name="actionSaveAs">
@@ -575,7 +576,7 @@ QStatusBar { margin:0px; }</string>
      <normaloff>:/icons/action_state_save.png</normaloff>:/icons/action_state_save.png</iconset>
    </property>
    <property name="text">
-    <string>Save As...</string>
+    <string>Save State As...</string>
    </property>
   </action>
   <action name="actionLimitFPS">
@@ -590,6 +591,21 @@ QStatusBar { margin:0px; }</string>
    </property>
    <property name="text">
     <string>Limit FPS</string>
+   </property>
+  </action>
+  <action name="actionSoftReset">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/action_reset.png</normaloff>:/icons/action_reset.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sof&amp;t Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
    </property>
   </action>
  </widget>

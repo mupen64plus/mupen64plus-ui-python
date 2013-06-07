@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Jun  7 16:09:00 2013
+# Created: Fri Jun  7 18:55:40 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -253,6 +253,10 @@ class Ui_MainWindow(object):
         self.actionLimitFPS.setChecked(True)
         self.actionLimitFPS.setEnabled(False)
         self.actionLimitFPS.setObjectName(_fromUtf8("actionLimitFPS"))
+        self.actionSoftReset = QtGui.QAction(MainWindow)
+        self.actionSoftReset.setEnabled(False)
+        self.actionSoftReset.setIcon(icon15)
+        self.actionSoftReset.setObjectName(_fromUtf8("actionSoftReset"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
         self.menuFile.addAction(self.menuLoad.menuAction())
@@ -280,6 +284,7 @@ class Ui_MainWindow(object):
         self.menuEmulation.addSeparator()
         self.menuEmulation.addAction(self.actionStop)
         self.menuEmulation.addAction(self.actionReset)
+        self.menuEmulation.addAction(self.actionSoftReset)
         self.menuEmulation.addSeparator()
         self.menuEmulation.addAction(self.actionLimitFPS)
         self.menuEmulation.addSeparator()
@@ -361,9 +366,11 @@ class Ui_MainWindow(object):
         self.actionSpeedUp.setShortcut(_translate("MainWindow", "F11", None))
         self.actionCheats.setText(_translate("MainWindow", "Cheats...", None))
         self.actionCheats.setShortcut(_translate("MainWindow", "F2", None))
-        self.actionLoadFrom.setText(_translate("MainWindow", "Load From...", None))
-        self.actionSaveAs.setText(_translate("MainWindow", "Save As...", None))
+        self.actionLoadFrom.setText(_translate("MainWindow", "Load State...", None))
+        self.actionSaveAs.setText(_translate("MainWindow", "Save State As...", None))
         self.actionLimitFPS.setText(_translate("MainWindow", "Limit FPS", None))
+        self.actionSoftReset.setText(_translate("MainWindow", "Sof&t Reset", None))
+        self.actionSoftReset.setShortcut(_translate("MainWindow", "F8", None))
 
 import images_rc
 import icons_rc

@@ -219,9 +219,9 @@ class Worker(QThread):
         """Sends key up event."""
         self.m64p.send_sdl_keyup(key)
 
-    def reset(self):
+    def reset(self, soft=False):
         """Resets emulator."""
-        self.m64p.reset()
+        self.m64p.reset(soft)
 
     def speed_up(self):
         """Speeds up emulator."""
