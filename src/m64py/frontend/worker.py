@@ -264,6 +264,15 @@ class Worker(QThread):
         else:
             self.core_state_set(M64CORE_AUDIO_MUTE, 1)
 
+    def toggle_speed_limit(self):
+        """Toggles speed limiter."""
+        if self.core_state_query(M64CORE_SPEED_LIMITER):
+            self.core_state_set(M64CORE_SPEED_LIMITER, 0)
+            log.info("Speed limiter disabled")
+        else:
+            self.core_state_set(M64CORE_SPEED_LIMITER, 1)
+            log.info("Speed limiter enabled")
+
     def toggle_actions(self):
         """Toggles actions state."""
         self.state = self.core_state_query(M64CORE_EMU_STATE)

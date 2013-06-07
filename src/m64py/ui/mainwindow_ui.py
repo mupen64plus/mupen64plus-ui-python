@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Jun  7 14:15:00 2013
+# Created: Fri Jun  7 16:09:00 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -248,6 +248,11 @@ class Ui_MainWindow(object):
         self.actionSaveAs.setEnabled(False)
         self.actionSaveAs.setIcon(icon9)
         self.actionSaveAs.setObjectName(_fromUtf8("actionSaveAs"))
+        self.actionLimitFPS = QtGui.QAction(MainWindow)
+        self.actionLimitFPS.setCheckable(True)
+        self.actionLimitFPS.setChecked(True)
+        self.actionLimitFPS.setEnabled(False)
+        self.actionLimitFPS.setObjectName(_fromUtf8("actionLimitFPS"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
         self.menuFile.addAction(self.menuLoad.menuAction())
@@ -275,6 +280,8 @@ class Ui_MainWindow(object):
         self.menuEmulation.addSeparator()
         self.menuEmulation.addAction(self.actionStop)
         self.menuEmulation.addAction(self.actionReset)
+        self.menuEmulation.addSeparator()
+        self.menuEmulation.addAction(self.actionLimitFPS)
         self.menuEmulation.addSeparator()
         self.menuEmulation.addAction(self.actionSlowDown)
         self.menuEmulation.addAction(self.actionSpeedUp)
@@ -356,6 +363,7 @@ class Ui_MainWindow(object):
         self.actionCheats.setShortcut(_translate("MainWindow", "F2", None))
         self.actionLoadFrom.setText(_translate("MainWindow", "Load From...", None))
         self.actionSaveAs.setText(_translate("MainWindow", "Save As...", None))
+        self.actionLimitFPS.setText(_translate("MainWindow", "Limit FPS", None))
 
 import images_rc
 import icons_rc

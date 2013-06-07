@@ -275,6 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionMute.setEnabled(action)
         self.actionStop.setEnabled(action)
         self.actionReset.setEnabled(action)
+        self.actionLimitFPS.setEnabled(action)
         self.actionSlowDown.setEnabled(action)
         self.actionSpeedUp.setEnabled(action)
         self.actionFullscreen.setEnabled(action)
@@ -299,6 +300,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stack.setCurrentWidget(self.view)
         self.actionMute.setChecked(False)
         self.actionPause.setChecked(False)
+        self.actionLimitFPS.setChecked(True)
         self.on_set_caption("M64Py")
         self.update_status("ROM closed.")
         del self.cheats
@@ -392,6 +394,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionReset_triggered(self):
         """Resets emulator."""
         self.worker.reset()
+
+    @pyqtSignature("")
+    def on_actionLimitFPS_triggered(self):
+        """Toggles speed limit."""
+        self.worker.toggle_speed_limit()
 
     @pyqtSignature("")
     def on_actionSlowDown_triggered(self):

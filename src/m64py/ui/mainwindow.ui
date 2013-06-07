@@ -119,6 +119,8 @@
     <addaction name="actionStop"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
+    <addaction name="actionLimitFPS"/>
+    <addaction name="separator"/>
     <addaction name="actionSlowDown"/>
     <addaction name="actionSpeedUp"/>
     <addaction name="separator"/>
@@ -574,6 +576,20 @@ QStatusBar { margin:0px; }</string>
    </property>
    <property name="text">
     <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionLimitFPS">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Limit FPS</string>
    </property>
   </action>
  </widget>
