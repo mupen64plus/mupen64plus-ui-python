@@ -14,15 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QPushButton, QKeySequence
+from PyQt4.QtGui import QPushButton
 from PyQt4.QtCore import Qt, SIGNAL
 
-try:
-    from SDL.constants import *
-except ImportError, err:
-    sys.stderr.write("Error: Can't import SDL module%s%s%s" % (
-        os.linesep, str(err), os.linesep))
-    sys.exit(1)
+from m64py.opts import SDL2
+from m64py.frontend.keymap import QT2SDL, QT2SDL2
+from m64py.SDL.constants import SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT
 
 class InputButton(QPushButton):
 
@@ -59,7 +56,7 @@ class InputButton(QPushButton):
         if modifier == Qt.NoModifier or modifier == Qt.KeypadModifier:
             key = event.key()
         else:
-            key = modifier
+            key = modifier.__int__()
 
         if key == Qt.Key_Escape:
             text = self.key
@@ -68,12 +65,15 @@ class InputButton(QPushButton):
             text = "Select..."
             self.setCheckable(False)
         else:
-            text = QKeySequence(key).toString(
-                    QKeySequence.PortableText)
-            if modifier != Qt.NoModifier:
-                text = text.replace("+", "")
+            if SDL2 or self.input.parent.worker.m64p.core_sdl2:
+                from m64py.SDL2.keyboard import SDL_GetScancodeName
+                text = SDL_GetScancodeName(QT2SDL2[key])
+            else:
+                from m64py.SDL.keyboard import SDL_GetKeyName
+                text = SDL_GetKeyName(QT2SDL[key]).title()
 
-        self.setText(text)
+        text = text.replace("Left ", "")
+        self.setText(text.title())
         self.clearFocus()
 
     def focusInEvent(self, event):

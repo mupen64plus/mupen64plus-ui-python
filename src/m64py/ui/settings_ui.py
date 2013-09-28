@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'settings.ui'
 #
-# Created: Wed Jun  5 09:01:17 2013
-#      by: PyQt4 UI code generator 4.10.1
+# Created: Tue Sep  3 02:08:52 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,16 +26,16 @@ except AttributeError:
 class Ui_Settings(object):
     def setupUi(self, Settings):
         Settings.setObjectName(_fromUtf8("Settings"))
-        Settings.resize(509, 397)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(Settings)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        Settings.resize(507, 392)
+        self.verticalLayout_14 = QtGui.QVBoxLayout(Settings)
+        self.verticalLayout_14.setObjectName(_fromUtf8("verticalLayout_14"))
         self.tabWidget = QtGui.QTabWidget(Settings)
         self.tabWidget.setTabShape(QtGui.QTabWidget.Rounded)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab_1 = QtGui.QWidget()
         self.tab_1.setObjectName(_fromUtf8("tab_1"))
         self.layoutWidget = QtGui.QWidget(self.tab_1)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 461, 271))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 451, 271))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_13 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_13.setMargin(0)
@@ -155,85 +155,23 @@ class Ui_Settings(object):
         self.tabWidget.addTab(self.tab_1, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
-        self.verticalLayout_14 = QtGui.QVBoxLayout(self.tab_2)
-        self.verticalLayout_14.setObjectName(_fromUtf8("verticalLayout_14"))
-        self.verticalLayout_10 = QtGui.QVBoxLayout()
+        self.widget = QtGui.QWidget(self.tab_2)
+        self.widget.setGeometry(QtCore.QRect(10, 10, 461, 211))
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.verticalLayout_10 = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout_10.setMargin(0)
         self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
-        self.groupGraphics = QtGui.QGroupBox(self.tab_2)
-        self.groupGraphics.setAutoFillBackground(False)
-        self.groupGraphics.setStyleSheet(_fromUtf8("QGroupBox {\n"
-"    border: 1px solid #7F7F7F;\n"
-"    border-radius: 3px;\n"
-"    margin-top: 1ex; \n"
-"    padding: 4px 0\n"
-";\n"
-" }\n"
-"\n"
-"QGroupBox::title {\n"
-"    subcontrol-origin: margin;\n"
-"    subcontrol-position: top left; \n"
-"    padding: 0 2px;\n"
-" }"))
-        self.groupGraphics.setFlat(False)
-        self.groupGraphics.setCheckable(False)
-        self.groupGraphics.setObjectName(_fromUtf8("groupGraphics"))
-        self.verticalLayout_18 = QtGui.QVBoxLayout(self.groupGraphics)
-        self.verticalLayout_18.setObjectName(_fromUtf8("verticalLayout_18"))
-        self.verticalLayout_15 = QtGui.QVBoxLayout()
-        self.verticalLayout_15.setObjectName(_fromUtf8("verticalLayout_15"))
-        self.checkFullscreen = QtGui.QCheckBox(self.groupGraphics)
-        self.checkFullscreen.setObjectName(_fromUtf8("checkFullscreen"))
-        self.verticalLayout_15.addWidget(self.checkFullscreen)
-        self.checkOSD = QtGui.QCheckBox(self.groupGraphics)
-        self.checkOSD.setChecked(True)
-        self.checkOSD.setObjectName(_fromUtf8("checkOSD"))
-        self.verticalLayout_15.addWidget(self.checkOSD)
-        self.checkEnableVidExt = QtGui.QCheckBox(self.groupGraphics)
-        self.checkEnableVidExt.setChecked(False)
-        self.checkEnableVidExt.setObjectName(_fromUtf8("checkEnableVidExt"))
-        self.verticalLayout_15.addWidget(self.checkEnableVidExt)
-        self.groupResolution = QtGui.QGroupBox(self.groupGraphics)
-        self.groupResolution.setAutoFillBackground(False)
-        self.groupResolution.setStyleSheet(_fromUtf8("QGroupBox {\n"
-"    border: 1px solid #7F7F7F;\n"
-"    border-radius: 3px;\n"
-"    margin-top: 1ex; \n"
-" }\n"
-"\n"
-"QGroupBox::title {\n"
-"    subcontrol-origin: margin;\n"
-"    subcontrol-position: top left; \n"
-"    padding: 0 2px;\n"
-" }"))
-        self.groupResolution.setFlat(False)
-        self.groupResolution.setCheckable(False)
-        self.groupResolution.setObjectName(_fromUtf8("groupResolution"))
-        self.verticalLayout_11 = QtGui.QVBoxLayout(self.groupResolution)
-        self.verticalLayout_11.setObjectName(_fromUtf8("verticalLayout_11"))
-        self.horizontalLayout_10 = QtGui.QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
-        self.comboResolution = QtGui.QComboBox(self.groupResolution)
-        self.comboResolution.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.groupEmuMode = QtGui.QGroupBox(self.widget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboResolution.sizePolicy().hasHeightForWidth())
-        self.comboResolution.setSizePolicy(sizePolicy)
-        self.comboResolution.setObjectName(_fromUtf8("comboResolution"))
-        self.horizontalLayout_10.addWidget(self.comboResolution)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_10.addItem(spacerItem)
-        self.verticalLayout_11.addLayout(self.horizontalLayout_10)
-        self.verticalLayout_15.addWidget(self.groupResolution)
-        self.verticalLayout_18.addLayout(self.verticalLayout_15)
-        self.verticalLayout_10.addWidget(self.groupGraphics)
-        self.groupEmuMode = QtGui.QGroupBox(self.tab_2)
+        sizePolicy.setHeightForWidth(self.groupEmuMode.sizePolicy().hasHeightForWidth())
+        self.groupEmuMode.setSizePolicy(sizePolicy)
         self.groupEmuMode.setAutoFillBackground(False)
         self.groupEmuMode.setStyleSheet(_fromUtf8("QGroupBox {\n"
 "    border: 1px solid #7F7F7F;\n"
 "    border-radius: 3px;\n"
 "    margin-top: 1ex;\n"
-"    padding: 4px 0;\n"
 " }\n"
 "\n"
 "QGroupBox::title {\n"
@@ -245,13 +183,17 @@ class Ui_Settings(object):
         self.groupEmuMode.setCheckable(False)
         self.groupEmuMode.setObjectName(_fromUtf8("groupEmuMode"))
         self.verticalLayout_10.addWidget(self.groupEmuMode)
-        self.groupEmuMode_2 = QtGui.QGroupBox(self.tab_2)
+        self.groupEmuMode_2 = QtGui.QGroupBox(self.widget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupEmuMode_2.sizePolicy().hasHeightForWidth())
+        self.groupEmuMode_2.setSizePolicy(sizePolicy)
         self.groupEmuMode_2.setAutoFillBackground(False)
         self.groupEmuMode_2.setStyleSheet(_fromUtf8("QGroupBox {\n"
 "    border: 1px solid #7F7F7F;\n"
 "    border-radius: 3px;\n"
 "    margin-top: 1ex;\n"
-"    padding: 4px 0;\n"
 " }\n"
 "\n"
 "QGroupBox::title {\n"
@@ -274,8 +216,101 @@ class Ui_Settings(object):
         self.verticalLayout_16.addWidget(self.checkDisableExtraMem)
         self.verticalLayout_17.addLayout(self.verticalLayout_16)
         self.verticalLayout_10.addWidget(self.groupEmuMode_2)
-        self.verticalLayout_14.addLayout(self.verticalLayout_10)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
+        self.tab_4 = QtGui.QWidget()
+        self.tab_4.setObjectName(_fromUtf8("tab_4"))
+        self.widget1 = QtGui.QWidget(self.tab_4)
+        self.widget1.setGeometry(QtCore.QRect(11, 10, 461, 233))
+        self.widget1.setObjectName(_fromUtf8("widget1"))
+        self.verticalLayout_18 = QtGui.QVBoxLayout(self.widget1)
+        self.verticalLayout_18.setMargin(0)
+        self.verticalLayout_18.setObjectName(_fromUtf8("verticalLayout_18"))
+        self.groupGraphics = QtGui.QGroupBox(self.widget1)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupGraphics.sizePolicy().hasHeightForWidth())
+        self.groupGraphics.setSizePolicy(sizePolicy)
+        self.groupGraphics.setAutoFillBackground(False)
+        self.groupGraphics.setStyleSheet(_fromUtf8("QGroupBox {\n"
+"    border: 1px solid #7F7F7F;\n"
+"    border-radius: 3px;\n"
+"    margin-top: 1ex;\n"
+" }\n"
+"\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    subcontrol-position: top left; \n"
+"    padding: 0 2px;\n"
+" }"))
+        self.groupGraphics.setFlat(False)
+        self.groupGraphics.setCheckable(False)
+        self.groupGraphics.setObjectName(_fromUtf8("groupGraphics"))
+        self.verticalLayout_15 = QtGui.QVBoxLayout(self.groupGraphics)
+        self.verticalLayout_15.setSpacing(6)
+        self.verticalLayout_15.setObjectName(_fromUtf8("verticalLayout_15"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout()
+        self.verticalLayout_2.setSpacing(6)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.checkOSD = QtGui.QCheckBox(self.groupGraphics)
+        self.checkOSD.setChecked(True)
+        self.checkOSD.setObjectName(_fromUtf8("checkOSD"))
+        self.verticalLayout_2.addWidget(self.checkOSD)
+        self.checkDisableScreenSaver = QtGui.QCheckBox(self.groupGraphics)
+        self.checkDisableScreenSaver.setObjectName(_fromUtf8("checkDisableScreenSaver"))
+        self.verticalLayout_2.addWidget(self.checkDisableScreenSaver)
+        self.checkEnableVidExt = QtGui.QCheckBox(self.groupGraphics)
+        self.checkEnableVidExt.setChecked(False)
+        self.checkEnableVidExt.setObjectName(_fromUtf8("checkEnableVidExt"))
+        self.verticalLayout_2.addWidget(self.checkEnableVidExt)
+        self.checkKeepAspect = QtGui.QCheckBox(self.groupGraphics)
+        self.checkKeepAspect.setObjectName(_fromUtf8("checkKeepAspect"))
+        self.verticalLayout_2.addWidget(self.checkKeepAspect)
+        self.verticalLayout_15.addLayout(self.verticalLayout_2)
+        self.verticalLayout_18.addWidget(self.groupGraphics)
+        self.groupResolution = QtGui.QGroupBox(self.widget1)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupResolution.sizePolicy().hasHeightForWidth())
+        self.groupResolution.setSizePolicy(sizePolicy)
+        self.groupResolution.setAutoFillBackground(False)
+        self.groupResolution.setStyleSheet(_fromUtf8("QGroupBox {\n"
+"    border: 1px solid #7F7F7F;\n"
+"    border-radius: 3px;\n"
+"    margin-top: 1ex;\n"
+" }\n"
+"\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    subcontrol-position: top left; \n"
+"    padding: 0 2px;\n"
+" }"))
+        self.groupResolution.setFlat(False)
+        self.groupResolution.setCheckable(False)
+        self.groupResolution.setObjectName(_fromUtf8("groupResolution"))
+        self.verticalLayout_11 = QtGui.QVBoxLayout(self.groupResolution)
+        self.verticalLayout_11.setObjectName(_fromUtf8("verticalLayout_11"))
+        self.checkFullscreen = QtGui.QCheckBox(self.groupResolution)
+        self.checkFullscreen.setChecked(False)
+        self.checkFullscreen.setObjectName(_fromUtf8("checkFullscreen"))
+        self.verticalLayout_11.addWidget(self.checkFullscreen)
+        self.horizontalLayout_10 = QtGui.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
+        self.comboResolution = QtGui.QComboBox(self.groupResolution)
+        self.comboResolution.setEnabled(False)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboResolution.sizePolicy().hasHeightForWidth())
+        self.comboResolution.setSizePolicy(sizePolicy)
+        self.comboResolution.setObjectName(_fromUtf8("comboResolution"))
+        self.horizontalLayout_10.addWidget(self.comboResolution)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_10.addItem(spacerItem)
+        self.verticalLayout_11.addLayout(self.horizontalLayout_10)
+        self.verticalLayout_18.addWidget(self.groupResolution)
+        self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
         self.tab_3 = QtGui.QWidget()
         self.tab_3.setObjectName(_fromUtf8("tab_3"))
         self.layoutWidget1 = QtGui.QWidget(self.tab_3)
@@ -441,7 +476,7 @@ class Ui_Settings(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout_9)
         self.verticalLayout_12.addWidget(self.groupRSP)
         self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
-        self.verticalLayout_2.addWidget(self.tabWidget)
+        self.verticalLayout_14.addWidget(self.tabWidget)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         spacerItem1 = QtGui.QSpacerItem(368, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -449,10 +484,10 @@ class Ui_Settings(object):
         self.closeButton = QtGui.QPushButton(Settings)
         self.closeButton.setObjectName(_fromUtf8("closeButton"))
         self.horizontalLayout_2.addWidget(self.closeButton)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_2)
 
         self.retranslateUi(Settings)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QObject.connect(self.closeButton, QtCore.SIGNAL(_fromUtf8("clicked()")), Settings.close)
         QtCore.QMetaObject.connectSlotsByName(Settings)
 
@@ -467,19 +502,24 @@ class Ui_Settings(object):
         self.groupROM.setTitle(_translate("Settings", "ROMs directory", None))
         self.browseROM.setText(_translate("Settings", "Browse", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("Settings", "Paths", None))
-        self.groupGraphics.setTitle(_translate("Settings", "Graphics", None))
-        self.checkFullscreen.setToolTip(_translate("Settings", "Used only when video extension is disabled", None))
-        self.checkFullscreen.setText(_translate("Settings", "Fullscreen", None))
-        self.checkOSD.setText(_translate("Settings", "On Screen Display", None))
-        self.checkEnableVidExt.setToolTip(_translate("Settings", "<html><head/><body><p>Enable embedding of OpenGL window. This option needs restart.</p></body></html>", None))
-        self.checkEnableVidExt.setText(_translate("Settings", "Enable Video Extension", None))
-        self.groupResolution.setTitle(_translate("Settings", "Resolution", None))
-        self.comboResolution.setToolTip(_translate("Settings", "Used only when video extension is disabled", None))
         self.groupEmuMode.setTitle(_translate("Settings", "CPU Core", None))
         self.groupEmuMode_2.setTitle(_translate("Settings", "Compatibility", None))
         self.checkNoCompiledJump.setText(_translate("Settings", "No Compiled Jump", None))
         self.checkDisableExtraMem.setText(_translate("Settings", "Disable Extra Memory", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Settings", "Emulator", None))
+        self.groupGraphics.setTitle(_translate("Settings", "Graphics", None))
+        self.checkOSD.setText(_translate("Settings", "On Screen Display", None))
+        self.checkDisableScreenSaver.setToolTip(_translate("Settings", "Disables ScreenSaver when emulator is running", None))
+        self.checkDisableScreenSaver.setText(_translate("Settings", "Disable ScreenSaver", None))
+        self.checkEnableVidExt.setToolTip(_translate("Settings", "Enable embedding of OpenGL window. This option needs restart.", None))
+        self.checkEnableVidExt.setText(_translate("Settings", "Enable Video Extension", None))
+        self.checkKeepAspect.setToolTip(_translate("Settings", "Maintain aspect-ratio on resizing", None))
+        self.checkKeepAspect.setText(_translate("Settings", "Keep Aspect Ratio", None))
+        self.groupResolution.setTitle(_translate("Settings", "Resolution", None))
+        self.checkFullscreen.setToolTip(_translate("Settings", "Fullscreen, used only when video extension is disabled", None))
+        self.checkFullscreen.setText(_translate("Settings", "Fullscreen", None))
+        self.comboResolution.setToolTip(_translate("Settings", "Used only when video extension is disabled", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Settings", "Graphics", None))
         self.groupVideo.setTitle(_translate("Settings", "Video", None))
         self.pushButtonVideo.setText(_translate("Settings", "Configure", None))
         self.groupAudio.setTitle(_translate("Settings", "Audio", None))

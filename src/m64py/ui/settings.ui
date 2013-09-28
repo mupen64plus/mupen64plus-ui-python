@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>509</width>
-    <height>397</height>
+    <width>507</width>
+    <height>392</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_14">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabShape">
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -31,7 +31,7 @@
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>461</width>
+         <width>451</width>
          <height>271</height>
         </rect>
        </property>
@@ -223,154 +223,32 @@ QGroupBox::title {
       <attribute name="title">
        <string>Emulator</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_14">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_10">
-         <item>
-          <widget class="QGroupBox" name="groupGraphics">
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QGroupBox {
-	border: 1px solid #7F7F7F;
-	border-radius: 3px;
-	margin-top: 1ex; 
-	padding: 4px 0
-;
- }
-
-QGroupBox::title {
-	subcontrol-origin: margin;
-	subcontrol-position: top left; 
-	padding: 0 2px;
- }</string>
-           </property>
-           <property name="title">
-            <string>Graphics</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_18">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_15">
-              <item>
-               <widget class="QCheckBox" name="checkFullscreen">
-                <property name="toolTip">
-                 <string>Used only when video extension is disabled</string>
-                </property>
-                <property name="text">
-                 <string>Fullscreen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkOSD">
-                <property name="text">
-                 <string>On Screen Display</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkEnableVidExt">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable embedding of OpenGL window. This option needs restart.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Enable Video Extension</string>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupResolution">
-                <property name="autoFillBackground">
-                 <bool>false</bool>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QGroupBox {
-	border: 1px solid #7F7F7F;
-	border-radius: 3px;
-	margin-top: 1ex; 
- }
-
-QGroupBox::title {
-	subcontrol-origin: margin;
-	subcontrol-position: top left; 
-	padding: 0 2px;
- }</string>
-                </property>
-                <property name="title">
-                 <string>Resolution</string>
-                </property>
-                <property name="flat">
-                 <bool>false</bool>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_11">
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_10">
-                   <item>
-                    <widget class="QComboBox" name="comboResolution">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Used only when video extension is disabled</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_2">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupEmuMode">
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QGroupBox {
+      <widget class="QWidget" name="">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>461</width>
+         <height>211</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QGroupBox" name="groupEmuMode">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QGroupBox {
 	border: 1px solid #7F7F7F;
 	border-radius: 3px;
 	margin-top: 1ex;
-	padding: 4px 0;
  }
 
 QGroupBox::title {
@@ -378,29 +256,34 @@ QGroupBox::title {
 	subcontrol-position: top left; 
 	padding: 0 2px;
  }</string>
-           </property>
-           <property name="title">
-            <string>CPU Core</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupEmuMode_2">
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QGroupBox {
+          </property>
+          <property name="title">
+           <string>CPU Core</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupEmuMode_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QGroupBox {
 	border: 1px solid #7F7F7F;
 	border-radius: 3px;
 	margin-top: 1ex;
-	padding: 4px 0;
  }
 
 QGroupBox::title {
@@ -408,41 +291,230 @@ QGroupBox::title {
 	subcontrol-position: top left; 
 	padding: 0 2px;
  }</string>
+          </property>
+          <property name="title">
+           <string>Compatibility</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_17">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <item>
+              <widget class="QCheckBox" name="checkNoCompiledJump">
+               <property name="text">
+                <string>No Compiled Jump</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkDisableExtraMem">
+               <property name="text">
+                <string>Disable Extra Memory</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Graphics</string>
+      </attribute>
+      <widget class="QWidget" name="">
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>10</y>
+         <width>461</width>
+         <height>233</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_18">
+        <item>
+         <widget class="QGroupBox" name="groupGraphics">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QGroupBox {
+	border: 1px solid #7F7F7F;
+	border-radius: 3px;
+	margin-top: 1ex;
+ }
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left; 
+	padding: 0 2px;
+ }</string>
+          </property>
+          <property name="title">
+           <string>Graphics</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_15">
+           <property name="spacing">
+            <number>6</number>
            </property>
-           <property name="title">
-            <string>Compatibility</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_17">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <item>
-               <widget class="QCheckBox" name="checkNoCompiledJump">
-                <property name="text">
-                 <string>No Compiled Jump</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkDisableExtraMem">
-                <property name="text">
-                 <string>Disable Extra Memory</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="checkOSD">
+               <property name="text">
+                <string>On Screen Display</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkDisableScreenSaver">
+               <property name="toolTip">
+                <string>Disables ScreenSaver when emulator is running</string>
+               </property>
+               <property name="text">
+                <string>Disable ScreenSaver</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkEnableVidExt">
+               <property name="toolTip">
+                <string>Enable embedding of OpenGL window. This option needs restart.</string>
+               </property>
+               <property name="text">
+                <string>Enable Video Extension</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkKeepAspect">
+               <property name="toolTip">
+                <string>Maintain aspect-ratio on resizing</string>
+               </property>
+               <property name="text">
+                <string>Keep Aspect Ratio</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupResolution">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QGroupBox {
+	border: 1px solid #7F7F7F;
+	border-radius: 3px;
+	margin-top: 1ex;
+ }
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left; 
+	padding: 0 2px;
+ }</string>
+          </property>
+          <property name="title">
+           <string>Resolution</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <widget class="QCheckBox" name="checkFullscreen">
+             <property name="toolTip">
+              <string>Fullscreen, used only when video extension is disabled</string>
+             </property>
+             <property name="text">
+              <string>Fullscreen</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QComboBox" name="comboResolution">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>Used only when video extension is disabled</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">

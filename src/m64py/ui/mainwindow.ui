@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -94,6 +94,7 @@
     </property>
     <addaction name="actionPaths"/>
     <addaction name="actionEmulator"/>
+    <addaction name="actionGraphics"/>
     <addaction name="actionPlugins"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -606,6 +607,15 @@ QStatusBar { margin:0px; }</string>
    </property>
    <property name="shortcut">
     <string>F8</string>
+   </property>
+  </action>
+  <action name="actionGraphics">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/action_graphics.png</normaloff>:/icons/action_graphics.png</iconset>
+   </property>
+   <property name="text">
+    <string>Graphics</string>
    </property>
   </action>
  </widget>

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'cheat.ui'
 #
-# Created: Sat Jun 23 10:26:17 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Tue Sep  3 02:08:51 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_CheatDialog(object):
     def setupUi(self, CheatDialog):
@@ -137,9 +146,9 @@ class Ui_CheatDialog(object):
         QtCore.QMetaObject.connectSlotsByName(CheatDialog)
 
     def retranslateUi(self, CheatDialog):
-        CheatDialog.setWindowTitle(QtGui.QApplication.translate("CheatDialog", "Cheats", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupCheats.setTitle(QtGui.QApplication.translate("CheatDialog", "Cheats", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushUnmarkAll.setText(QtGui.QApplication.translate("CheatDialog", "Unmark All", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupNotes.setTitle(QtGui.QApplication.translate("CheatDialog", "Notes", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushClose.setText(QtGui.QApplication.translate("CheatDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+        CheatDialog.setWindowTitle(_translate("CheatDialog", "Cheats", None))
+        self.groupCheats.setTitle(_translate("CheatDialog", "Cheats", None))
+        self.pushUnmarkAll.setText(_translate("CheatDialog", "Unmark All", None))
+        self.groupNotes.setTitle(_translate("CheatDialog", "Notes", None))
+        self.pushClose.setText(_translate("CheatDialog", "&Close", None))
 

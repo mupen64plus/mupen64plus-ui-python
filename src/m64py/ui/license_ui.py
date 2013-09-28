@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'license.ui'
 #
-# Created: Sat Jun 23 10:26:17 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Tue Sep  3 02:08:51 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_LicenseDialog(object):
     def setupUi(self, LicenseDialog):
@@ -41,8 +50,8 @@ class Ui_LicenseDialog(object):
         QtCore.QMetaObject.connectSlotsByName(LicenseDialog)
 
     def retranslateUi(self, LicenseDialog):
-        LicenseDialog.setWindowTitle(QtGui.QApplication.translate("LicenseDialog", "License", None, QtGui.QApplication.UnicodeUTF8))
-        self.textBrowser.setHtml(QtGui.QApplication.translate("LicenseDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        LicenseDialog.setWindowTitle(_translate("LicenseDialog", "License", None))
+        self.textBrowser.setHtml(_translate("LicenseDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Droid Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
@@ -183,6 +192,6 @@ class Ui_LicenseDialog(object):
 "<p style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Courier New,courier\'; font-size:9pt;\">    under certain conditions; type `show c\' for details. </span></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">The hypothetical commands `show w\' and `show c\' should show the appropriate parts of the General Public License. Of course, your program\'s commands might be different; for a GUI interface, you would use an “about box”. </span></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">You should also get your employer (if you work as a programmer) or school, if any, to sign a “copyright disclaimer” for the program, if necessary. For more information on this, and how to apply and follow the GNU GPL, see &lt;</span><a href=\"http://www.gnu.org/licenses/\"><span style=\" font-size:9pt; text-decoration: underline; color:#0000ff;\">http://www.gnu.org/licenses/</span></a><span style=\" font-size:9pt;\">&gt;. </span></p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">The GNU General Public License does not permit incorporating your program into proprietary programs. If your program is a subroutine library, you may consider it more useful to permit linking proprietary applications with the library. If this is what you want to do, use the GNU Lesser General Public License instead of this License. But first, please read &lt;</span><a href=\"http://www.gnu.org/philosophy/why-not-lgpl.html\"><span style=\" font-size:9pt; text-decoration: underline; color:#0000ff;\">http://www.gnu.org/philosophy/why-not-lgpl.html</span></a><span style=\" font-size:9pt;\">&gt;. </span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("LicenseDialog", "&Close", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">The GNU General Public License does not permit incorporating your program into proprietary programs. If your program is a subroutine library, you may consider it more useful to permit linking proprietary applications with the library. If this is what you want to do, use the GNU Lesser General Public License instead of this License. But first, please read &lt;</span><a href=\"http://www.gnu.org/philosophy/why-not-lgpl.html\"><span style=\" font-size:9pt; text-decoration: underline; color:#0000ff;\">http://www.gnu.org/philosophy/why-not-lgpl.html</span></a><span style=\" font-size:9pt;\">&gt;. </span></p></body></html>", None))
+        self.pushButton.setText(_translate("LicenseDialog", "&Close", None))
 

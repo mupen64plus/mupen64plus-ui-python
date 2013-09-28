@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'romlist.ui'
 #
-# Created: Sat Jun 23 10:26:18 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Tue Sep  3 02:08:52 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_ROMList(object):
     def setupUi(self, ROMList):
@@ -181,15 +190,15 @@ class Ui_ROMList(object):
         QtCore.QMetaObject.connectSlotsByName(ROMList)
 
     def retranslateUi(self, ROMList):
-        ROMList.setWindowTitle(QtGui.QApplication.translate("ROMList", "Load ROM Image", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupROMList.setTitle(QtGui.QApplication.translate("ROMList", "ROMs List", None, QtGui.QApplication.UnicodeUTF8))
+        ROMList.setWindowTitle(_translate("ROMList", "Load ROM Image", None))
+        self.groupROMList.setTitle(_translate("ROMList", "ROMs List", None))
         self.listWidget.setSortingEnabled(True)
-        self.groupTitle.setTitle(QtGui.QApplication.translate("ROMList", "Title Screen", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupSnapshot.setTitle(QtGui.QApplication.translate("ROMList", "In Game Snapshot", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkAvailable.setText(QtGui.QApplication.translate("ROMList", "Show available ROMs", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushRefresh.setText(QtGui.QApplication.translate("ROMList", "Refresh", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelAvailable.setText(QtGui.QApplication.translate("ROMList", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushCancel.setText(QtGui.QApplication.translate("ROMList", "&Cancel", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushOpen.setText(QtGui.QApplication.translate("ROMList", "&Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupTitle.setTitle(_translate("ROMList", "Title Screen", None))
+        self.groupSnapshot.setTitle(_translate("ROMList", "In Game Snapshot", None))
+        self.checkAvailable.setText(_translate("ROMList", "Show available ROMs", None))
+        self.pushRefresh.setText(_translate("ROMList", "Refresh", None))
+        self.labelAvailable.setText(_translate("ROMList", "TextLabel", None))
+        self.pushCancel.setText(_translate("ROMList", "&Cancel", None))
+        self.pushOpen.setText(_translate("ROMList", "&Open", None))
 
 from imageview import ImageView

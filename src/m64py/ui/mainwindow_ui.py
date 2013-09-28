@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Jun  7 18:55:40 2013
-#      by: PyQt4 UI code generator 4.10.1
+# Created: Tue Sep  3 02:08:51 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 320, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 320, 24))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -257,6 +257,11 @@ class Ui_MainWindow(object):
         self.actionSoftReset.setEnabled(False)
         self.actionSoftReset.setIcon(icon15)
         self.actionSoftReset.setObjectName(_fromUtf8("actionSoftReset"))
+        self.actionGraphics = QtGui.QAction(MainWindow)
+        icon19 = QtGui.QIcon()
+        icon19.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/action_graphics.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionGraphics.setIcon(icon19)
+        self.actionGraphics.setObjectName(_fromUtf8("actionGraphics"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
         self.menuFile.addAction(self.menuLoad.menuAction())
@@ -276,6 +281,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionQuit)
         self.menuSettings.addAction(self.actionPaths)
         self.menuSettings.addAction(self.actionEmulator)
+        self.menuSettings.addAction(self.actionGraphics)
         self.menuSettings.addAction(self.actionPlugins)
         self.menuHelp.addAction(self.actionAbout)
         self.menuHelp.addAction(self.actionLicense)
@@ -371,6 +377,7 @@ class Ui_MainWindow(object):
         self.actionLimitFPS.setText(_translate("MainWindow", "Limit FPS", None))
         self.actionSoftReset.setText(_translate("MainWindow", "Sof&t Reset", None))
         self.actionSoftReset.setShortcut(_translate("MainWindow", "F8", None))
+        self.actionGraphics.setText(_translate("MainWindow", "Graphics", None))
 
 import images_rc
 import icons_rc
