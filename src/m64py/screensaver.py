@@ -34,14 +34,20 @@ class LinuxScreenSaver:
 
     def disable(self):
         if self.screensaver:
-            self.cookie = self.screensaver.Inhibit("M64Py")
-            log.info("ScreenSaver disabled")
+            try:
+                self.cookie = self.screensaver.Inhibit("M64Py", "Emulation started")
+                log.info("ScreenSaver disabled")
+            except Exception, err:
+                log.exception(str(err))
 
     def enable(self):
         if self.cookie:
-            self.screensaver.UnInhibit(self.cookie)
-            log.info("ScreenSaver enabled")
-            self.cookie = None
+            try:
+                self.screensaver.UnInhibit(self.cookie)
+                log.info("ScreenSaver enabled")
+                self.cookie = None
+            except Exception, err:
+                log.exception(str(err))
 
 class DarwinScreenSaver:
     def __init__(self):
