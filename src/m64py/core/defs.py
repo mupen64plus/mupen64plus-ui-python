@@ -20,9 +20,9 @@ from m64py.platform import DLL_EXT
 
 CORE_NAME = "mupen64plus"
 CORE_API_VERSION = 0x20001
-CONFIG_API_VERSION = 0x20200
-MINIMUM_CORE_VERSION = 0x016305
-FRONTEND_VERSION = "0.1.4"
+CONFIG_API_VERSION = 0x20000
+MINIMUM_CORE_VERSION = 0x016300
+FRONTEND_VERSION = "0.1.6"
 
 SIZE_1X = (320, 240)
 SIZE_2X = (640, 480)
@@ -154,7 +154,7 @@ M64SAV_PJ64C = 2
 M64SAV_PJ64 = 3
 
 M64P_SAVES = {
-        M64SAV_M64P: ("M64P (*.m64p)", "mp"),
+        M64SAV_M64P: ("M64P (*.m64p)", "m64p"),
         M64SAV_PJ64C: ("PJ64 compressed (*.zip)", "zip"),
         M64SAV_PJ64: ("PJ64 (*.pj)", "pj")
         }
