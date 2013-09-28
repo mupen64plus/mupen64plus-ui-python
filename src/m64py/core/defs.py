@@ -154,7 +154,7 @@ M64SAV_PJ64C = 2
 M64SAV_PJ64 = 3
 
 M64P_SAVES = {
-        M64SAV_M64P: ("M64P (*.mp)", "mp"),
+        M64SAV_M64P: ("M64P (*.m64p)", "mp"),
         M64SAV_PJ64C: ("PJ64 compressed (*.zip)", "zip"),
         M64SAV_PJ64: ("PJ64 (*.pj)", "pj")
         }
