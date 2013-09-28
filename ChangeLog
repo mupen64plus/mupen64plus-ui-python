@@ -1,3 +1,10 @@
+v0.1.6  Sep 28, 2013:
+
+    * SDL2 support
+    * option to disable screensaver when emulator is running
+    * option to keep aspect when resizing window
+    * LoadFrom/SaveAs actions for state files, PJ64 states are supported
+
 v0.1.4  Jun 05, 2013:
 
     * window resizing (needs Mupen64Plus v2.0-rc2)
