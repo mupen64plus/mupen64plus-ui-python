@@ -36,9 +36,8 @@ except ImportError, err:
     sys.exit(1)
 
 try:
-    from m64py.core.defs import FRONTEND_VERSION, LOGO
-    from m64py.frontend.mainwindow import MainWindow
     from m64py.loader import load_library
+    from m64py.core.defs import FRONTEND_VERSION, LOGO
 except ImportError, err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
@@ -58,6 +57,7 @@ def main():
     from m64py.opts import opts, args
     sys.stderr.write("%s\nM64Py - A frontend for Mupen64Plus version %s\n\n" % (
         LOGO, FRONTEND_VERSION))
+    from m64py.frontend.mainwindow import MainWindow
     window = MainWindow((opts, args))
     window.show()
     window.raise_()

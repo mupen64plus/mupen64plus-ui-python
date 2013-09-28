@@ -19,9 +19,13 @@
 
 from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer, SIGNAL
 
-from SDL import *
-
 from m64py.utils import log
+from m64py.opts import SDL2
+
+if SDL2:
+    from m64py.SDL2 import *
+else:
+    from m64py.SDL import *
 
 JOYSTICK_DEADZONE = 0
 JOYSTICK_SENSITIVITY = 0
@@ -79,7 +83,7 @@ class Joystick(QObject):
 
         try:
             self.joystick = SDL_JoystickOpen(stick)
-        except SDL.error.SDL_Exception, err:
+        except Exception, err:
             log.warn(str(err))
 
         if self.joystick:

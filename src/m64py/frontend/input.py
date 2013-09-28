@@ -19,11 +19,17 @@ import re
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from m64py.opts import SDL2
 from m64py.core.defs import *
 from m64py.utils import format_tooltip
 from m64py.frontend.joystick import Joystick
-from m64py.frontend.keymap import SDL_KEYMAP, QT_MODIFIERS, QT_KEYSTRING
+from m64py.frontend.keymap import QT2SDL, SCANCODE2KEYCODE, KEYCODE2SCANCODE
 from m64py.ui.input_ui import Ui_InputDialog
+
+if SDL2:
+    from m64py.SDL2 import *
+else:
+    from m64py.SDL import *
 
 KEY_RE = re.compile("([a-z]+)\((.*)\)")
 AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
@@ -42,6 +48,9 @@ class Input(QDialog, Ui_InputDialog):
         self.add_items()
         self.connect_signals()
 
+    def showEvent(self, event):
+        self.adjustSize()
+
     def closeEvent(self, event):
         self.save_config()
         self.close()
@@ -57,9 +66,16 @@ class Input(QDialog, Ui_InputDialog):
         self.config.open_section(self.section)
         self.device = self.config.get_parameter("device")
         self.is_joystick = bool(self.device >= 0)
+        self.set_items()
+        self.show()
+
+    def set_items(self):
+        if not SDL_WasInit(SDL_INIT_VIDEO):
+            SDL_InitSubSystem(SDL_INIT_VIDEO)
         self.get_opts(), self.get_keys()
         self.set_opts(), self.set_keys()
-        self.show()
+        if SDL_WasInit(SDL_INIT_VIDEO):
+            SDL_QuitSubSystem(SDL_INIT_VIDEO)
 
     def set_section(self, section):
         self.section = section
@@ -101,8 +117,7 @@ class Input(QDialog, Ui_InputDialog):
         self.is_joystick = bool(self.config.get_parameter("device") >= 0)
         if not self.config.parameters[self.section]:
             self.set_default()
-        self.get_opts(), self.get_keys()
-        self.set_opts(), self.set_keys()
+        self.set_items()
 
     def set_default(self):
         for key in self.keys.keys():
@@ -117,9 +132,14 @@ class Input(QDialog, Ui_InputDialog):
             if key == "plugged":
                 param = False
             elif key == "plugin":
-                param = 1
+                if self.is_joystick:
+                    param = 5
+                else:
+                    param = 1
             elif key == "device":
                 param = -2
+            elif key == "mode":
+                param = 0
             self.config.set_default(ptype, key, param, tooltip)
         self.config.list_parameters()
 
@@ -261,16 +281,11 @@ class Input(QDialog, Ui_InputDialog):
             if key.startswith("X Axis") or key.startswith("Y Axis"):
                 continue
             else:
-                val = KEY_RE.findall(str(widget.text()))
-                if val:
-                    value = str(widget.text())
-                    self.config.set_parameter(key, value)
+                value = self.get_sdl_key(widget.text())
+                if value:
+                    self.config.set_parameter(key, "key(%s)" % value)
                 else:
-                    value = self.get_sdl_key(widget.text())
-                    if value:
-                        self.config.set_parameter(key, "key(%s)" % value)
-                    else:
-                        continue
+                    continue
 
     def get_axis(self, axis):
         param = self.config.get_parameter(axis)
@@ -348,29 +363,31 @@ class Input(QDialog, Ui_InputDialog):
         return [0, 0]
 
     def get_sdl_key(self, text):
-        try:
-            if text in QT_KEYSTRING.keys():
-                key = QT_KEYSTRING[str(text)]
-            else:
+        if SDL2 or self.parent.worker.m64p.core_sdl2:
+            from m64py.SDL2.keyboard import SDL_GetScancodeFromName
+            if "Shift" in text or "Ctrl" in text or "Alt" in text:
+                text = "Left %s" % text
+            return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
+        else:
+            try:
                 key = QKeySequence(text).__int__()
-            return SDL_KEYMAP[key]
-        except KeyError:
-            return None
+                return QT2SDL[key]
+            except KeyError:
+                return None
 
     def get_key_name(self, sdl_key):
         if not sdl_key:
             return "Select..."
-        try:
-            key = Qt.Key_unknown
-            for qt, sdl in SDL_KEYMAP.items():
-                if sdl == int(sdl_key):
-                    key = qt
-            if key in QT_MODIFIERS.keys():
-                key = QT_MODIFIERS[key]
-        except IndexError:
-            key = Qt.Key_unknown
-
-        text = QKeySequence(key).toString(QKeySequence.PortableText)
-        if key in QT_MODIFIERS.values():
-            text = text.replace("+", "")
-        return text
+        if SDL2 or self.parent.worker.m64p.core_sdl2:
+            from m64py.SDL2.keyboard import SDL_GetScancodeName
+            try:
+                text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])
+            except:
+                return "Select..."
+        else:
+            text = SDL_GetKeyName(int(sdl_key)).title()
+        if not text:
+            return "Select..."
+        if "Shift" in text or "Ctrl" in text or "Alt" in text:
+            text = text.replace("Left ", "")
+        return text.title()

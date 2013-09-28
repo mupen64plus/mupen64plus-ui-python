@@ -19,7 +19,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtOpenGL import *
 
 from m64py.core.defs import *
-from m64py.frontend.keymap import SDL_KEYMAP
+from m64py.opts import SDL2
+from m64py.frontend.keymap import QT2SDL, QT2SDL2
 
 class GLWidget(QGLWidget):
 
@@ -33,8 +34,7 @@ class GLWidget(QGLWidget):
         self.setContentsMargins(QMargins())
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFocus(True)
-        self.connect(self, SIGNAL("toggle_fs()"),
-                self.toggle_fs)
+        self.connect(self, SIGNAL("toggle_fs()"), self.toggle_fs)
 
     def showEvent(self, event):
         self.qglClearColor(Qt.black)
@@ -63,8 +63,11 @@ class GLWidget(QGLWidget):
                 self.worker.save_snapshot()
             else:
                 try:
-                    self.worker.send_sdl_keydown(
-                            SDL_KEYMAP[key])
+                    if SDL2 or self.worker.m64p.core_sdl2:
+                        sdl_key = QT2SDL2[key]
+                    else:
+                        sdl_key = QT2SDL[key]
+                    self.worker.send_sdl_keydown(sdl_key)
                 except KeyError:
                     pass
 
@@ -72,8 +75,11 @@ class GLWidget(QGLWidget):
         if self.worker.state == M64EMU_RUNNING:
             key = event.key()
             try:
-                self.worker.send_sdl_keyup(
-                        SDL_KEYMAP[key])
+                if SDL2 or self.worker.m64p.core_sdl2:
+                    sdl_key = QT2SDL2[key]
+                else:
+                    sdl_key = QT2SDL[key]
+                self.worker.send_sdl_keyup(sdl_key)
             except KeyError:
                 pass
 

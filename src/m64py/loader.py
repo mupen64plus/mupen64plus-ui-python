@@ -56,7 +56,6 @@ class LibraryLoader(object):
         self.other_dirs=[]
 
     def find_library(self, libname):
-        """Given the name of a library, return path."""
         paths = self.getpaths(libname)
         for path in paths:
             if os.path.exists(path):
@@ -64,7 +63,6 @@ class LibraryLoader(object):
         return None
 
     def load_library(self, libname):
-        """Given the name of a library, load it."""
         paths = self.getpaths(libname)
         for path in paths:
             if os.path.exists(path):
@@ -75,7 +73,6 @@ class LibraryLoader(object):
         dlclose(tdll._handle)
 
     def load(self, path):
-        """Given a path to a library, load it."""
         try:
             # Darwin requires dlopen to be called with mode RTLD_GLOBAL instead
             # of the default RTLD_LOCAL.  Without this, you end up with
@@ -89,7 +86,6 @@ class LibraryLoader(object):
             raise ImportError(e)
 
     def getpaths(self, libname):
-        """Return a list of paths where the library might be found."""
         if os.path.isabs(libname):
             yield libname
 
@@ -103,10 +99,9 @@ class LibraryLoader(object):
     def getplatformpaths(self, libname):
         return []
 
-# Darwin (Mac OS X)
 class DarwinLibraryLoader(LibraryLoader):
-    name_formats = ["lib%s.dylib", "lib%s.so", "lib%s.bundle", "%s.dylib",
-                "%s.so", "%s.bundle", "%s"]
+    name_formats = ["lib%s.dylib", "lib%s.so", "lib%s.bundle",
+            "%s.dylib", "%s.so", "%s.bundle", "%s"]
 
     def getplatformpaths(self, libname):
         if os.path.pathsep in libname:
@@ -135,7 +130,6 @@ class DarwinLibraryLoader(LibraryLoader):
                                           '/usr/local/lib', '/usr/lib']
 
         dirs = []
-
         if '/' in libname:
             dirs.extend(_environ_path("DYLD_LIBRARY_PATH"))
         else:
@@ -152,10 +146,8 @@ class DarwinLibraryLoader(LibraryLoader):
                 'Frameworks'))
 
         dirs.extend(dyld_fallback_library_path)
-
         return dirs
 
-# Posix
 class PosixLibraryLoader(LibraryLoader):
     _ld_so_cache = None
 
@@ -178,8 +170,10 @@ class PosixLibraryLoader(LibraryLoader):
         directories.extend(self.other_dirs)
         directories.append(".")
 
-        try: directories.extend([dir.strip() for dir in open('/etc/ld.so.conf')])
-        except IOError: pass
+        try:
+            directories.extend([dir.strip() for dir in open('/etc/ld.so.conf')])
+        except IOError:
+            pass
 
         directories.extend(['/lib', '/usr/lib', '/lib64',
             '/usr/lib64', '/usr/games/lib', '/usr/games/lib64',
@@ -217,7 +211,6 @@ class PosixLibraryLoader(LibraryLoader):
         path = ctypes.util.find_library(libname)
         if path: yield os.path.join("/lib",path)
 
-# Windows
 class _WindowsLibrary(object):
     def __init__(self, path):
         try:
@@ -226,7 +219,7 @@ class _WindowsLibrary(object):
             self.windll = ctypes.windll.LoadLibrary(path)
         except WindowsError:
             os.environ['PATH'] = ';'.join(
-                [os.path.dirname(path), os.environ['PATH']])            
+                [os.path.dirname(path), os.environ['PATH']])
             path = os.path.basename(path)
             self.cdll = ctypes.cdll.LoadLibrary(path)
             self.windll = ctypes.windll.LoadLibrary(path)
@@ -276,7 +269,6 @@ class WindowsLibraryLoader(LibraryLoader):
                 if path:
                     yield path
 
-# Platform switching
 loaderclass = {
     "darwin":   DarwinLibraryLoader,
     "cygwin":   WindowsLibraryLoader,
@@ -287,7 +279,7 @@ loader = loaderclass.get(sys.platform, PosixLibraryLoader)()
 
 load = loader.load
 load_library = loader.load_library
-unload_library = loader.unload_library
 find_library = loader.find_library
+unload_library = loader.unload_library
 
 del loaderclass

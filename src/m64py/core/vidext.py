@@ -17,22 +17,12 @@
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
-from SDL import *
-
 from m64py.core.defs import *
 from m64py.utils import log
 
-try:
-    if not SDL_WasInit(SDL_INIT_VIDEO):
-        SDL_InitSubSystem(SDL_INIT_VIDEO)
-    MODES = [(mode.w, mode.h) for mode in SDL_ListModes(
-        None, SDL_FULLSCREEN|SDL_HWSURFACE)]
-    SDL_QuitSubSystem(SDL_INIT_VIDEO)
-except Exception, err:
-    log.warn(str(err))
-    MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
-            (1280, 960), (1152, 864), (1024, 768),
-            (800, 600), (640, 480), (320, 240)]
+MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
+        (1280, 960), (1152, 864), (1024, 768),
+        (800, 600), (640, 480), (320, 240)]
 
 class Video():
     """Mupen64Plus video extension"""

@@ -23,6 +23,7 @@ from PyQt4.QtCore import *
 from m64py.core.defs import *
 from m64py.utils import log
 from m64py.loader import find_library
+from m64py.screensaver import screensaver
 from m64py.core.core import Core
 from m64py.core.vidext import video
 from m64py.archive import Archive
@@ -77,7 +78,7 @@ class Worker(QThread):
         else:
             path_library = self.settings.qset.value(
                     "Paths/Library", find_library(CORE_NAME))
-        self.m64p.core_load(path_library, self.use_vidext)
+        self.m64p.core_load(str(path_library), self.use_vidext)
 
     def core_shutdown(self):
         """Shutdowns core library."""
@@ -128,6 +129,9 @@ class Worker(QThread):
             del romfile
             self.m64p.rom_get_header()
             self.m64p.rom_get_settings()
+            if bool(int(self.settings.qset.value(
+                "disable_screensaver", 1))):
+                screensaver.disable()
             self.parent.emit(SIGNAL("rom_opened()"))
             self.parent.recent_files.add(self.filepath)
 
@@ -136,6 +140,9 @@ class Worker(QThread):
         self.m64p.detach_plugins()
         self.m64p.plugins_shutdown()
         self.m64p.rom_close()
+        if bool(int(self.settings.qset.value(
+            "disable_screensaver", 1))):
+            screensaver.enable()
         self.parent.emit(SIGNAL("rom_closed()"))
 
     def core_state_query(self, state):
@@ -158,7 +165,7 @@ class Worker(QThread):
         for filename in os.listdir(path):
             if filename.startswith(rom_name):
                 screenshots.append(os.path.join(
-                    screenshots_path, filename))
+                    path, filename))
         if screenshots:
             return sorted(screenshots)[-1]
         return None
@@ -253,8 +260,14 @@ class Worker(QThread):
         """Toggles pause."""
         if self.state == M64EMU_RUNNING:
             self.m64p.pause()
+            if bool(int(self.settings.qset.value(
+                "disable_screensaver", 1))):
+                screensaver.enable()
         elif self.state == M64EMU_PAUSED:
             self.m64p.resume()
+            if bool(int(self.settings.qset.value(
+                "disable_screensaver", 1))):
+                screensaver.disable()
         self.toggle_actions()
 
     def toggle_mute(self):
