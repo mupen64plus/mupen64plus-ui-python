@@ -19,7 +19,11 @@ from PyQt4.QtCore import Qt, SIGNAL
 
 from m64py.opts import SDL2
 from m64py.frontend.keymap import QT2SDL, QT2SDL2
-from m64py.SDL.constants import SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT
+
+SDL_HAT_UP = 0x01
+SDL_HAT_RIGHT = 0x02
+SDL_HAT_DOWN = 0x04
+SDL_HAT_LEFT = 0x08
 
 class InputButton(QPushButton):
 
