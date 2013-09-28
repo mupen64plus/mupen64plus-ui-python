@@ -1,3 +1,12 @@
+m64py (0.1.6-1) unstable; urgency=low
+
+  * SDL2 support
+  * option to disable screensaver when emulator is running
+  * option to keep aspect when resizing window
+  * LoadFrom/SaveAs actions for state files, PJ64 states are supported
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Sat, 28 Sep 2013 20:55:21 +0200
+
 m64py (0.1.4-1) unstable; urgency=low
 
   * window resizing (needs Mupen64Plus v2.0-rc2)
