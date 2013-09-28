@@ -101,7 +101,7 @@ class Core:
                     os.path.basename(self.core_path), version_split(plugin_version), version_split(MINIMUM_CORE_VERSION)))
             elif plugin_api & 0xffff0000 != CORE_API_VERSION & 0xffff0000:
                 raise Exception("library '%s' is incompatible, core API major version %s doesn't match application (%s)." % (
-                    os.path.basename(core_path), version_split(plugin_version), version_split(CORE_API_VERSION)))
+                    os.path.basename(self.core_path), version_split(plugin_version), version_split(CORE_API_VERSION)))
             else:
                 config_ver, debug_ver, vidext_ver = self.core_get_api_versions()
                 if config_ver & 0xffff0000 != CONFIG_API_VERSION & 0xffff0000:
