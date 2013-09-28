@@ -20,12 +20,12 @@ provides a user-friendly interface over Mupen64Plus shared library.
     * Input bindings configuration
     * Cheats support
     * Support gzip, bzip2, zip, rar and 7z archives
-    * Video extension (experimental)
+    * Video extension (embedded OpenGL window)
 
 === Dependencies ===
 
     * PyQt4
-    * libSDL-1.2
+    * SDL-1.2 or SDL-2.0
 
 === License ===
 
