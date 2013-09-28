@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -139,7 +140,6 @@ class Settings(QDialog, Ui_Settings):
                     self.set_default_general()
                     size = self.qset.value("size", SIZE_1X)
                     self.parent.window_size_triggered(size)
-                    self.qset.setValue("firstrun", False)
 
                     self.parent.emit(SIGNAL(
                         "state_changed(PyQt_PyObject)"),
@@ -198,10 +198,10 @@ class Settings(QDialog, Ui_Settings):
         except IndexError:
             path_plugins = ""
 
-        self.pathLibrary.setText(path_library)
-        self.pathPlugins.setText(path_plugins)
-        self.pathData.setText(path_data)
-        self.pathROM.setText(path_roms)
+        self.pathLibrary.setText(str(path_library))
+        self.pathPlugins.setText(str(path_plugins))
+        self.pathData.setText(str(path_data))
+        self.pathROM.setText(str(path_roms))
 
     def set_video(self):
         self.comboResolution.clear()
@@ -223,6 +223,16 @@ class Settings(QDialog, Ui_Settings):
         self.checkFullscreen.setChecked(
                 bool(self.m64p.config.get_parameter("Fullscreen")))
         self.checkFullscreen.setEnabled(not self.parent.worker.use_vidext)
+
+        if sys.platform == "win32":
+            self.checkKeepAspect.setChecked(False)
+            self.checkKeepAspect.setEnabled(False)
+        else:
+            keep_aspect = bool(int(self.qset.value("keep_aspect", 1)))
+            self.checkKeepAspect.setChecked(keep_aspect)
+
+        disable_screensaver = bool(int(self.qset.value("disable_screensaver", 1)))
+        self.checkDisableScreenSaver.setChecked(disable_screensaver)
 
         enable_vidext = bool(int(self.qset.value("enable_vidext", 1)))
         self.checkEnableVidExt.setChecked(enable_vidext)
@@ -254,7 +264,7 @@ class Settings(QDialog, Ui_Settings):
                         plugin_desc, plugin_version) = plugin
                 name = os.path.basename(plugin_path)
                 combo.addItem(name)
-                index = combo.findText(name)
+                index = combo.findText(str(name))
                 combo.setItemData(index, plugin_desc)
                 combo.setItemData(index, plugin_desc, Qt.ToolTipRole)
             current = self.qset.value("Plugins/%s" % (
@@ -281,6 +291,9 @@ class Settings(QDialog, Ui_Settings):
             self.m64p.config.set_parameter("ScreenWidth", int(width))
             self.m64p.config.set_parameter("ScreenHeight", int(height))
         self.m64p.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
+
+        self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
+        self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
 
     def save_core(self):

@@ -102,12 +102,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.worker.use_vidext and self.worker.m64p.get_handle():
             # event.ignore() doesn't work on windows
             if not sys.platform == "win32":
-                if not fullscreen:
+                if not fullscreen and \
+                        bool(int(self.settings.qset.value("keep_aspect", 1))):
                     width, height = self.keep_aspect(size)
 
             self.worker.m64p.config.open_section("Video-General")
             self.worker.m64p.config.set_parameter("ScreenWidth", width)
             self.worker.m64p.config.set_parameter("ScreenHeight", height)
+
             if not fullscreen:
                 video_size = (width << 16) + height
             else:
@@ -284,6 +286,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionPause.setEnabled(pause)
         self.actionPaths.setEnabled(not action)
         self.actionEmulator.setEnabled(not action)
+        self.actionGraphics.setEnabled(not action)
         self.actionPlugins.setEnabled(not action)
 
     def on_rom_opened(self):
@@ -438,9 +441,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.show_page(1)
 
     @pyqtSignature("")
+    def on_actionGraphics_triggered(self):
+        """Shows emulator settings."""
+        self.settings.show_page(2)
+
+    @pyqtSignature("")
     def on_actionPlugins_triggered(self):
         """Shows plugins settings."""
-        self.settings.show_page(2)
+        self.settings.show_page(3)
 
     @pyqtSignature("")
     def on_actionAbout_triggered(self):
