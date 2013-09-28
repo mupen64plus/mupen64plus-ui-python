@@ -7,12 +7,11 @@ __docformat__ = 'restructuredtext'
 __version__ = '$Id: $'
 
 from ctypes import *
-import sys
 
-import SDL.array
-import SDL.constants
-import SDL.dll
-import SDL.rwops
+from .array import SDL_array, to_ctypes
+from .constants import AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB
+from .dll import function, private_function
+from .rwops import SDL_RWops, SDL_RWFromFile
 
 _SDL_AudioSpec_fn = \
     CFUNCTYPE(POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte), c_int)
@@ -93,7 +92,7 @@ SetPointerType(_SDL_AudioCVT_p, SDL_AudioCVT)
 
 # SDL_AudioInit and SDL_AudioQuit marked private
 
-_SDL_AudioDriverName = SDL.dll.private_function('SDL_AudioDriverName',
+_SDL_AudioDriverName = private_function('SDL_AudioDriverName',
     arg_types=[c_char_p, c_int],
     return_type=c_char_p)
 
@@ -114,18 +113,18 @@ def SDL_AudioDriverName(maxlen=1024):
     return None
 
 def _ctype_audio_format(fmt):
-    if fmt == SDL.constants.AUDIO_U8:
+    if fmt == AUDIO_U8:
         return c_ubyte
-    elif fmt == SDL.constants.AUDIO_S8:
+    elif fmt == AUDIO_S8:
         return c_char
-    elif fmt in (SDL.constants.AUDIO_U16LSB, SDL.constants.AUDIO_U16MSB):
+    elif fmt in (AUDIO_U16LSB, AUDIO_U16MSB):
         return c_ushort
-    elif fmt in (SDL.constants.AUDIO_S16LSB, SDL.constants.AUDIO_S16MSB):
+    elif fmt in (AUDIO_S16LSB, AUDIO_S16MSB):
         return c_short
     else:
         raise TypeError, 'Unsupported format %r' % fmt
 
-_SDL_OpenAudio = SDL.dll.private_function('SDL_OpenAudio',
+_SDL_OpenAudio = private_function('SDL_OpenAudio',
     arg_types=[POINTER(SDL_AudioSpec), POINTER(SDL_AudioSpec)],
     return_type=c_int,
     error_return=-1)
@@ -202,7 +201,7 @@ def SDL_OpenAudio(desired, obtained):
     ctype = [_ctype_audio_format(desired.format)]  # List, so mutable
 
     def cb(data, stream, len):
-        ar = SDL.array.SDL_array(stream, len/sizeof(ctype[0]), ctype[0])
+        ar = SDL_array(stream, len/sizeof(ctype[0]), ctype[0])
         callback(userdata, ar)
 
     desired._callback = _SDL_AudioSpec_fn(cb)
@@ -212,7 +211,7 @@ def SDL_OpenAudio(desired, obtained):
         obtained.callback = desired.callback
         ctype[0] = _ctype_audio_format(obtained.format)
 
-SDL_GetAudioStatus = SDL.dll.function('SDL_GetAudioStatus',
+SDL_GetAudioStatus = function('SDL_GetAudioStatus',
     '''Get the current audio state.
 
     :rtype: int
@@ -222,7 +221,7 @@ SDL_GetAudioStatus = SDL.dll.function('SDL_GetAudioStatus',
     arg_types=[],
     return_type=c_int)
 
-SDL_PauseAudio = SDL.dll.function('SDL_PauseAudio',
+SDL_PauseAudio = function('SDL_PauseAudio',
     '''Pause and unpause the audio callback processing.
 
     It should be called with a parameter of 0 after opening the audio
@@ -238,8 +237,8 @@ SDL_PauseAudio = SDL.dll.function('SDL_PauseAudio',
     arg_types=[c_int],
     return_type=None)
 
-_SDL_LoadWAV_RW = SDL.dll.private_function('SDL_LoadWAV_RW',
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), 
+_SDL_LoadWAV_RW = private_function('SDL_LoadWAV_RW',
+    arg_types=[POINTER(SDL_RWops), 
                c_int, 
                POINTER(SDL_AudioSpec), 
                POINTER(POINTER(c_ubyte)),
@@ -272,7 +271,7 @@ def SDL_LoadWAV_RW(src, freesrc):
     _SDL_LoadWAV_RW(src, freesrc, spec, byref(audio_buf), byref(audio_len))
     ctype = _ctype_audio_format(spec.format)
     return (spec, 
-            SDL.array.SDL_array(audio_buf, audio_len.value/sizeof(ctype), ctype))
+            SDL_array(audio_buf, audio_len.value/sizeof(ctype), ctype))
 
 def SDL_LoadWAV(file):
     '''Load a WAVE from a file.
@@ -283,9 +282,9 @@ def SDL_LoadWAV(file):
     :rtype: (`SDL_AudioSpec`, `SDL_array`)
     :see: `SDL_LoadWAV_RW`
     '''
-    return SDL_LoadWAV_RW(SDL.rwops.SDL_RWFromFile(file, 'rb'), 1)
+    return SDL_LoadWAV_RW(SDL_RWFromFile(file, 'rb'), 1)
 
-_SDL_FreeWAV = SDL.dll.private_function('SDL_FreeWAV',
+_SDL_FreeWAV = private_function('SDL_FreeWAV',
     arg_types=[POINTER(c_ubyte)],
     return_type=None)
 
@@ -299,7 +298,7 @@ def SDL_FreeWAV(audio_buf):
     '''
     _SDL_FreeWAV(audio_buf.as_bytes().as_ctypes())
 
-_SDL_BuildAudioCVT = SDL.dll.private_function('SDL_BuildAudioCVT',
+_SDL_BuildAudioCVT = private_function('SDL_BuildAudioCVT',
     arg_types=[POINTER(SDL_AudioCVT), c_ushort, c_ubyte, c_uint,
                c_ushort, c_ubyte, c_uint],
     return_type=c_int,
@@ -328,7 +327,7 @@ def SDL_BuildAudioCVT(src_format, src_channels, src_rate,
                        dst_format, dst_channels, dst_rate)
     return cvt
 
-SDL_ConvertAudio = SDL.dll.function('SDL_ConvertAudio',
+SDL_ConvertAudio = function('SDL_ConvertAudio',
     '''Convert audio data in-place.
 
     Once you have initialized the 'cvt' structure using
@@ -354,7 +353,7 @@ SDL_ConvertAudio = SDL.dll.function('SDL_ConvertAudio',
     arg_types=[POINTER(SDL_AudioCVT)],
     return_type=c_int)
 
-_SDL_MixAudio = SDL.dll.private_function('SDL_MixAudio',
+_SDL_MixAudio = private_function('SDL_MixAudio',
     arg_types=[POINTER(c_ubyte), POINTER(c_ubyte), c_uint, c_int],
     return_type=None)
 
@@ -378,15 +377,15 @@ def SDL_MixAudio(dst, src, length, volume):
      - `volume`: int
 
     '''
-    dstref, dst = SDL.array.to_ctypes(dst, len(dst), c_ubyte)
-    srcref, src = SDL.array.to_ctypes(src, len(src), c_ubyte)
+    dstref, dst = to_ctypes(dst, len(dst), c_ubyte)
+    srcref, src = to_ctypes(src, len(src), c_ubyte)
     if len(dst) < length:
         raise TypeError, 'Destination buffer too small'
     elif len(src) < length:
         raise TypeError, 'Source buffer too small'
     _SDL_MixAudio(dst, src, length, volume)
 
-SDL_LockAudio = SDL.dll.function('SDL_LockAudio',
+SDL_LockAudio = function('SDL_LockAudio',
     '''Guarantee the callback function is not running.
 
     The lock manipulated by these functions protects the callback function.
@@ -398,7 +397,7 @@ SDL_LockAudio = SDL.dll.function('SDL_LockAudio',
     arg_types=[],
     return_type=None)
 
-SDL_UnlockAudio = SDL.dll.function('SDL_UnlockAudio',
+SDL_UnlockAudio = function('SDL_UnlockAudio',
     '''Release the audio callback lock.
 
     :see: `SDL_LockAudio`
@@ -407,7 +406,7 @@ SDL_UnlockAudio = SDL.dll.function('SDL_UnlockAudio',
     arg_types=[],
     return_type=None)
 
-SDL_CloseAudio = SDL.dll.function('SDL_CloseAudio',
+SDL_CloseAudio = function('SDL_CloseAudio',
     '''Shut down audio processing and close the audio device.
     ''',
     args=[],

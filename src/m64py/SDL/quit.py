@@ -19,12 +19,12 @@ quit events for that signal.
 __docformat__ = 'restructuredtext'
 __version__ = '$Id: $'
 
-import SDL.events
+from .events import SDL_PumpEvents, SDL_HaveEvents, SDL_QUITMASK
 
 def SDL_QuitRequested():
     '''Return True if there is a quit event in the event queue.
 
     :rtype: bool
     '''
-    SDL.events.SDL_PumpEvents()
-    return SDL.events.SDL_HaveEvents(SDL.events.SDL_QUITMASK)
+    SDL_PumpEvents()
+    return SDL_HaveEvents(SDL_QUITMASK)

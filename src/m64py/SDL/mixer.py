@@ -24,19 +24,19 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.array
-import SDL.dll
-import SDL.rwops
-import SDL.version
+from .array import SDL_array, to_ctypes
+from .dll import SDL_DLL
+from .rwops import SDL_RWops, SDL_RWFromFile
+from .version import SDL_version
 
-_dll = SDL.dll.SDL_DLL('SDL_mixer', 'Mix_Linked_Version')
+_dll = SDL_DLL('SDL_mixer', 'Mix_Linked_Version')
 
 Mix_Linked_Version = _dll.function('Mix_Linked_Version',
     '''Get the version of the dynamically linked SDL_mixer library.
     ''',
     args=[],
     arg_types=[],
-    return_type=POINTER(SDL.version.SDL_version),
+    return_type=POINTER(SDL_version),
     dereference_return=True,
     require_return=True)
 
@@ -61,7 +61,7 @@ class Mix_Chunk(Structure):
 
     def __getattr__(self, attr):
         if attr == 'abuf':
-            return SDL.array.SDL_array(self._abuf, self.alen, c_ubyte)
+            return SDL_array(self._abuf, self.alen, c_ubyte)
         raise AttributeException, attr
 
 # opaque type
@@ -128,7 +128,7 @@ Mix_LoadWAV_RW = _dll.function('Mix_LoadWAV_RW',
     :rtype: `Mix_Chunk`
     ''',
     args=['src', 'freesrc'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int],
+    arg_types=[POINTER(SDL_RWops), c_int],
     return_type=POINTER(Mix_Chunk),
     dereference_return=True,
     require_return=True)
@@ -142,7 +142,7 @@ def Mix_LoadWAV(file):
 
     :rtype: `Mix_Chunk`
     '''
-    return Mix_LoadWAV_RW(SDL.rwops.SDL_RWFromFile(file, 'rb'), 1)
+    return Mix_LoadWAV_RW(SDL_RWFromFile(file, 'rb'), 1)
 
 Mix_LoadMUS = _dll.function('Mix_LoadMUS',
     '''Load a WAV, MID, OGG, MP3 or MOD file.
@@ -188,7 +188,7 @@ def Mix_QuickLoad_WAV(mem):
 
     :rtype: `Mix_Chunk`
     '''
-    ref, mem = SDL.array.to_ctypes(mem, len(mem), c_ubyte)
+    ref, mem = to_ctypes(mem, len(mem), c_ubyte)
     return _Mix_QuickLoad_WAV(mem)
 
 _Mix_QuickLoad_RAW = _dll.private_function('Mix_QuickLoad_RAW',
@@ -206,7 +206,7 @@ def Mix_QuickLoad_RAW(mem):
     :rtype: `Mix_Chunk`
     '''
     l = len(mem)
-    ref, mem = SDL.array.to_ctypes(mem, len(mem), c_ubyte)
+    ref, mem = to_ctypes(mem, len(mem), c_ubyte)
     return _Mix_QuickLoad_RAW(mem, l)
 
 Mix_FreeChunk = _dll.function('Mix_FreeChunk',
@@ -251,7 +251,7 @@ _Mix_FilterFunc = CFUNCTYPE(None, c_void_p, POINTER(c_ubyte), c_int)
 def _make_filter(func, udata):
     if func:
         def f(ignored, stream, len):
-            stream = SDL.array.SDL_array(stream, len, c_ubyte)
+            stream = SDL_array(stream, len, c_ubyte)
             func(udata, stream)
         return _Mix_FilterFunc(f)
     else:
@@ -369,7 +369,7 @@ _Mix_EffectFunc = CFUNCTYPE(None, c_int, POINTER(c_ubyte), c_int, c_void_p)
 def _make_Mix_EffectFunc(func, udata):
     if func:
         def f(chan, stream, len, ignored):
-            stream = SDL.array.SDL_array(stream, len, c_ubyte)
+            stream = SDL_array(stream, len, c_ubyte)
             func(chan, stream, udata)
         return _Mix_EffectFunc(f)
     else:

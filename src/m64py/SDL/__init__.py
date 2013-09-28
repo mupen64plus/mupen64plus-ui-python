@@ -27,26 +27,26 @@ __version__ = '$Id: $'
 import ctypes
 import sys
 
-import SDL.dll
-from SDL.active import *
-from SDL.audio import *
-from SDL.cdrom import *
-from SDL.constants import *
-from SDL.endian import *
-from SDL.error import *
-from SDL.events import *
-from SDL.joystick import *
-from SDL.keyboard import *
-from SDL.mouse import *
-from SDL.quit import *
-from SDL.rwops import *
-from SDL.timer import *
-from SDL.version import *
-from SDL.video import *
+from .dll import private_function, function
+from .active import *
+from .audio import *
+from .cdrom import *
+from .constants import *
+from .endian import *
+from .error import *
+from .events import *
+from .joystick import *
+from .keyboard import *
+from .mouse import *
+from .quit import *
+from .rwops import *
+from .timer import *
+from .version import *
+from .video import *
 
 # SDL.h
 
-_SDL_Init = SDL.dll.private_function('SDL_Init',
+_SDL_Init = private_function('SDL_Init',
     arg_types=[ctypes.c_uint],
     return_type=ctypes.c_int)
 
@@ -81,7 +81,7 @@ def SDL_Init(flags):
         SDL.darwin.init()
     return _SDL_Init(flags)
 
-_SDL_InitSubSystem = SDL.dll.private_function('SDL_InitSubSystem',
+_SDL_InitSubSystem = private_function('SDL_InitSubSystem',
     arg_types=[ctypes.c_uint],
     return_type=ctypes.c_int)
 
@@ -100,7 +100,7 @@ def SDL_InitSubSystem(flags):
         SDL.darwin.init()
     return _SDL_InitSubSystem(flags)
 
-SDL_QuitSubSystem = SDL.dll.function('SDL_QuitSubSystem',
+SDL_QuitSubSystem = function('SDL_QuitSubSystem',
     '''Clean up specific SDL subsystems.
 
     :Parameters:
@@ -112,7 +112,7 @@ SDL_QuitSubSystem = SDL.dll.function('SDL_QuitSubSystem',
     arg_types=[ctypes.c_uint],
     return_type=None)
 
-SDL_WasInit = SDL.dll.function('SDL_WasInit',
+SDL_WasInit = function('SDL_WasInit',
     '''Return a mask of the specified subsystems which have been
     initialized.
 
@@ -129,7 +129,7 @@ SDL_WasInit = SDL.dll.function('SDL_WasInit',
     arg_types=[ctypes.c_uint],
     return_type=ctypes.c_int)
 
-SDL_Quit = SDL.dll.function('SDL_Quit',
+SDL_Quit = function('SDL_Quit',
     '''Clean up all initialized subsystems.
 
     You should call this function upon all exit conditions.

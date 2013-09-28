@@ -13,8 +13,8 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
-import SDL.constants
+from .dll import function
+from .constants import RW_SEEK_CUR
 
 _rwops_p = POINTER('SDL_RWops')
 _seek_fn = CFUNCTYPE(c_int, _rwops_p, c_int, c_int)
@@ -53,7 +53,7 @@ class SDL_RWops(Structure):
                 ('_hidden_mem', _hidden_mem_t)]
 SetPointerType(_rwops_p, SDL_RWops)
 
-SDL_RWFromFile = SDL.dll.function('SDL_RWFromFile',
+SDL_RWFromFile = function('SDL_RWFromFile',
     '''Create an SDL_RWops structure from a file on disk.
 
     :Parameters:
@@ -70,7 +70,7 @@ SDL_RWFromFile = SDL.dll.function('SDL_RWFromFile',
     dereference_return=True,
     require_return=True)
 
-SDL_RWFromMem = SDL.dll.function('SDL_RWFromMem',
+SDL_RWFromMem = function('SDL_RWFromMem',
     '''Create an SDL_RWops structure from a contiguous region of memory.
 
     :Parameters:
@@ -85,7 +85,7 @@ SDL_RWFromMem = SDL.dll.function('SDL_RWFromMem',
     dereference_return=True,
     require_return=True)
 
-SDL_RWFromConstMem = SDL.dll.function('SDL_RWFromConstMem',
+SDL_RWFromConstMem = function('SDL_RWFromConstMem',
     '''Create an SDL_RWops structure from a contiguous region of memory.
 
     :Parameters:
@@ -103,7 +103,7 @@ SDL_RWFromConstMem = SDL.dll.function('SDL_RWFromConstMem',
     since=(1,2,7))
 
 """ These functions shouldn't be useful to Pythoners.
-SDL_AllocRW = SDL.dll.function('SDL_AllocRW',
+SDL_AllocRW = function('SDL_AllocRW',
     '''Allocate a blank SDL_Rwops structure.
 
     :rtype: `SDL_RWops`
@@ -114,7 +114,7 @@ SDL_AllocRW = SDL.dll.function('SDL_AllocRW',
     dereference_return=True,
     require_return=True)
 
-SDL_FreeRW = SDL.dll.function('SDL_FreeRW',
+SDL_FreeRW = function('SDL_FreeRW',
     '''Free a SDL_RWops structure.
 
     :param area: `SDL_RWops`
@@ -178,7 +178,7 @@ def SDL_RWseek(ctx, offset, whence):
     return ctx.seek(ctx, offset, whence)
 
 def SDL_RWtell(ctx):
-    return ctx.seek(ctx, 0, SDL.constants.RW_SEEK_CUR)
+    return ctx.seek(ctx, 0, RW_SEEK_CUR)
 
 def SDL_RWread(ctx, ptr, size, n):
     return ctx.read(ctx, ptr, size, n)

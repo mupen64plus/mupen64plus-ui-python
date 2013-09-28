@@ -10,15 +10,14 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.constants
-import SDL.dll
+from .dll import function, private_function
 
 class _SDL_Joystick(Structure):
     _fields_ = [('_dummy', c_void_p)]
 
 SDL_Joystick_p = POINTER(_SDL_Joystick)
 
-SDL_NumJoysticks = SDL.dll.function('SDL_NumJoysticks',
+SDL_NumJoysticks = function('SDL_NumJoysticks',
     '''Count the number of joysticks attached to the system.
 
     :rtype: int
@@ -27,7 +26,7 @@ SDL_NumJoysticks = SDL.dll.function('SDL_NumJoysticks',
     arg_types=[],
     return_type=c_int)
 
-SDL_JoystickName = SDL.dll.function('SDL_JoystickName',
+SDL_JoystickName = function('SDL_JoystickName',
     '''Get the implementation dependent name of a joystick.
 
     This can be called before any joysticks are opened.  If no name can be
@@ -42,7 +41,7 @@ SDL_JoystickName = SDL.dll.function('SDL_JoystickName',
     arg_types=[c_int],
     return_type=c_char_p)
 
-SDL_JoystickOpen = SDL.dll.function('SDL_JoystickOpen',
+SDL_JoystickOpen = function('SDL_JoystickOpen',
     '''Open a joystick for use.
     
     The index passed as an argument refers to the N'th joystick on the
@@ -61,7 +60,7 @@ SDL_JoystickOpen = SDL.dll.function('SDL_JoystickOpen',
     return_type=SDL_Joystick_p,
     require_return=True)
 
-SDL_JoystickOpened = SDL.dll.function('SDL_JoystickOpened',
+SDL_JoystickOpened = function('SDL_JoystickOpened',
     '''Determine if a joystick has been opened.
 
     :Parameters:
@@ -74,7 +73,7 @@ SDL_JoystickOpened = SDL.dll.function('SDL_JoystickOpened',
     arg_types=[c_int],
     return_type=c_int)
 
-SDL_JoystickIndex = SDL.dll.function('SDL_JoystickIndex',
+SDL_JoystickIndex = function('SDL_JoystickIndex',
     '''Get the device index of an opened joystick.
 
     :Parameters:
@@ -86,7 +85,7 @@ SDL_JoystickIndex = SDL.dll.function('SDL_JoystickIndex',
     arg_types=[SDL_Joystick_p],
     return_type=c_int)
 
-SDL_JoystickNumAxes = SDL.dll.function('SDL_JoystickNumAxes',
+SDL_JoystickNumAxes = function('SDL_JoystickNumAxes',
     '''Get the number of general axis controls on a joystick.
 
     :Parameters:
@@ -98,7 +97,7 @@ SDL_JoystickNumAxes = SDL.dll.function('SDL_JoystickNumAxes',
     arg_types=[SDL_Joystick_p],
     return_type=c_int)
 
-SDL_JoystickNumBalls = SDL.dll.function('SDL_JoystickNumBalls',
+SDL_JoystickNumBalls = function('SDL_JoystickNumBalls',
     '''Get the number of trackballs on a joystick.
 
     Joystick trackballs have only relative motion events associated with
@@ -113,7 +112,7 @@ SDL_JoystickNumBalls = SDL.dll.function('SDL_JoystickNumBalls',
     arg_types=[SDL_Joystick_p],
     return_type=c_int)
 
-SDL_JoystickNumHats = SDL.dll.function('SDL_JoystickNumHats',
+SDL_JoystickNumHats = function('SDL_JoystickNumHats',
     '''Get the number of POV hats on a joystick.
 
     :Parameters:
@@ -125,7 +124,7 @@ SDL_JoystickNumHats = SDL.dll.function('SDL_JoystickNumHats',
     arg_types=[SDL_Joystick_p],
     return_type=c_int)
 
-SDL_JoystickNumButtons = SDL.dll.function('SDL_JoystickNumButtons',
+SDL_JoystickNumButtons = function('SDL_JoystickNumButtons',
     '''Get the number of buttons on a joystick.
 
     :Parameters:
@@ -137,7 +136,7 @@ SDL_JoystickNumButtons = SDL.dll.function('SDL_JoystickNumButtons',
     arg_types=[SDL_Joystick_p],
     return_type=c_int)
 
-SDL_JoystickUpdate = SDL.dll.function('SDL_JoystickUpdate',
+SDL_JoystickUpdate = function('SDL_JoystickUpdate',
     '''Update the current state of the open joysticks.
 
     This is called automatically by the event loop if any joystick events
@@ -147,7 +146,7 @@ SDL_JoystickUpdate = SDL.dll.function('SDL_JoystickUpdate',
     arg_types=[],
     return_type=None)
 
-SDL_JoystickEventState = SDL.dll.function('SDL_JoystickEventState',
+SDL_JoystickEventState = function('SDL_JoystickEventState',
     '''Enable/disable joystick event polling.
 
     If joystick events are disabled, you must call `SDL_JoystickUpdate`
@@ -166,7 +165,7 @@ SDL_JoystickEventState = SDL.dll.function('SDL_JoystickEventState',
     return_type=c_int)
 
 
-SDL_JoystickGetAxis = SDL.dll.function('SDL_JoystickGetAxis',
+SDL_JoystickGetAxis = function('SDL_JoystickGetAxis',
     '''Get the current state of an axis control on a joystick.
 
     The axis indices start at index 0.
@@ -182,7 +181,7 @@ SDL_JoystickGetAxis = SDL.dll.function('SDL_JoystickGetAxis',
     arg_types=[SDL_Joystick_p, c_int],
     return_type=c_short)
 
-SDL_JoystickGetHat = SDL.dll.function('SDL_JoystickGetHat',
+SDL_JoystickGetHat = function('SDL_JoystickGetHat',
     '''Get the current state of POV hat on a joystick.
 
     The hat indices start at index 0.
@@ -201,7 +200,7 @@ SDL_JoystickGetHat = SDL.dll.function('SDL_JoystickGetHat',
     arg_types=[SDL_Joystick_p, c_int],
     return_type=c_ubyte)
 
-_SDL_JoystickGetBall = SDL.dll.private_function('SDL_JoystickGetBall',
+_SDL_JoystickGetBall = private_function('SDL_JoystickGetBall',
     arg_types=[SDL_Joystick_p, c_int, POINTER(c_int), POINTER(c_int)],
     return_type=c_int,
     error_return=-1)
@@ -222,7 +221,7 @@ def SDL_JoystickGetBall(joystick, ball):
     _SDL_JoystickGetBall(joystick, ball, byref(x), byref(y))
     return dx.value, dy.value
 
-SDL_JoystickGetButton = SDL.dll.function('SDL_JoystickGetButton',
+SDL_JoystickGetButton = function('SDL_JoystickGetButton',
     '''Get the current state of a button on a joystick.
 
     The button indices start at index 0.
@@ -238,7 +237,7 @@ SDL_JoystickGetButton = SDL.dll.function('SDL_JoystickGetButton',
     arg_types=[SDL_Joystick_p, c_int],
     return_type=c_ubyte)
 
-SDL_JoystickClose = SDL.dll.function('SDL_JoystickClose',
+SDL_JoystickClose = function('SDL_JoystickClose',
     '''Close a joystick previously opened with `SDL_JoystickOpen`.
 
     :Parameters:

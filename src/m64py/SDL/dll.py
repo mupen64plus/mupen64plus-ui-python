@@ -82,8 +82,8 @@ class SDL_DLL:
     def assert_version_compatible(self, name, since):
         '''Raises an exception if `since` is later than the loaded library.'''
         if not version_compatible(since):
-            import SDL.error
-            raise SDL.error.SDL_NotImplementedError, \
+            from .error import SDL_NotImplementedError
+            raise SDL_NotImplementedError, \
                 '%s requires SDL version %s; currently using version %s' % \
                 (name, _version_string(since), _version_string(self._version))
 
@@ -145,8 +145,8 @@ class SDL_DLL:
         # Check for version compatibility first
         if since and not self.version_compatible(since):
             def _f(*args, **kwargs):
-                import SDL.error
-                raise SDL.error.SDL_NotImplementedError, \
+                from .error import SDL_NotImplementedError
+                raise SDL_NotImplementedError, \
                       '%s requires %s %s; currently using version %s' % \
                       (name, self.library_name, _version_string(since),
                        _version_string(self._version))
@@ -171,8 +171,8 @@ class SDL_DLL:
                     result = func(*args, **kwargs)
                     if result:
                         return result.contents
-                    import SDL.error
-                    raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+                    from .error import SDL_Exception, SDL_GetError
+                    raise SDL_Exception, SDL_GetError()
             else:
                 # Construct a function which dereferences the pointer result,
                 # or returns None if NULL is returned.
@@ -187,8 +187,8 @@ class SDL_DLL:
             def _f(*args, **kwargs):
                 result = func(*args, **kwargs)
                 if result != success_return:
-                    import SDL.error
-                    raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+                    from .error import SDL_Exception, SDL_GetError
+                    raise SDL_Exception, SDL_GetError()
                 return result
         elif error_return is not None:
             # Construct a function which returns None, but raises an exception
@@ -196,8 +196,8 @@ class SDL_DLL:
             def _f(*args, **kwargs):
                 result = func(*args, **kwargs)
                 if result == error_return:
-                    import SDL.error
-                    raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+                    from .error import SDL_Exception, SDL_GetError
+                    raise SDL_Exception, SDL_GetError()
                 return result
         elif require_return:
             # Construct a function which returns the usual result, or returns
@@ -205,8 +205,8 @@ class SDL_DLL:
             def _f(*args, **kwargs):
                 result = func(*args, **kwargs)
                 if not result:
-                    import SDL.error
-                    raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+                    from .error import SDL_Exception, SDL_GetError
+                    raise SDL_Exception, SDL_GetError()
                 return result
         else:
             # Construct a function which returns the C function's return

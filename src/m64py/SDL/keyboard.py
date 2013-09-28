@@ -10,7 +10,7 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
+from .dll import function, private_function
 
 class SDL_keysym(Structure):
     '''Keysym structure
@@ -44,7 +44,7 @@ class SDL_keysym(Structure):
             return unichr(self._unicode)
         raise AttributeError
 
-SDL_EnableUNICODE = SDL.dll.function('SDL_EnableUNICODE',
+SDL_EnableUNICODE = function('SDL_EnableUNICODE',
     '''Enable or disable Unicode translation of keyboard input.
 
     This translation has some overhead, so translation defaults off.
@@ -62,7 +62,7 @@ SDL_EnableUNICODE = SDL.dll.function('SDL_EnableUNICODE',
     arg_types=[c_int],
     return_type=c_int)
 
-SDL_EnableKeyRepeat = SDL.dll.function('SDL_EnableKeyRepeat',
+SDL_EnableKeyRepeat = function('SDL_EnableKeyRepeat',
     '''Enable keyboard repeat.
 
     Keyboard repeat defaults to off.
@@ -82,7 +82,7 @@ SDL_EnableKeyRepeat = SDL.dll.function('SDL_EnableKeyRepeat',
     arg_types=[c_int, c_int],
     return_type=c_int)
 
-_SDL_GetKeyRepeat = SDL.dll.private_function('SDL_GetKeyRepeat',
+_SDL_GetKeyRepeat = private_function('SDL_GetKeyRepeat',
     arg_types=[POINTER(c_int), POINTER(c_int)],
     return_type=None,
     since=(1,2,10))
@@ -99,7 +99,7 @@ def SDL_GetKeyRepeat():
     _SDL_GetKeyRepeat(byref(delay), byref(interval))
     return delay.value, interval.value
 
-_SDL_GetKeyState = SDL.dll.private_function('SDL_GetKeyState',
+_SDL_GetKeyState = private_function('SDL_GetKeyState',
     arg_types=[POINTER(c_int)],
     return_type=POINTER(c_ubyte))
 
@@ -120,7 +120,7 @@ def SDL_GetKeyState():
     keystate_ar = cast(keystate, POINTER(c_ubyte * numkeys.value)).contents
     return list(keystate_ar)
 
-SDL_GetModState = SDL.dll.function('SDL_GetModState',
+SDL_GetModState = function('SDL_GetModState',
     '''Get the current key modifier state.
 
     :rtype: int
@@ -129,7 +129,7 @@ SDL_GetModState = SDL.dll.function('SDL_GetModState',
     arg_types=[],
     return_type=c_int)
 
-SDL_SetModState = SDL.dll.function('SDL_SetModState',
+SDL_SetModState = function('SDL_SetModState',
     '''Set the current key modifier state.
 
     This does not change the keyboard state, only the key modifier flags.
@@ -142,7 +142,7 @@ SDL_SetModState = SDL.dll.function('SDL_SetModState',
     arg_types=[c_int],
     return_type=None)
 
-_SDL_GetKeyName = SDL.dll.private_function('SDL_GetKeyName',
+_SDL_GetKeyName = private_function('SDL_GetKeyName',
     arg_types=[c_int],
     return_type=c_char_p)
 

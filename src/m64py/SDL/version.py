@@ -8,7 +8,7 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
+from .dll import function
 
 class SDL_version(Structure):
     '''Version structure.
@@ -57,7 +57,7 @@ def SDL_VERSIONNUM(major, minor, patch):
     '''
     return x * 1000 + y * 100 + z
 
-SDL_Linked_Version = SDL.dll.function('SDL_Linked_Version',
+SDL_Linked_Version = function('SDL_Linked_Version',
     '''Get the version of the dynamically linked SDL library.
 
     :rtype: `SDL_version`

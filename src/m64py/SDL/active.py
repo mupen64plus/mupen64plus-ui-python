@@ -8,9 +8,9 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
+from .dll import function
 
-SDL_GetAppState = SDL.dll.function('SDL_GetAppState',
+SDL_GetAppState = function('SDL_GetAppState',
     '''Return the current state of the application.
 
     The return value is a bitwise combination of `SDL_APPMOUSEFOCUS`,

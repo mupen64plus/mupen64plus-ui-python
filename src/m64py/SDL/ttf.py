@@ -12,12 +12,12 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
-import SDL.rwops
-import SDL.version
-import SDL.video
+from .dll import SDL_DLL
+from .rwops import SDL_RWops
+from .version import SDL_version
+from .video import SDL_Color, SDL_Surface
 
-_dll = SDL.dll.SDL_DLL('SDL_ttf', 'TTF_Linked_Version')
+_dll = SDL_DLL('SDL_ttf', 'TTF_Linked_Version')
 
 TTF_Linked_Version = _dll.function('TTF_Linked_Version',
     '''Get the version of the dynamically linked SDL_ttf library.
@@ -26,7 +26,7 @@ TTF_Linked_Version = _dll.function('TTF_Linked_Version',
     ''',
     args=[],
     arg_types=[],
-    return_type=POINTER(SDL.version.SDL_version),
+    return_type=POINTER(SDL_version),
     dereference_return=True,
     require_return=True)
 
@@ -93,7 +93,7 @@ TTF_OpenFontRW = _dll.function('TTF_OpenFontRW',
     :rtype: ``TTF_Font``
     ''',
     args=['src', 'freesrc', 'ptsize'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int, c_int],
+    arg_types=[POINTER(SDL_RWops), c_int, c_int],
     return_type=_TTF_Font,
     require_return=True)
 
@@ -113,7 +113,7 @@ TTF_OpenFontIndexRW = _dll.function('TTF_OpenFontIndexRW',
     :rtype: ``TTF_Font``
     ''',
     args=['src', 'freesrc', 'ptsize', 'index'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int, c_int, c_int],
+    arg_types=[POINTER(SDL_RWops), c_int, c_int, c_int],
     return_type=_TTF_Font,
     require_return=True)
 
@@ -314,8 +314,8 @@ def TTF_SizeText(font, text):
     return w.value, h.value
 
 _TTF_RenderUTF8_Solid = _dll.private_function('TTF_RenderUTF8_Solid',
-    arg_types=[_TTF_Font, c_char_p, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_char_p, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 
@@ -336,8 +336,8 @@ def TTF_RenderText_Solid(font, text, fg):
     return _TTF_RenderUTF8_Solid(font, text.encode('utf8'), fg)
       
 _TTF_RenderGlyph_Solid = _dll.private_function('TTF_RenderGlyph_Solid',
-    arg_types=[_TTF_Font, c_ushort, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_ushort, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 
@@ -361,8 +361,8 @@ def TTF_RenderGlyph_Solid(font, ch, fg):
     return _TTF_RenderGlyph_Solid(font, ord(text), fg)
 
 _TTF_RenderUTF8_Shaded = _dll.private_function('TTF_RenderUTF8_Shaded',
-    arg_types=[_TTF_Font, c_char_p, SDL.video.SDL_Color, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_char_p, SDL_Color, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 
@@ -384,8 +384,8 @@ def TTF_RenderText_Shaded(font, text, fg, bg):
     return _TTF_RenderUTF8_Shaded(font, text.encode('utf8'), fg, bg)
       
 _TTF_RenderGlyph_Shaded = _dll.private_function('TTF_RenderGlyph_Shaded',
-    arg_types=[_TTF_Font, c_ushort, SDL.video.SDL_Color, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_ushort, SDL_Color, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 
@@ -410,8 +410,8 @@ def TTF_RenderGlyph_Shaded(font, ch, fg, bg):
     return _TTF_RenderGlyph_Shaded(font, ord(ch), fg, bg)
 
 _TTF_RenderUTF8_Blended = _dll.private_function('TTF_RenderUTF8_Blended',
-    arg_types=[_TTF_Font, c_char_p, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_char_p, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 
@@ -430,8 +430,8 @@ def TTF_RenderText_Blended(font, text, fg):
     return _TTF_RenderUTF8_Blended(font, text.encode('utf8'), fg)
       
 _TTF_RenderGlyph_Blended = _dll.private_function('TTF_RenderGlyph_Blended',
-    arg_types=[_TTF_Font, c_ushort, SDL.video.SDL_Color],
-    return_type=POINTER(SDL.video.SDL_Surface), 
+    arg_types=[_TTF_Font, c_ushort, SDL_Color],
+    return_type=POINTER(SDL_Surface), 
     require_return=True,
     dereference_return=True)
 

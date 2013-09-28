@@ -18,11 +18,11 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.array
-import SDL.dll
-import SDL.error
-import SDL.constants
-import SDL.rwops
+from .array import SDL_array, to_ctypes
+from .dll import function, private_function, assert_version_compatible
+from .error import SDL_Exception, SDL_GetError
+from .constants import SDL_HWSURFACE, SDL_ASYNCBLIT, SDL_RLEACCEL
+from .rwops import SDL_RWops, SDL_RWFromFile
 
 class SDL_Rect(Structure):
     '''Rectangle structure.
@@ -114,7 +114,7 @@ class SDL_Palette(Structure):
 
     def __getattr__(self, name):
         if name == 'colors':
-            return SDL.array.SDL_array(self._colors, self.ncolors, SDL_Color)
+            return SDL_array(self._colors, self.ncolors, SDL_Color)
         raise AttributeError, name
         
 
@@ -247,7 +247,7 @@ class SDL_Surface(Structure):
         elif name == 'pixels':
             # Return SDL_array type for pixels
             if not self._pixels:
-                raise SDL.error.SDL_Exception, 'Surface needs locking'
+                raise SDL_Exception, 'Surface needs locking'
             bpp = self.format.BitsPerPixel
             count = self.pitch / self.format.BytesPerPixel * self.h
             if bpp == 1:
@@ -265,8 +265,8 @@ class SDL_Surface(Structure):
             elif bpp == 32:
                 sz = c_uint
             else:
-                raise SDL.error.SDL_Exception, 'Unsupported bytes-per-pixel'
-            return SDL.array.SDL_array(self._pixels, count, sz)
+                raise SDL_Exception, 'Unsupported bytes-per-pixel'
+            return SDL_array(self._pixels, count, sz)
         raise AttributeError, name
 
 def SDL_MUSTLOCK(surface):
@@ -280,9 +280,9 @@ def SDL_MUSTLOCK(surface):
     '''
     return surface._offset or \
         ((surface.flags & \
-          (SDL.constants.SDL_HWSURFACE | \
-           SDL.constants.SDL_ASYNCBLIT | \
-           SDL.constants.SDL_RLEACCEL)) != 0)
+          (SDL_HWSURFACE | \
+           SDL_ASYNCBLIT | \
+           SDL_RLEACCEL)) != 0)
 
 SDL_blit = CFUNCTYPE(c_int, POINTER(SDL_Surface), POINTER(SDL_Rect),
                             POINTER(SDL_Surface), POINTER(SDL_Rect))
@@ -354,7 +354,7 @@ class SDL_VideoInfo(Structure):
         
         # current_w and current_h added in SDL 1.2.10
         if name in ('current_w', 'current_h'):
-            SDL.dll.assert_version_compatible(name, (1,2,10))
+            assert_version_compatible(name, (1,2,10))
             return getattr(self, '_%s' % name)
         raise AttributeError, name
 
@@ -398,18 +398,18 @@ class SDL_Overlay(Structure):
         
         elif name == 'pixels':
             if not self._pixels:
-                raise SDL.error.SDL_Exception, 'Overlay needs locking'
+                raise SDL_Exception, 'Overlay needs locking'
             p = []
             for i in range(self.planes):
                 sz = self.pitches[i] * self.h
-                p.append(SDL.array.SDL_array(self._pixels[i], sz, c_byte))
+                p.append(SDL_array(self._pixels[i], sz, c_byte))
             return p
 
 
 # SDL_VideoInit and SDL_VideoQuit not implemented (internal only, according
 # to SDL_video.h).
 
-_SDL_VideoDriverName = SDL.dll.private_function('SDL_VideoDriverName',
+_SDL_VideoDriverName = private_function('SDL_VideoDriverName',
     arg_types=[c_char_p, c_int],
     return_type=c_int)
 
@@ -428,7 +428,7 @@ def SDL_VideoDriverName(maxlen=1024):
         return buf.value
     return None
 
-SDL_GetVideoSurface = SDL.dll.function('SDL_GetVideoSurface',
+SDL_GetVideoSurface = function('SDL_GetVideoSurface',
     '''Return the current display surface.
 
     If SDL is doing format conversion on the display surface, this
@@ -440,7 +440,7 @@ SDL_GetVideoSurface = SDL.dll.function('SDL_GetVideoSurface',
     return_type=POINTER(SDL_Surface),
     dereference_return=True)
 
-SDL_GetVideoInfo = SDL.dll.function('SDL_GetVideoInfo',
+SDL_GetVideoInfo = function('SDL_GetVideoInfo',
     '''Return information about the video hardware.
 
     If this is called before `SDL_SetVideoMode`, the ``vfmt`` member
@@ -452,7 +452,7 @@ SDL_GetVideoInfo = SDL.dll.function('SDL_GetVideoInfo',
     return_type=POINTER(SDL_VideoInfo),
     dereference_return=True)
 
-SDL_VideoModeOK = SDL.dll.function('SDL_VideoModeOK',
+SDL_VideoModeOK = function('SDL_VideoModeOK',
     '''Check to see if a particular video mode is supported.
 
     Returns 0 if the requested mode is not supported under any bit
@@ -480,7 +480,7 @@ SDL_VideoModeOK = SDL.dll.function('SDL_VideoModeOK',
     arg_types=[c_int, c_int, c_int, c_uint],
     return_type=c_int)
 
-_SDL_ListModes = SDL.dll.private_function('SDL_ListModes',
+_SDL_ListModes = private_function('SDL_ListModes',
     arg_types=[POINTER(SDL_PixelFormat), c_uint],
     return_type=POINTER(POINTER(SDL_Rect)))
 
@@ -513,7 +513,7 @@ def SDL_ListModes(format, flags):
         i += 1
     return lst
 
-SDL_SetVideoMode = SDL.dll.function('SDL_SetVideoMode',
+SDL_SetVideoMode = function('SDL_SetVideoMode',
     '''Set up a video mode with the specified width, height and
     bits-per-pixel.
 
@@ -593,7 +593,7 @@ SDL_SetVideoMode = SDL.dll.function('SDL_SetVideoMode',
     dereference_return=True,
     require_return=True)
 
-_SDL_UpdateRects = SDL.dll.private_function('SDL_UpdateRects',
+_SDL_UpdateRects = private_function('SDL_UpdateRects',
     arg_types=[POINTER(SDL_Surface), c_int, POINTER(SDL_Rect)],
     return_type=None)
 
@@ -607,10 +607,10 @@ def SDL_UpdateRects(screen, rects):
       - `screen`: `SDL_Surface`
       - `rects`: list of `SDL_Rect`
     '''
-    ref, ar = SDL.array.to_ctypes(rects, len(rects), SDL_Rect)
+    ref, ar = to_ctypes(rects, len(rects), SDL_Rect)
     _SDL_UpdateRects(screen, len(rects), ar)
 
-SDL_UpdateRect = SDL.dll.function('SDL_UpdateRect',
+SDL_UpdateRect = function('SDL_UpdateRect',
     '''Make sure that the given rectangle is updated on the given
     screen.
 
@@ -630,7 +630,7 @@ SDL_UpdateRect = SDL.dll.function('SDL_UpdateRect',
     arg_types=[POINTER(SDL_Surface), c_int, c_int, c_uint, c_uint],
     return_type=None)
 
-SDL_Flip = SDL.dll.function('SDL_Flip',
+SDL_Flip = function('SDL_Flip',
     '''Flip the front and back buffers.
 
     On hardware that supports double-buffering, this function sets up a
@@ -652,7 +652,7 @@ SDL_Flip = SDL.dll.function('SDL_Flip',
     return_type=c_int,
     success_return=0)
 
-SDL_SetGamma = SDL.dll.function('SDL_SetGamma',
+SDL_SetGamma = function('SDL_SetGamma',
     '''Set the gamma correction for each of the color channels.
 
     The gamma values range (approximately) between 0.1 and 10.0
@@ -671,7 +671,7 @@ SDL_SetGamma = SDL.dll.function('SDL_SetGamma',
     return_type=c_int,
     success_return=0)
 
-_SDL_SetGammaRamp = SDL.dll.private_function('SDL_SetGammaRamp',
+_SDL_SetGammaRamp = private_function('SDL_SetGammaRamp',
     arg_types=[POINTER(c_ushort), POINTER(c_ushort), POINTER(c_ushort)],
     return_type=c_int)
 
@@ -700,16 +700,16 @@ def SDL_SetGammaRamp(red, green, blue):
     '''
     rar = gar = bar = None
     if red:
-        rref, rar = SDL.array.to_ctypes(red, 256, c_ushort)
+        rref, rar = to_ctypes(red, 256, c_ushort)
     if green:
-        gref, gar = SDL.array.to_ctypes(green, 256, c_ushort)
+        gref, gar = to_ctypes(green, 256, c_ushort)
     if blue:
-        bref, bar = SDL.array.to_ctypes(blue, 256, c_ushort)
+        bref, bar = to_ctypes(blue, 256, c_ushort)
     result = _SDL_SetGammaRamp(rar, gar, bar)
     if result != 0:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
 
-_SDL_GetGammaRamp = SDL.dll.private_function('SDL_GetGammaRamp',
+_SDL_GetGammaRamp = private_function('SDL_GetGammaRamp',
     arg_types=[POINTER(c_ushort), POINTER(c_ushort), POINTER(c_ushort)],
     return_type=c_int)
 
@@ -721,14 +721,14 @@ def SDL_GetGammaRamp():
         is either None (if the display driver doesn't support gamma
         translation) or an SDL_array of 256 ints in the range [0, 2**16).
     '''
-    rar = SDL.array.SDL_array(None, 256, c_ushort)
-    gar = SDL.array.SDL_array(None, 256, c_ushort)
-    bar = SDL.array.SDL_array(None, 256, c_ushort)
+    rar = SDL_array(None, 256, c_ushort)
+    gar = SDL_array(None, 256, c_ushort)
+    bar = SDL_array(None, 256, c_ushort)
     if _SDL_GetGammaRamp(rar.as_ctypes(), gar.as_ctypes(), bar.as_ctypes()) == 0:
         return rar, gar, bar
     return None, None, None
 
-_SDL_SetColors = SDL.dll.private_function('SDL_SetColors',
+_SDL_SetColors = private_function('SDL_SetColors',
     arg_types=[POINTER(SDL_Surface), POINTER(SDL_Color), c_int, c_int],
     return_type=c_int)
 
@@ -756,10 +756,10 @@ def SDL_SetColors(surface, colors, firstcolor):
     :rtype: int
     :return: 1 if all colors were set as passed, otherwise 0.
     '''
-    ref, ar = SDL.array.to_ctypes(colors, len(colors), SDL_Color)
+    ref, ar = to_ctypes(colors, len(colors), SDL_Color)
     return _SDL_SetColors(surface, ar, firstcolor, len(colors))
 
-_SDL_SetPalette = SDL.dll.private_function('SDL_SetPalette',
+_SDL_SetPalette = private_function('SDL_SetPalette',
     arg_types=[POINTER(SDL_Surface), c_int, POINTER(SDL_Color), c_int, c_int],
     return_type=c_int)
 
@@ -787,12 +787,12 @@ def SDL_SetPalette(surface, flags, colors, firstcolor):
       - `colors`: sequence or SDL_array of `SDL_Color`
       - `firstcolor`: int; the first color index to set.
     '''
-    ref, ar = SDL.array.to_ctypes(colors, len(colors), SDL_Color)
+    ref, ar = to_ctypes(colors, len(colors), SDL_Color)
     result = _SDL_SetPalette(surface, flags, ar, firstcolor, len(colors))
     if result != 1:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
 
-SDL_MapRGB = SDL.dll.function('SDL_MapRGB',
+SDL_MapRGB = function('SDL_MapRGB',
     '''Map an RGB triple to an opaque pixel value for a given pixel
     format.
 
@@ -809,7 +809,7 @@ SDL_MapRGB = SDL.dll.function('SDL_MapRGB',
     arg_types=[POINTER(SDL_PixelFormat), c_ubyte, c_ubyte, c_ubyte],
     return_type=c_uint)
 
-SDL_MapRGBA = SDL.dll.function('SDL_MapRGBA',
+SDL_MapRGBA = function('SDL_MapRGBA',
     '''Map an RGBA quadruple to an opaque pixel value for a given pixel
     format.
 
@@ -827,7 +827,7 @@ SDL_MapRGBA = SDL.dll.function('SDL_MapRGBA',
     arg_types=[POINTER(SDL_PixelFormat), c_ubyte, c_ubyte, c_ubyte, c_ubyte],
     return_type=c_uint)
 
-_SDL_GetRGB = SDL.dll.private_function('SDL_GetRGB',
+_SDL_GetRGB = private_function('SDL_GetRGB',
     arg_types=[c_uint, POINTER(SDL_PixelFormat), 
                POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)],
     return_type=None)
@@ -848,7 +848,7 @@ def SDL_GetRGB(pixel, fmt):
     _SDL_GetRGB(pixel, fmt, byref(r), byref(g), byref(b))
     return r.value, g.value, b.value
 
-_SDL_GetRGBA = SDL.dll.private_function('SDL_GetRGBA',
+_SDL_GetRGBA = private_function('SDL_GetRGBA',
     arg_types=[c_uint, POINTER(SDL_PixelFormat), 
                POINTER(c_ubyte), POINTER(c_ubyte), 
                POINTER(c_ubyte), POINTER(c_ubyte)],
@@ -870,7 +870,7 @@ def SDL_GetRGBA(pixel, fmt):
     _SDL_GetRGBA(pixel, fmt, byref(r), byref(g), byref(b), byref(a))
     return r.value, g.value, b.value, a.value
 
-SDL_CreateRGBSurface = SDL.dll.function('SDL_CreateRGBSurface',
+SDL_CreateRGBSurface = function('SDL_CreateRGBSurface',
     '''Allocate an RGB surface.
     
     Must be called after `SDL_SetVideoMode`.  If the depth is 4 or 8
@@ -938,7 +938,7 @@ SDL_CreateRGBSurface = SDL.dll.function('SDL_CreateRGBSurface',
     require_return=True)
 
 _SDL_CreateRGBSurfaceFrom = \
-    SDL.dll.private_function('SDL_CreateRGBSurfaceFrom',
+    private_function('SDL_CreateRGBSurfaceFrom',
     arg_types=[POINTER(c_ubyte), c_int, c_int, c_int, 
                c_uint, c_uint, c_uint, c_uint],
     return_type=POINTER(SDL_Surface),
@@ -981,14 +981,14 @@ def SDL_CreateRGBSurfaceFrom(pixels, width, height, depth, pitch,
         if len(pixels) == pitch * 8 / depth * height:
             # pixel array?
             if depth == 8:
-                ref, ar = SDL.array.to_ctypes(pixels, len(pixels), c_ubyte)
+                ref, ar = to_ctypes(pixels, len(pixels), c_ubyte)
             elif depth == 16:
-                ref, ar = SDL.array.to_ctypes(pixels, len(pixels), c_ushort)
+                ref, ar = to_ctypes(pixels, len(pixels), c_ushort)
             elif depth == 32:
-                ref, ar = SDL.array.to_ctypes(pixels, len(pixels), c_uint)
+                ref, ar = to_ctypes(pixels, len(pixels), c_uint)
         elif len(pixels) == pitch * height:
             # byte array
-            ref, ar = SDL.array.to_ctypes(pixels, len(pixels), c_ubyte)
+            ref, ar = to_ctypes(pixels, len(pixels), c_ubyte)
         else:
             raise TypeError, 'Length of pixels does not match given dimensions.'
 
@@ -997,7 +997,7 @@ def SDL_CreateRGBSurfaceFrom(pixels, width, height, depth, pitch,
     surface._buffer_ref = ref
     return surface
 
-SDL_FreeSurface = SDL.dll.function('SDL_FreeSurface',
+SDL_FreeSurface = function('SDL_FreeSurface',
     '''Free an RGB Surface.
 
     :Parameters:
@@ -1007,7 +1007,7 @@ SDL_FreeSurface = SDL.dll.function('SDL_FreeSurface',
     arg_types=[POINTER(SDL_Surface)],
     return_type=None)
 
-SDL_LockSurface = SDL.dll.function('SDL_LockSurface',
+SDL_LockSurface = function('SDL_LockSurface',
     '''Set up a surface for directly accessing the pixels.
 
     Between calls to `SDL_LockSurface`/`SDL_UnlockSurface`, you can write
@@ -1032,7 +1032,7 @@ SDL_LockSurface = SDL.dll.function('SDL_LockSurface',
     return_type=c_int,
     success_return=0)
 
-SDL_UnlockSurface = SDL.dll.function('SDL_UnlockSurface',
+SDL_UnlockSurface = function('SDL_UnlockSurface',
     '''Unlock a surface locked with `SDL_LockSurface`.
 
     :Parameters:
@@ -1042,7 +1042,7 @@ SDL_UnlockSurface = SDL.dll.function('SDL_UnlockSurface',
     arg_types=[POINTER(SDL_Surface)],
     return_type=None)
 
-SDL_LoadBMP_RW = SDL.dll.function('SDL_LoadBMP_RW',
+SDL_LoadBMP_RW = function('SDL_LoadBMP_RW',
     '''Load a surface from a seekable SDL data source (memory or file).
 
     If `freesrc` is non-zero, the source will be closed after being read.
@@ -1056,7 +1056,7 @@ SDL_LoadBMP_RW = SDL.dll.function('SDL_LoadBMP_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src', 'freesrc'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int],
+    arg_types=[POINTER(SDL_RWops), c_int],
     return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
@@ -1072,9 +1072,9 @@ def SDL_LoadBMP(file):
 
     :rtype: `SDL_Surface`
     '''
-    return SDL_LoadBMP_RW(SDL.rwops.SDL_RWFromFile(file, 'rb'), 1)
+    return SDL_LoadBMP_RW(SDL_RWFromFile(file, 'rb'), 1)
 
-SDL_SaveBMP_RW = SDL.dll.function('SDL_SaveBMP_RW',
+SDL_SaveBMP_RW = function('SDL_SaveBMP_RW',
     '''Save a surface to a seekable SDL data source (memory or file).
 
     If `freedst` is non-zero, the destination will be closed after being
@@ -1086,7 +1086,7 @@ SDL_SaveBMP_RW = SDL.dll.function('SDL_SaveBMP_RW',
      - `freesrc`: int
     ''',
     args=['surface', 'dst', 'freedst'],
-    arg_types=[POINTER(SDL_Surface), POINTER(SDL.rwops.SDL_RWops), c_int],
+    arg_types=[POINTER(SDL_Surface), POINTER(SDL_RWops), c_int],
     return_type=c_int,
     success_return=0)
 
@@ -1100,9 +1100,9 @@ def SDL_SaveBMP(surface, file):
      - `surface`: `SDL_Surface`
      - `dst`: `SDL_RWops`
     '''
-    return SDL_SaveBMP_RW(surface, SDL.rwops.SDL_RWFromFile(file, 'wb'), 1)
+    return SDL_SaveBMP_RW(surface, SDL_RWFromFile(file, 'wb'), 1)
 
-SDL_SetColorKey = SDL.dll.function('SDL_SetColorKey',
+SDL_SetColorKey = function('SDL_SetColorKey',
     '''Set the color key (transparent pixel) in a blittable surface.
 
     If `flag` is `SDL_SRCCOLORKEY` (optionally OR'd with `SDL_RLEACCEL`), 
@@ -1121,7 +1121,7 @@ SDL_SetColorKey = SDL.dll.function('SDL_SetColorKey',
     return_type=c_int,
     success_return=0)
 
-SDL_SetAlpha = SDL.dll.function('SDL_SetAlpha',
+SDL_SetAlpha = function('SDL_SetAlpha',
     '''Set the alpha value for the entire surface, as opposed to using
     the alpha component of each pixel.
 
@@ -1151,7 +1151,7 @@ SDL_SetAlpha = SDL.dll.function('SDL_SetAlpha',
     arg_types=[POINTER(SDL_Surface), c_uint, c_uint],
     return_type=c_int)
 
-SDL_SetClipRect = SDL.dll.function('SDL_SetClipRect',
+SDL_SetClipRect = function('SDL_SetClipRect',
     '''Set the clipping rectangle for the destination surface in a blit.
 
     If the clip rectangle is None, clipping will be disabled.
@@ -1175,7 +1175,7 @@ SDL_SetClipRect = SDL.dll.function('SDL_SetClipRect',
     arg_types=[POINTER(SDL_Surface), POINTER(SDL_Rect)],
     return_type=c_int)
 
-_SDL_GetClipRect = SDL.dll.private_function('SDL_GetClipRect',
+_SDL_GetClipRect = private_function('SDL_GetClipRect',
     arg_types=[POINTER(SDL_Surface), POINTER(SDL_Rect)],
     return_type=None)
 
@@ -1193,7 +1193,7 @@ def SDL_GetClipRect(surface):
     _SDL_GetClipRect(surface, byref(rect))
     return rect
 
-SDL_ConvertSurface = SDL.dll.function('SDL_ConvertSurface',
+SDL_ConvertSurface = function('SDL_ConvertSurface',
     '''Create a new surface of the specified format, then copy and
     map the given surface to it so the blit of the converted surface
     will be as fast as possible.
@@ -1218,7 +1218,7 @@ SDL_ConvertSurface = SDL.dll.function('SDL_ConvertSurface',
     dereference_return=True,
     require_return=True)
 
-SDL_UpperBlit = SDL.dll.function('SDL_UpperBlit',
+SDL_UpperBlit = function('SDL_UpperBlit',
     '''Perform a fast blit from the source surface to the destination
     surface.
 
@@ -1300,7 +1300,7 @@ SDL_UpperBlit = SDL.dll.function('SDL_UpperBlit',
     return_type=c_int,
     error_return=-1)
 
-SDL_BlitSurface = SDL.dll.function('SDL_UpperBlit',
+SDL_BlitSurface = function('SDL_UpperBlit',
     '''Perform a fast blit from the source surface to the destination
     surface.
 
@@ -1314,7 +1314,7 @@ SDL_BlitSurface = SDL.dll.function('SDL_UpperBlit',
     return_type=c_int,
     error_return=-1)
 
-SDL_LowerBlit = SDL.dll.function('SDL_LowerBlit',
+SDL_LowerBlit = function('SDL_LowerBlit',
     '''Low-level fast blit.
 
     This is a semi-private blit function that does not perform
@@ -1329,7 +1329,7 @@ SDL_LowerBlit = SDL.dll.function('SDL_LowerBlit',
     return_type=c_int,
     error_return=-1)
 
-SDL_FillRect = SDL.dll.function('SDL_FillRect',
+SDL_FillRect = function('SDL_FillRect',
     '''Perform a fast fill of the given rectangle with `color`.
 
     The given rectangle is clipped to the destination surface clip area
@@ -1348,7 +1348,7 @@ SDL_FillRect = SDL.dll.function('SDL_FillRect',
     return_type=c_int,
     success_return=0)
 
-SDL_DisplayFormat = SDL.dll.function('SDL_DisplayFormat',
+SDL_DisplayFormat = function('SDL_DisplayFormat',
     '''Copy a surface to the pixel format and colors of the display
     buffer.
 
@@ -1370,7 +1370,7 @@ SDL_DisplayFormat = SDL.dll.function('SDL_DisplayFormat',
     dereference_return=True,
     require_return=True)
 
-SDL_DisplayFormatAlpha = SDL.dll.function('SDL_DisplayFormatAlpha',
+SDL_DisplayFormatAlpha = function('SDL_DisplayFormatAlpha',
     '''Copy a surface to the pixel format and colors of the display
     buffer.
 
@@ -1393,7 +1393,7 @@ SDL_DisplayFormatAlpha = SDL.dll.function('SDL_DisplayFormatAlpha',
     dereference_return=True,
     require_return=True)
 
-SDL_CreateYUVOverlay = SDL.dll.function('SDL_CreateYUVOverlay',
+SDL_CreateYUVOverlay = function('SDL_CreateYUVOverlay',
     '''Create a video output overlay.
 
     Calling the returned surface an overlay is something of a misnomer
@@ -1434,7 +1434,7 @@ SDL_CreateYUVOverlay = SDL.dll.function('SDL_CreateYUVOverlay',
     dereference_return=True,
     require_return=True)
 
-SDL_LockYUVOverlay = SDL.dll.function('SDL_LockYUVOverlay',
+SDL_LockYUVOverlay = function('SDL_LockYUVOverlay',
     '''Lock an overlay for direct access.
 
     Unlock the overlay when done with `SDL_UnlockYUVOverlay`.
@@ -1449,7 +1449,7 @@ SDL_LockYUVOverlay = SDL.dll.function('SDL_LockYUVOverlay',
     arg_types=[POINTER(SDL_Overlay)],
     return_type=c_int)
 
-SDL_UnlockYUVOverlay = SDL.dll.function('SDL_UnlockYUVOverlay',
+SDL_UnlockYUVOverlay = function('SDL_UnlockYUVOverlay',
     '''Unlock an overlay after locking it with `SDL_LockYUVOverlay`.
 
     :Parameters:
@@ -1459,7 +1459,7 @@ SDL_UnlockYUVOverlay = SDL.dll.function('SDL_UnlockYUVOverlay',
     arg_types=[POINTER(SDL_Overlay)],
     return_type=None)
 
-SDL_DisplayYUVOverlay = SDL.dll.function('SDL_DisplayYUVOverlay',
+SDL_DisplayYUVOverlay = function('SDL_DisplayYUVOverlay',
     '''Blit a video overlay to the display surface.
 
     The contents of the video surface underneath the blit destination
@@ -1478,7 +1478,7 @@ SDL_DisplayYUVOverlay = SDL.dll.function('SDL_DisplayYUVOverlay',
     arg_types=[POINTER(SDL_Overlay), POINTER(SDL_Rect)],
     return_type=c_int)
 
-SDL_FreeYUVOverlay = SDL.dll.function('SDL_FreeYUVOverlay',
+SDL_FreeYUVOverlay = function('SDL_FreeYUVOverlay',
     '''Free a video overlay.
 
     :Parameters:
@@ -1491,7 +1491,7 @@ SDL_FreeYUVOverlay = SDL.dll.function('SDL_FreeYUVOverlay',
 
 # SDL_GL_LoadLibrary, SDL_GL_GetProcAddress not implemented.
 
-SDL_GL_SetAttribute = SDL.dll.function('SDL_GL_SetAttribute',
+SDL_GL_SetAttribute = function('SDL_GL_SetAttribute',
     '''Set an attribute of the OpenGL subsystem before initialization.
 
     :Parameters:
@@ -1505,7 +1505,7 @@ SDL_GL_SetAttribute = SDL.dll.function('SDL_GL_SetAttribute',
     arg_types=[c_uint, c_int],
     return_type=c_int)
 
-_SDL_GL_GetAttribute = SDL.dll.private_function('SDL_GL_GetAttribute',
+_SDL_GL_GetAttribute = private_function('SDL_GL_GetAttribute',
     arg_types=[c_int, POINTER(c_int)],
     return_type=c_int)
 
@@ -1517,7 +1517,7 @@ def SDL_GL_GetAttribute(attr):
     _SDL_GL_GetAttribute(attr, byref(val))
     return val.value
 
-SDL_GL_SwapBuffers = SDL.dll.function('SDL_GL_SwapBuffers',
+SDL_GL_SwapBuffers = function('SDL_GL_SwapBuffers',
     '''Swap the OpenGL buffers, if double-buffering is supported.
     ''',
     args=[],
@@ -1527,7 +1527,7 @@ SDL_GL_SwapBuffers = SDL.dll.function('SDL_GL_SwapBuffers',
 # SDL_GL_UpdateRects, SDL_GL_Lock and SDL_GL_Unlock not implemented (marked
 # private in SDL_video.h)
 
-_SDL_WM_SetCaption = SDL.dll.private_function('SDL_WM_SetCaption',
+_SDL_WM_SetCaption = private_function('SDL_WM_SetCaption',
     arg_types=[c_char_p, c_char_p],
     return_type=None)
 
@@ -1543,7 +1543,7 @@ def SDL_WM_SetCaption(title, icon):
     _SDL_WM_SetCaption(title.encode('utf-8'), icon.encode('utf-8'))
 
 
-_SDL_WM_GetCaption = SDL.dll.private_function('SDL_WM_GetCaption',
+_SDL_WM_GetCaption = private_function('SDL_WM_GetCaption',
     arg_types=[POINTER(c_char_p), POINTER(c_char_p)],
     return_type=None)
 
@@ -1567,7 +1567,7 @@ def SDL_WM_GetCaption():
         icon = None
     return title, icon
 
-_SDL_WM_SetIcon = SDL.dll.private_function('SDL_WM_SetIcon',
+_SDL_WM_SetIcon = private_function('SDL_WM_SetIcon',
     arg_types=[POINTER(SDL_Surface), POINTER(c_ubyte)],
     return_type=None)
 
@@ -1585,10 +1585,10 @@ def SDL_WM_SetIcon(icon, mask):
     '''
     if mask:
         ref, mask = \
-            SDL.array.to_ctypes(mask, (icon.w * icon.h + 7) / 8, c_ubyte)
+            to_ctypes(mask, (icon.w * icon.h + 7) / 8, c_ubyte)
     _SDL_WM_SetIcon(icon, mask)
 
-SDL_WM_IconifyWindow = SDL.dll.function('SDL_WM_IconifyWindow',
+SDL_WM_IconifyWindow = function('SDL_WM_IconifyWindow',
     '''Iconify the window.
 
     If the function succeeds, it generates an `SDL_APPACTIVATE` loss
@@ -1599,7 +1599,7 @@ SDL_WM_IconifyWindow = SDL.dll.function('SDL_WM_IconifyWindow',
     return_type=c_int,
     error_return=0)
 
-SDL_WM_ToggleFullScreen = SDL.dll.function('SDL_WM_ToggleFullScreen',
+SDL_WM_ToggleFullScreen = function('SDL_WM_ToggleFullScreen',
     '''Toggle fullscreen mode without changing the contents of the
     screen.
 
@@ -1620,7 +1620,7 @@ SDL_WM_ToggleFullScreen = SDL.dll.function('SDL_WM_ToggleFullScreen',
     return_type=c_int,
     error_return=0)
 
-SDL_WM_GrabInput = SDL.dll.function('SDL_WM_GrabInput',
+SDL_WM_GrabInput = function('SDL_WM_GrabInput',
     '''Set the grab mode for the mouse and keyboard.
 
     Grabbing means that the mouse is confined to the application window,

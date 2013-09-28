@@ -19,13 +19,13 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
-import SDL.error
-import SDL.rwops
-import SDL.version
-import SDL.video
+from .dll import SDL_DLL
+from .error import SDL_NotImplementedError
+from .rwops import SDL_RWops
+from .version import SDL_version
+from .video import SDL_Surface
 
-_dll = SDL.dll.SDL_DLL('SDL_image', 'IMG_Linked_Version')
+_dll = SDL_DLL('SDL_image', 'IMG_Linked_Version')
 
 IMG_Linked_Version = _dll.function('IMG_Linked_Version',
     '''Get the version of the dynamically linked SDL_image library.
@@ -34,7 +34,7 @@ IMG_Linked_Version = _dll.function('IMG_Linked_Version',
     ''',
     args=[],
     arg_types=[],
-    return_type=POINTER(SDL.version.SDL_version),
+    return_type=POINTER(SDL_version),
     dereference_return=True,
     require_return=True,
     since=(1,2,5))
@@ -59,8 +59,8 @@ IMG_LoadTyped_RW = _dll.function('IMG_LoadTyped_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src', 'freesrc', 'type'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int, c_char_p],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops), c_int, c_char_p],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -81,7 +81,7 @@ IMG_Load = _dll.function('IMG_Load',
     ''',
     args=['file'],
     arg_types=[c_char_p],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -103,8 +103,8 @@ IMG_Load_RW = _dll.function('IMG_Load_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src', 'freesrc'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_int],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops), c_int],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -120,7 +120,7 @@ IMG_isBMP = _dll.function('IMG_isBMP',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 IMG_isGIF = _dll.function('IMG_isGIF',
@@ -133,7 +133,7 @@ IMG_isGIF = _dll.function('IMG_isGIF',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -147,7 +147,7 @@ IMG_isJPG = _dll.function('IMG_isJPG',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -161,7 +161,7 @@ IMG_isLBM = _dll.function('IMG_isLBM',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -175,7 +175,7 @@ IMG_isPCX = _dll.function('IMG_isPCX',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -189,7 +189,7 @@ IMG_isPNG = _dll.function('IMG_isPNG',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -203,7 +203,7 @@ IMG_isPNM = _dll.function('IMG_isPNM',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -217,7 +217,7 @@ IMG_isTIF = _dll.function('IMG_isTIF',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -231,7 +231,7 @@ IMG_isXCF = _dll.function('IMG_isXCF',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -245,7 +245,7 @@ IMG_isXPM = _dll.function('IMG_isXPM',
     :rtype: int
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+    arg_types=[POINTER(SDL_RWops)],
     return_type=c_int)
 
 
@@ -261,13 +261,13 @@ if hasattr(_dll._dll, 'IMG_isXV'):
         :since: SDL_image 1.2.5
         ''',
         args=['src'],
-        arg_types=[POINTER(SDL.rwops.SDL_RWops)],
+        arg_types=[POINTER(SDL_RWops)],
         return_type=c_int,
         since=(1,2,5))
 else:
     # Broken build of SDL_image 1.2.5 on OS X does define xv.c symbols
     def IMG_isXV(src):
-        raise SDL.error.SDL_NotImplementedError, 'Linked version of ' + \
+        raise SDL_NotImplementedError, 'Linked version of ' + \
             'SDL_image does not define IMG_isXV'
 
 IMG_LoadBMP_RW = _dll.function('IMG_LoadBMP_RW',
@@ -280,8 +280,8 @@ IMG_LoadBMP_RW = _dll.function('IMG_LoadBMP_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -295,8 +295,8 @@ IMG_LoadGIF_RW = _dll.function('IMG_LoadGIF_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -310,8 +310,8 @@ IMG_LoadJPG_RW = _dll.function('IMG_LoadJPG_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -325,8 +325,8 @@ IMG_LoadLBM_RW = _dll.function('IMG_LoadLBM_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -340,8 +340,8 @@ IMG_LoadPCX_RW = _dll.function('IMG_LoadPCX_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -355,8 +355,8 @@ IMG_LoadPNG_RW = _dll.function('IMG_LoadPNG_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -370,8 +370,8 @@ IMG_LoadPNM_RW = _dll.function('IMG_LoadPNM_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -385,8 +385,8 @@ IMG_LoadTGA_RW = _dll.function('IMG_LoadTGA_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -400,8 +400,8 @@ IMG_LoadTIF_RW = _dll.function('IMG_LoadTIF_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -415,8 +415,8 @@ IMG_LoadXCF_RW = _dll.function('IMG_LoadXCF_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -430,8 +430,8 @@ IMG_LoadXPM_RW = _dll.function('IMG_LoadXPM_RW',
     :rtype: `SDL_Surface`
     ''',
     args=['src'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-    return_type=POINTER(SDL.video.SDL_Surface),
+    arg_types=[POINTER(SDL_RWops)],
+    return_type=POINTER(SDL_Surface),
     dereference_return=True,
     require_return=True)
 
@@ -447,15 +447,15 @@ if hasattr(_dll._dll, 'IMG_LoadXV_RW'):
         :since: SDL_image 1.2.5
         ''',
         args=['src'],
-        arg_types=[POINTER(SDL.rwops.SDL_RWops)],
-        return_type=POINTER(SDL.video.SDL_Surface),
+        arg_types=[POINTER(SDL_RWops)],
+        return_type=POINTER(SDL_Surface),
         dereference_return=True,
         require_return=True,
         since=(1,2,5))
 else:
     # Broken build of SDL_image 1.2.5 on OS X does define xv.c symbols
     def IMG_LoadXV_RW(src):
-        raise SDL.error.SDL_NotImplementedError, 'Linked version of ' + \
+        raise SDL_NotImplementedError, 'Linked version of ' + \
             'SDL_image does not define IMG_LoadXV_RW'
 
 # IMG_ReadXPMFromArray cannot be implemented.

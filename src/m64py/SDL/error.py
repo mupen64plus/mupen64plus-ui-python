@@ -8,7 +8,7 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
+from .dll import function
 
 class SDL_Exception(Exception):
     '''Exception raised for all SDL errors.  
@@ -26,7 +26,7 @@ class SDL_NotImplementedError(NotImplementedError):
     requested function.'''
     pass
 
-SDL_SetError = SDL.dll.function('SDL_SetError',
+SDL_SetError = function('SDL_SetError',
     '''Set the static error string.
 
     :Parameters:
@@ -38,7 +38,7 @@ SDL_SetError = SDL.dll.function('SDL_SetError',
     arg_types=[c_char_p],
     return_type=None)
 
-SDL_GetError = SDL.dll.function('SDL_GetError',
+SDL_GetError = function('SDL_GetError',
     '''Return the last error string set.
 
     :rtype: string
@@ -47,7 +47,7 @@ SDL_GetError = SDL.dll.function('SDL_GetError',
     arg_types=[],
     return_type=c_char_p)
 
-SDL_ClearError = SDL.dll.function('SDL_ClearError',
+SDL_ClearError = function('SDL_ClearError',
     '''Clear any error string set.
     ''',
     args=[],

@@ -38,12 +38,11 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.array
-import SDL.dll
-import SDL.rwops
-import SDL.version
+from .array import SDL_array, to_ctypes
+from .dll import SDL_DLL, _version_parts
+from .rwops import SDL_RWops
 
-_dll = SDL.dll.SDL_DLL('SDL_sound', None)
+_dll = SDL_DLL('SDL_sound', None)
 
 class Sound_Version(Structure):
     '''Version structure.
@@ -78,7 +77,7 @@ def Sound_GetLinkedVersion():
     return version
 
 # Fill in non-standard linked version now, so "since" declarations can work
-_dll._version = SDL.dll._version_parts(Sound_GetLinkedVersion())
+_dll._version = _version_parts(Sound_GetLinkedVersion())
 
 class Sound_AudioInfo(Structure):
     '''Information about an existing sample's format.
@@ -167,7 +166,7 @@ class Sound_Sample(Structure):
         if name == 'decoder':
             return self._decoder.contents
         elif name == 'buffer':
-            return SDL.array.SDL_array(self._buffer, self.buffer_size, c_ubyte)
+            return SDL_array(self._buffer, self.buffer_size, c_ubyte)
         raise AttributeError, name
 
 Sound_Init = _dll.function('Sound_Init',
@@ -319,7 +318,7 @@ Sound_NewSample = _dll.function('Sound_NewSample',
     :rtype: `Sound_Sample`
     ''',
     args=['rw', 'ext', 'desired', 'bufferSize'],
-    arg_types=[POINTER(SDL.rwops.SDL_RWops), c_char_p,
+    arg_types=[POINTER(SDL_RWops), c_char_p,
                POINTER(Sound_AudioInfo), c_uint],
     return_type=POINTER(Sound_Sample),
     dereference_return=True,
@@ -355,7 +354,7 @@ def Sound_NewSampleFromMem(data, ext, desired, bufferSize):
 
     :since: Not yet released in SDL_sound
     '''
-    ref, data = SDL.array.to_ctypes(data, len(data), c_ubyte)
+    ref, data = to_ctypes(data, len(data), c_ubyte)
     return _Sound_NewSampleFromMem(data, len(data), ext, desired, bufferSize)
 
 Sound_NewSampleFromFile = _dll.function('Sound_NewSampleFromFile',

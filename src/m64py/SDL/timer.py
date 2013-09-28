@@ -8,9 +8,10 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.dll
+from .dll import function, private_function
+from .error import SDL_Exception, SDL_GetError
 
-SDL_GetTicks = SDL.dll.function('SDL_GetTicks',
+SDL_GetTicks = function('SDL_GetTicks',
     '''Get the number of milliseconds since the SDL library initialization.
 
     Note that this value wraps if the program runs for more than ~49 days.
@@ -21,7 +22,7 @@ SDL_GetTicks = SDL.dll.function('SDL_GetTicks',
     arg_types=[],
     return_type=c_uint)
 
-SDL_Delay = SDL.dll.function('SDL_Delay',
+SDL_Delay = function('SDL_Delay',
     '''Wait a specified number of milliseconds before returning.
 
     :Parameters:
@@ -34,7 +35,7 @@ SDL_Delay = SDL.dll.function('SDL_Delay',
     return_type=None)
 
 _SDL_TimerCallback = CFUNCTYPE(c_int, c_uint)
-_SDL_SetTimer = SDL.dll.private_function('SDL_SetTimer',
+_SDL_SetTimer = private_function('SDL_SetTimer',
     arg_types=[c_uint, _SDL_TimerCallback],
     return_type=c_int)
 
@@ -92,7 +93,7 @@ def SDL_SetTimer(interval, callback):
     # XXX if this fails the global ref is incorrect and old one will
     # possibly be collected early.
     if _SDL_SetTimer(interval, _timercallback_ref) == -1:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
 
 
 # For the new timer functions, the void *param passed to the callback
@@ -100,7 +101,7 @@ def SDL_SetTimer(interval, callback):
 # is not defined, we use c_void_p instead.
 
 _SDL_NewTimerCallback = CFUNCTYPE(c_uint, c_int, c_void_p)
-_SDL_AddTimer = SDL.dll.private_function('SDL_AddTimer',
+_SDL_AddTimer = private_function('SDL_AddTimer',
     arg_types=[c_uint, _SDL_NewTimerCallback, c_void_p],
     return_type=c_void_p)
 
@@ -136,11 +137,11 @@ def SDL_AddTimer(interval, callback, param):
     func = _SDL_NewTimerCallback(_callback)
     result = _SDL_AddTimer(interval, func, None)
     if not result:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
     _timer_refs[result] = func
     return result
 
-_SDL_RemoveTimer = SDL.dll.private_function('SDL_RemoveTimer',
+_SDL_RemoveTimer = private_function('SDL_RemoveTimer',
     args=['t'],
     arg_types=[c_void_p],
     return_type=c_int,

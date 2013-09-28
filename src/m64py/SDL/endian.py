@@ -8,7 +8,7 @@ __version__ = '$Id: $'
 
 import sys
 
-import SDL.constants
+from .constants import SDL_BIG_ENDIAN, SDL_LIL_ENDIAN
 
 def SDL_Swap16(x):
     return (x << 8 & 0xff00) | \
@@ -28,7 +28,7 @@ def _noop(x):
     return x
 
 if sys.byteorder == 'big':
-    SDL_BYTEORDER = SDL.constants.SDL_BIG_ENDIAN
+    SDL_BYTEORDER = SDL_BIG_ENDIAN
     SDL_SwapLE16 = SDL_Swap16
     SDL_SwapLE32 = SDL_Swap32
     SDL_SwapLE64 = SDL_Swap64
@@ -36,7 +36,7 @@ if sys.byteorder == 'big':
     SDL_SwapBE32 = _noop
     SDL_SwapBE64 = _noop
 else:
-    SDL_BYTEORDER = SDL.constants.SDL_LIL_ENDIAN
+    SDL_BYTEORDER = SDL_LIL_ENDIAN
     SDL_SwapLE16 = _noop
     SDL_SwapLE32 = _noop
     SDL_SwapLE64 = _noop

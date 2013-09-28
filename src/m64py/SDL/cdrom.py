@@ -12,8 +12,8 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.constants
-import SDL.dll
+from .constants import SDL_MAX_TRACKS, CD_FPS
+from .dll import function
 
 class SDL_CDtrack(Structure):
     '''Structure describing a single CD track.
@@ -61,7 +61,7 @@ class SDL_CD(Structure):
                 ('numtracks', c_int),
                 ('cur_track', c_int),
                 ('cur_frame', c_int),
-                ('track', SDL_CDtrack * (SDL.constants.SDL_MAX_TRACKS + 1))]
+                ('track', SDL_CDtrack * (SDL_MAX_TRACKS + 1))]
 
 def CD_INDRIVE(status):
     '''Given a status, returns True if there's a disk in the drive.
@@ -82,8 +82,8 @@ def FRAMES_TO_MSF(frames):
     :rtype: (int, int, int)
     :return: tuple of (minutes, seconds, frames)
     '''
-    F = frames % SDL.constants.CD_FPS
-    frames /= SDL.constants.CD_FPS
+    F = frames % CD_FPS
+    frames /= CD_FPS
     S = frames % 60
     frames /= 60
     M = frames
@@ -99,9 +99,9 @@ def MSF_TO_FRAMES(minutes, seconds, frames):
 
     :rtype: int
     '''
-    return SDL.constants.CD_FPS(minutes * 60 + seconds) + frames
+    return CD_FPS(minutes * 60 + seconds) + frames
 
-SDL_CDNumDrives = SDL.dll.function('SDL_CDNumDrives',
+SDL_CDNumDrives = function('SDL_CDNumDrives',
     '''Return the number of CD-ROM drives on the system.
 
     :rtype: int
@@ -111,7 +111,7 @@ SDL_CDNumDrives = SDL.dll.function('SDL_CDNumDrives',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDName = SDL.dll.function('SDL_CDName',
+SDL_CDName = function('SDL_CDName',
     '''Return a human-readable, system-dependent identifier for the
     CD-ROM.
 
@@ -133,7 +133,7 @@ SDL_CDName = SDL.dll.function('SDL_CDName',
     return_type=c_char_p,
     require_return=True)
 
-SDL_CDOpen = SDL.dll.function('SDL_CDOpen',
+SDL_CDOpen = function('SDL_CDOpen',
     '''Open a CD-ROM drive for access.
 
     It returns a drive handle on success, or raises an exception if the
@@ -155,7 +155,7 @@ SDL_CDOpen = SDL.dll.function('SDL_CDOpen',
     dereference_return=True,
     require_return=True)
 
-SDL_CDStatus = SDL.dll.function('SDL_CDStatus',
+SDL_CDStatus = function('SDL_CDStatus',
     '''Return the current status of the given drive.
 
     If the drive has a CD in it, the table of contents of the CD and
@@ -178,7 +178,7 @@ SDL_CDStatus = SDL.dll.function('SDL_CDStatus',
     return_type=int,
     error_return=-1)
 
-SDL_CDPlayTracks = SDL.dll.function('SDL_CDPlayTracks',
+SDL_CDPlayTracks = function('SDL_CDPlayTracks',
     '''Play the given CD.
 
     Plays the given CD starting at `start_track` and `start_frame` for
@@ -214,7 +214,7 @@ SDL_CDPlayTracks = SDL.dll.function('SDL_CDPlayTracks',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDPlay = SDL.dll.function('SDL_CDPlay',
+SDL_CDPlay = function('SDL_CDPlay',
     '''Play the given CD.
 
     Plays the given CD starting at `start` frame for `length` frames.
@@ -230,7 +230,7 @@ SDL_CDPlay = SDL.dll.function('SDL_CDPlay',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDPause = SDL.dll.function('SDL_CDPause',
+SDL_CDPause = function('SDL_CDPause',
     '''Pause play.
 
     :Parameters:
@@ -242,7 +242,7 @@ SDL_CDPause = SDL.dll.function('SDL_CDPause',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDResume = SDL.dll.function('SDL_CDResume',
+SDL_CDResume = function('SDL_CDResume',
     '''Resume play.
 
     :Parameters:
@@ -254,7 +254,7 @@ SDL_CDResume = SDL.dll.function('SDL_CDResume',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDStop = SDL.dll.function('SDL_CDStop',
+SDL_CDStop = function('SDL_CDStop',
     '''Stop play.
 
     :Parameters:
@@ -266,7 +266,7 @@ SDL_CDStop = SDL.dll.function('SDL_CDStop',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDEject = SDL.dll.function('SDL_CDEject',
+SDL_CDEject = function('SDL_CDEject',
     '''Eject CD-ROM.
 
     :Parameters:
@@ -278,7 +278,7 @@ SDL_CDEject = SDL.dll.function('SDL_CDEject',
     return_type=c_int,
     error_return=-1)
 
-SDL_CDClose = SDL.dll.function('SDL_CDClose',
+SDL_CDClose = function('SDL_CDClose',
     '''Close the handle for the CD-ROM drive.
 
     :Parameters:

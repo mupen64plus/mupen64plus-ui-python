@@ -17,8 +17,8 @@ from AppKit import *
 import objc
 import MacOS
 
-import SDL.dll
-import SDL.events
+from .dll import version_compatible
+from .events import SDL_Event, SDL_PushEvent
 
 __all__ = ['init']
 
@@ -47,14 +47,14 @@ def setupWindowMenu(app):
 # Used to cleanly terminate
 class SDLAppDelegate(NSObject):
     def applicationShouldTerminate_(self, app):
-        event = SDL.events.SDL_Event()
+        event = SDL_Event()
         event.type = SDL_QUIT
-        SDL.events.SDL_PushEvent(event)
+        SDL_PushEvent(event)
         return NSTerminateLater
 
     def windowUpdateNotification_(self, notification):
         win = notification.object()
-        if not SDL.dll.version_compatible((1, 2, 8)) and isinstance(win, objc.lookUpClass('SDL_QuartzWindow')):
+        if not version_compatible((1, 2, 8)) and isinstance(win, objc.lookUpClass('SDL_QuartzWindow')):
             # Seems to be a retain count bug in SDL.. workaround!
             win.retain()
         NSNotificationCenter.defaultCenter().removeObserver_name_object_(

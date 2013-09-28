@@ -8,9 +8,10 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.constants
-import SDL.dll
-import SDL.keyboard
+from .constants import *
+from .dll import function, private_function
+from .keyboard import SDL_keysym
+from .error import SDL_Exception, SDL_GetError
 
 class SDL_ActiveEvent(Structure):
     '''Application visibility event structure.
@@ -48,7 +49,7 @@ class SDL_KeyboardEvent(Structure):
     _fields_ = [('type', c_ubyte),
                 ('which', c_ubyte),
                 ('state', c_ubyte),
-                ('keysym', SDL.keyboard.SDL_keysym)]
+                ('keysym', SDL_keysym)]
 
 class SDL_MouseMotionEvent(Structure):
     '''Mouse motion event structure.
@@ -279,21 +280,21 @@ class SDL_Event(Union):
                 ('syswm', SDL_SysWMEvent)]
 
     types = {
-        SDL.constants.SDL_ACTIVEEVENT: (SDL_ActiveEvent, 'active'),
-        SDL.constants.SDL_KEYDOWN: (SDL_KeyboardEvent, 'key'),
-        SDL.constants.SDL_KEYUP: (SDL_KeyboardEvent, 'key'),
-        SDL.constants.SDL_MOUSEMOTION: (SDL_MouseMotionEvent, 'motion'),
-        SDL.constants.SDL_MOUSEBUTTONDOWN: (SDL_MouseButtonEvent, 'button'),
-        SDL.constants.SDL_MOUSEBUTTONUP: (SDL_MouseButtonEvent, 'button'),
-        SDL.constants.SDL_JOYAXISMOTION: (SDL_JoyAxisEvent, 'jaxis'),
-        SDL.constants.SDL_JOYBALLMOTION: (SDL_JoyBallEvent, 'jball'),
-        SDL.constants.SDL_JOYHATMOTION: (SDL_JoyHatEvent, 'jhat'),
-        SDL.constants.SDL_JOYBUTTONDOWN: (SDL_JoyButtonEvent, 'jbutton'),
-        SDL.constants.SDL_JOYBUTTONUP: (SDL_JoyButtonEvent, 'jbutton'),
-        SDL.constants.SDL_VIDEORESIZE: (SDL_ResizeEvent, 'resize'),
-        SDL.constants.SDL_VIDEOEXPOSE: (SDL_ExposeEvent, 'expose'),
-        SDL.constants.SDL_QUIT: (SDL_QuitEvent, 'quit'),
-        SDL.constants.SDL_SYSWMEVENT: (SDL_SysWMEvent, 'syswm')
+        SDL_ACTIVEEVENT: (SDL_ActiveEvent, 'active'),
+        SDL_KEYDOWN: (SDL_KeyboardEvent, 'key'),
+        SDL_KEYUP: (SDL_KeyboardEvent, 'key'),
+        SDL_MOUSEMOTION: (SDL_MouseMotionEvent, 'motion'),
+        SDL_MOUSEBUTTONDOWN: (SDL_MouseButtonEvent, 'button'),
+        SDL_MOUSEBUTTONUP: (SDL_MouseButtonEvent, 'button'),
+        SDL_JOYAXISMOTION: (SDL_JoyAxisEvent, 'jaxis'),
+        SDL_JOYBALLMOTION: (SDL_JoyBallEvent, 'jball'),
+        SDL_JOYHATMOTION: (SDL_JoyHatEvent, 'jhat'),
+        SDL_JOYBUTTONDOWN: (SDL_JoyButtonEvent, 'jbutton'),
+        SDL_JOYBUTTONUP: (SDL_JoyButtonEvent, 'jbutton'),
+        SDL_VIDEORESIZE: (SDL_ResizeEvent, 'resize'),
+        SDL_VIDEOEXPOSE: (SDL_ExposeEvent, 'expose'),
+        SDL_QUIT: (SDL_QuitEvent, 'quit'),
+        SDL_SYSWMEVENT: (SDL_SysWMEvent, 'syswm')
     }
 
     def __init__(self, typecode=0):
@@ -302,7 +303,7 @@ class SDL_Event(Union):
     def __repr__(self):
         if self.type in self.types:
             return self.types[self.type][0].__repr__(self)
-        elif self.type >= SDL.constants.SDL_USEREVENT: 
+        elif self.type >= SDL_USEREVENT: 
             # SDL_MAXEVENTS not defined
             return SDL_UserEvent.__repr__(self)
         return 'SDLEvent(type=%d)' % self.type
@@ -315,12 +316,12 @@ class SDL_Event(Union):
         '''
         if self.type in self.types:
             return getattr(self, self.types[self.type][1])
-        elif self.type >= SDL.constants.SDL_USEREVENT:    
+        elif self.type >= SDL_USEREVENT:    
             # SDL_MAXEVENTS not defined
             return self.user
         return self
 
-SDL_PumpEvents = SDL.dll.function('SDL_PumpEvents',
+SDL_PumpEvents = function('SDL_PumpEvents',
     '''Pumps the event loop, gathering events from the input devices.
 
     This function updates the event queue and internal input device state.
@@ -330,7 +331,7 @@ SDL_PumpEvents = SDL.dll.function('SDL_PumpEvents',
     arg_types=[],
     return_type=None)
 
-_SDL_PeepEvents = SDL.dll.private_function('SDL_PeepEvents',
+_SDL_PeepEvents = private_function('SDL_PeepEvents',
     arg_types=[POINTER(SDL_Event), c_int, c_int, c_uint],
     return_type=c_int)
 
@@ -362,12 +363,12 @@ def SDL_PeepEvents(numevents, action, mask):
     :return: list of SDL_Event (or subclass)
     :see: `SDL_PushEvent`, `SDL_HaveEvents`
     '''
-    if action == SDL.constants.SDL_ADDEVENT:
+    if action == SDL_ADDEVENT:
         raise NotImplementedError, 'Use SDL_PushEvent to add events'
     ar = (SDL_Event * numevents)()
     num = _SDL_PeepEvents(ar, numevents, action, mask)
     if num == -1:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
     return list([e.specialize() for e in ar[:num]])
 
 def SDL_HaveEvents(mask):
@@ -384,10 +385,10 @@ def SDL_HaveEvents(mask):
     :return: True if at least one event matches the mask in the event
         queue.
     '''
-    num = _SDL_PeepEvents(None, 1, SDL.constants.SDL_PEEKEVENT, mask)
+    num = _SDL_PeepEvents(None, 1, SDL_PEEKEVENT, mask)
     return num > 0
 
-_SDL_PollEvent = SDL.dll.private_function('SDL_PollEvent',
+_SDL_PollEvent = private_function('SDL_PollEvent',
     arg_types=[POINTER(SDL_Event)],
     return_type=c_int)
 
@@ -415,7 +416,7 @@ def SDL_PollEventAndReturn():
         return e.specialize()
     return None
 
-_SDL_WaitEvent = SDL.dll.private_function('SDL_WaitEvent',
+_SDL_WaitEvent = private_function('SDL_WaitEvent',
     arg_types=[POINTER(SDL_Event)],
     return_type=c_int)
 
@@ -428,7 +429,7 @@ def SDL_WaitEvent():
     :see: `SDL_WaitEventAndReturn`
     '''
     if _SDL_WaitEvent(None) == 0:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
     
 def SDL_WaitEventAndReturn():
     '''Wait indefinitely for the next event and return it.
@@ -441,9 +442,9 @@ def SDL_WaitEventAndReturn():
     if result == 1:
         return ev.specialize()
     else:
-        raise SDL.error.SDL_Exception, SDL.error.SDL_GetError()
+        raise SDL_Exception, SDL_GetError()
 
-SDL_PushEvent = SDL.dll.function('SDL_PushEvent',
+SDL_PushEvent = function('SDL_PushEvent',
     '''Add an event to the event queue.
 
     :Parameters:
@@ -457,7 +458,7 @@ SDL_PushEvent = SDL.dll.function('SDL_PushEvent',
 
 
 _SDL_EventFilter = CFUNCTYPE(c_int, POINTER(SDL_Event))
-_SDL_SetEventFilter = SDL.dll.private_function('SDL_SetEventFilter',
+_SDL_SetEventFilter = private_function('SDL_SetEventFilter',
     arg_types=[_SDL_EventFilter],
     return_type=None)
 
@@ -496,7 +497,7 @@ def SDL_SetEventFilter(filter):
         _eventfilter_ref = _SDL_EventFilter()
     _SDL_SetEventFilter(_eventfilter_ref)
 
-SDL_GetEventFilter = SDL.dll.function('SDL_GetEventFilter',
+SDL_GetEventFilter = function('SDL_GetEventFilter',
     '''Return the current event filter.
 
     This can be used to "chain" filters.  If there is no event filter set,
@@ -508,7 +509,7 @@ SDL_GetEventFilter = SDL.dll.function('SDL_GetEventFilter',
     arg_types=[],
     return_type=_SDL_EventFilter)
 
-SDL_EventState = SDL.dll.function('SDL_EventState',
+SDL_EventState = function('SDL_EventState',
     '''Ignore or enable the processing of certain events.
 
     The behaviour of this function depends on `state`

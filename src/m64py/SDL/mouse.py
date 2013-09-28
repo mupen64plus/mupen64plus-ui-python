@@ -8,9 +8,10 @@ __version__ = '$Id: $'
 
 from ctypes import *
 
-import SDL.array
-import SDL.dll
-import SDL.video
+from .array import SDL_array, to_ctypes
+from .dll import function, private_function
+from .video import SDL_Rect
+from .constants import SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE, SDL_BUTTON_RIGHT
 
 class SDL_Cursor(Structure):
     '''Cursor structure.
@@ -24,7 +25,7 @@ class SDL_Cursor(Structure):
             Y coordinate of the tip of the cursor
     
     '''
-    _fields_ = [('area', SDL.video.SDL_Rect),
+    _fields_ = [('area', SDL_Rect),
                 ('hot_x', c_short),
                 ('hot_y', c_short),
                 ('_data', POINTER(c_ubyte)),
@@ -35,12 +36,12 @@ class SDL_Cursor(Structure):
     def __getattr__(self, name):
         w, h = self.area.w, self.area.h
         if name == 'data':
-            return SDL.array.SDL_array(self._data, w * h / 8, c_ubyte)
+            return SDL_array(self._data, w * h / 8, c_ubyte)
         elif name == 'mask':
-            return SDL.array.SDL_array(self._mask, w * h / 8, c_ubyte)
+            return SDL_array(self._mask, w * h / 8, c_ubyte)
         raise AttributeError, name
 
-_SDL_GetMouseState = SDL.dll.private_function('SDL_GetMouseState',
+_SDL_GetMouseState = private_function('SDL_GetMouseState',
     arg_types=[POINTER(c_int), POINTER(c_int)],
     return_type=c_ubyte)
 
@@ -64,7 +65,7 @@ def SDL_GetMouseState():
     return state, x.value, y.value
 
 _SDL_GetRelativeMouseState = \
-    SDL.dll.private_function('SDL_GetRelativeMouseState',
+    private_function('SDL_GetRelativeMouseState',
     arg_types=[POINTER(c_int), POINTER(c_int)],
     return_type=c_ubyte)
 
@@ -82,7 +83,7 @@ def SDL_GetRelativeMouseState():
     state = _SDL_GetRelativeMouseState(byref(dx), byref(dy))
     return state, dx.value, dy.value
 
-SDL_WarpMouse = SDL.dll.function('SDL_WarpMouse',
+SDL_WarpMouse = function('SDL_WarpMouse',
     '''Set the position of the mouse cursor.
 
     Generates a mouse motion event.
@@ -96,7 +97,7 @@ SDL_WarpMouse = SDL.dll.function('SDL_WarpMouse',
     arg_types=[c_ushort, c_ushort],
     return_type=None)
 
-_SDL_CreateCursor = SDL.dll.private_function('SDL_CreateCursor',
+_SDL_CreateCursor = private_function('SDL_CreateCursor',
     arg_types=[POINTER(c_ubyte), POINTER(c_ubyte), c_int, c_int, c_int, c_int],
     return_type=POINTER(SDL_Cursor),
     dereference_return=True,
@@ -132,11 +133,11 @@ def SDL_CreateCursor(data, mask, w, h, hot_x, hot_y):
 
     :rtype: `SDL_Cursor`
     '''
-    dataref, data = SDL.array.to_ctypes(data, len(data), c_ubyte)
-    maskref, mask = SDL.array.to_ctypes(mask, len(mask), c_ubyte)
+    dataref, data = to_ctypes(data, len(data), c_ubyte)
+    maskref, mask = to_ctypes(mask, len(mask), c_ubyte)
     return _SDL_CreateCursor(data, mask, w, h, hot_x, hot_y)
 
-SDL_SetCursor = SDL.dll.function('SDL_SetCursor',
+SDL_SetCursor = function('SDL_SetCursor',
     '''Set the currently active cursor to the specified one.
 
     If the cursor is currently visible, the change will be immediately
@@ -150,7 +151,7 @@ SDL_SetCursor = SDL.dll.function('SDL_SetCursor',
     arg_types=[POINTER(SDL_Cursor)],
     return_type=None)
 
-SDL_GetCursor = SDL.dll.function('SDL_GetCursor',
+SDL_GetCursor = function('SDL_GetCursor',
     '''Return the currently active cursor.
 
     :rtype: `SDL_Cursor`
@@ -160,7 +161,7 @@ SDL_GetCursor = SDL.dll.function('SDL_GetCursor',
     return_type=POINTER(SDL_Cursor),
     dereference_return=True)
 
-SDL_FreeCursor = SDL.dll.function('SDL_FreeCursor',
+SDL_FreeCursor = function('SDL_FreeCursor',
     '''Deallocate a cursor created with `SDL_CreateCursor`
 
     :Parameters:
@@ -170,7 +171,7 @@ SDL_FreeCursor = SDL.dll.function('SDL_FreeCursor',
     arg_types=[POINTER(SDL_Cursor)],
     return_type=None)
 
-SDL_ShowCursor = SDL.dll.function('SDL_ShowCursor',
+SDL_ShowCursor = function('SDL_ShowCursor',
     '''Toggle whether or not the curosr is shown on the screen.
 
     The cursor starts off displayed, but can be turned off.
@@ -193,6 +194,6 @@ def SDL_BUTTON(X):
     '''
     return 1 << (X-1)
 
-SDL_BUTTON_LMASK    = SDL_BUTTON(SDL.constants.SDL_BUTTON_LEFT)
-SDL_BUTTON_MMASK    = SDL_BUTTON(SDL.constants.SDL_BUTTON_MIDDLE)
-SDL_BUTTON_RMASK    = SDL_BUTTON(SDL.constants.SDL_BUTTON_RIGHT)
+SDL_BUTTON_LMASK    = SDL_BUTTON(SDL_BUTTON_LEFT)
+SDL_BUTTON_MMASK    = SDL_BUTTON(SDL_BUTTON_MIDDLE)
+SDL_BUTTON_RMASK    = SDL_BUTTON(SDL_BUTTON_RIGHT)
