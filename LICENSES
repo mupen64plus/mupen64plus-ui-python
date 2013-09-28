@@ -4,6 +4,10 @@
 
         http://www.gnu.org/licenses/lgpl.html
 
+- Included SDL2 ctypes code is Copyright: Marcus von Appen
+
+    This software is distributed under the Public Domain.
+
 
 - joystick.py is a Python port of Qt SDL joystick wrapper by René Reucher:
 
