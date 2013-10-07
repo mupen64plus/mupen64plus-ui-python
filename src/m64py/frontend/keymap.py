@@ -16,8 +16,7 @@
 
 from PyQt4.QtCore import Qt
 
-from m64py.SDL.constants import *
-from m64py.SDL2.scancode import *
+from m64py.frontend.keycodes import *
 
 QT2SDL = {}
 QT2SDL2 = {}

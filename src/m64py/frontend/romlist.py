@@ -144,8 +144,8 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def refresh_items(self):
         """Refreshes available ROMs list"""
-        path_roms = self.qset.value("Paths/ROM")
-        if not path_roms:
+        path_roms = str(self.qset.value("Paths/ROM"))
+        if not path_roms or path_roms == "None":
             self.parent.emit(SIGNAL(
                 "info_dialog(PyQt_PyObject)"),
                 "ROMs directory not found.")

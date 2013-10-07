@@ -27,10 +27,13 @@ class AboutDialog(QDialog, Ui_AboutDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setupUi(self)
+        if parent.worker.m64p.core_version != "Unknown":
+            version = version_split(parent.worker.m64p.core_version)
+        else:
+            version = "Unknown"
         text = self.labelAbout.text()
         text = text.replace("FRONTEND_VERSION", FRONTEND_VERSION)
-        text = text.replace("CORE_VERSION",
-                version_split(parent.worker.m64p.core_version))
+        text = text.replace("CORE_VERSION", version)
         self.labelAbout.setText(text)
         self.show()
 
