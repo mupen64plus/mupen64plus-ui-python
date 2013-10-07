@@ -19,8 +19,8 @@
 
 from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer, SIGNAL
 
-from m64py.utils import log
 from m64py.opts import SDL2
+from m64py.frontend.log import log
 
 if SDL2:
     from m64py.SDL2 import *

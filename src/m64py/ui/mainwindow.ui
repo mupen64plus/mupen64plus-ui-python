@@ -109,6 +109,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionLicense"/>
+    <addaction name="actionLog"/>
    </widget>
    <widget class="QMenu" name="menuEmulation">
     <property name="title">
@@ -234,7 +235,7 @@ QStatusBar { margin:0px; }</string>
      <normaloff>:/icons/action_license.png</normaloff>:/icons/action_license.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;License</string>
+    <string>License</string>
    </property>
   </action>
   <action name="actionLoadState">
@@ -616,6 +617,11 @@ QStatusBar { margin:0px; }</string>
    </property>
    <property name="text">
     <string>Graphics</string>
+   </property>
+  </action>
+  <action name="actionLog">
+   <property name="text">
+    <string>&amp;Log Viewer</string>
    </property>
   </action>
  </widget>

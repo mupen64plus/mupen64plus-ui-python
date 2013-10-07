@@ -21,7 +21,8 @@ import ConfigParser
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from m64py.utils import log, md5sum
+from m64py.utils import md5sum
+from m64py.frontend.log import log
 from m64py.archive import Archive, EXT_FILTER
 from m64py.ui.romlist_ui import Ui_ROMList
 

@@ -21,7 +21,7 @@ from m64py.core.defs import FRONTEND_VERSION
 usage = 'usage: %prog <romfile>'
 parser = OptionParser(usage=usage, version="M64Py Version %s" % FRONTEND_VERSION)
 parser.add_option("-v", "--verbose", action="store_true", dest="verbose", help="show verbose output")
-parser.add_option("--sdl2", action="store_true", dest="sdl2", help="use libSDL2 library")
+parser.add_option("--sdl2", action="store_true", dest="sdl2", help="use libSDL2 library", default=False)
 opts, args = parser.parse_args()
 
 SDL2 = opts.sdl2

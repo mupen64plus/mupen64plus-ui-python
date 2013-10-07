@@ -24,6 +24,7 @@ from m64py.core.defs import *
 from m64py.frontend.dialogs import *
 from m64py.archive import EXT_FILTER
 from m64py.ui.mainwindow_ui import Ui_MainWindow
+from m64py.frontend.log import logview
 from m64py.frontend.worker import Worker
 from m64py.frontend.rominfo import RomInfo
 from m64py.frontend.romlist import ROMList
@@ -49,6 +50,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self, None)
         self.setupUi(self)
         self.opts, self.args = optparse
+
+        logview.setParent(self)
+        logview.setWindowFlags(Qt.Dialog)
 
         self.statusbarLabel = QLabel()
         self.statusbarLabel.setIndent(2)
@@ -459,6 +463,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionLicense_triggered(self):
         """Shows license dialog."""
         LicenseDialog(self)
+
+    @pyqtSignature("")
+    def on_actionLog_triggered(self):
+        """Shows log dialog."""
+        logview.show()
 
 class View(QGraphicsView):
     def __init__(self, parent=None):

@@ -21,7 +21,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from m64py.core.defs import *
-from m64py.utils import log
+from m64py.frontend.log import log
 from m64py.loader import find_library
 from m64py.screensaver import screensaver
 from m64py.core.core import Core

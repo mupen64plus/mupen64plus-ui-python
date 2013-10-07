@@ -15,7 +15,6 @@
 
 import os
 import re
-import logging
 from hashlib import md5
 
 def md5sum(filename=None, filedata=None, buf_size=8192):
@@ -91,11 +90,3 @@ def format_options(param_help):
     if len(opts) > 0:
         return opts
     return None
-
-class Logger():
-    def __init__(self):
-        log_format = 'Frontend: %(levelname)s: %(message)s'
-        logging.basicConfig(level=logging.DEBUG, format=log_format)
-        self.logger = logging.getLogger('frontend')
-
-log = Logger().logger

@@ -18,7 +18,7 @@ from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
 from m64py.core.defs import *
-from m64py.utils import log
+from m64py.frontend.log import log
 
 MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
         (1280, 960), (1152, 864), (1024, 768),

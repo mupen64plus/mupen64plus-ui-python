@@ -18,7 +18,7 @@ import os
 import ctypes as C
 
 from m64py.core.defs import *
-from m64py.utils import log
+from m64py.frontend.log import log
 
 SECTIONS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p)
 PARAMETERS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p, C.c_int)

@@ -23,7 +23,8 @@ import subprocess
 from m64py.core.defs import *
 from m64py.core.config import Config
 from m64py.loader import load, unload_library
-from m64py.utils import log, version_split
+from m64py.frontend.log import log
+from m64py.utils import version_split
 from m64py.opts import VERBOSE
 from m64py.archive import ROM_TYPE
 from m64py.platform import DLL_EXT, DEFAULT_DYNLIB, SEARCH_DIRS, LDD_CMD

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Sep  3 02:08:51 2013
+# Created: Mon Oct  7 15:44:47 2013
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -262,6 +262,8 @@ class Ui_MainWindow(object):
         icon19.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/action_graphics.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionGraphics.setIcon(icon19)
         self.actionGraphics.setObjectName(_fromUtf8("actionGraphics"))
+        self.actionLog = QtGui.QAction(MainWindow)
+        self.actionLog.setObjectName(_fromUtf8("actionLog"))
         self.menuLoad.addAction(self.actionManually)
         self.menuLoad.addAction(self.actionFromList)
         self.menuFile.addAction(self.menuLoad.menuAction())
@@ -285,6 +287,7 @@ class Ui_MainWindow(object):
         self.menuSettings.addAction(self.actionPlugins)
         self.menuHelp.addAction(self.actionAbout)
         self.menuHelp.addAction(self.actionLicense)
+        self.menuHelp.addAction(self.actionLog)
         self.menuEmulation.addAction(self.actionPause)
         self.menuEmulation.addAction(self.actionMute)
         self.menuEmulation.addSeparator()
@@ -334,7 +337,7 @@ class Ui_MainWindow(object):
         self.actionGraphic.setText(_translate("MainWindow", "Graphics", None))
         self.actionEmulator.setText(_translate("MainWindow", "Emulator", None))
         self.actionPlugins.setText(_translate("MainWindow", "Plugins", None))
-        self.actionLicense.setText(_translate("MainWindow", "&License", None))
+        self.actionLicense.setText(_translate("MainWindow", "License", None))
         self.actionLoadState.setText(_translate("MainWindow", "Load State", None))
         self.actionLoadState.setShortcut(_translate("MainWindow", "F7", None))
         self.actionSaveState.setText(_translate("MainWindow", "Save State", None))
@@ -378,6 +381,7 @@ class Ui_MainWindow(object):
         self.actionSoftReset.setText(_translate("MainWindow", "Sof&t Reset", None))
         self.actionSoftReset.setShortcut(_translate("MainWindow", "F8", None))
         self.actionGraphics.setText(_translate("MainWindow", "Graphics", None))
+        self.actionLog.setText(_translate("MainWindow", "&Log Viewer", None))
 
 import images_rc
 import icons_rc

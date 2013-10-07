@@ -18,7 +18,7 @@ import sys
 import ctypes
 import subprocess
 
-from m64py.utils import log
+from m64py.frontend.log import log
 
 class LinuxScreenSaver:
     cookie = None

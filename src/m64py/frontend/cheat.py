@@ -22,7 +22,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from m64py.core.defs import *
-from m64py.utils import sl, log
+from m64py.utils import sl
+from m64py.frontend.log import log
 from m64py.ui.cheat_ui import Ui_CheatDialog
 from m64py.ui.choices_ui import Ui_ChoicesDialog
 

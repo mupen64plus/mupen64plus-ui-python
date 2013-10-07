@@ -37,7 +37,6 @@ elif sys.platform == "darwin":
     DLL_FILTER = ".dylib"
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
     SEARCH_DIRS = [
-            os.path.join(".", "M64Py", "Contents", "MacOS"),
             "/usr/local/lib/mupen64plus",
             "/usr/lib/mupen64plus",
             "."
