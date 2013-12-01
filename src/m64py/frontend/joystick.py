@@ -23,9 +23,15 @@ from m64py.opts import SDL2
 from m64py.frontend.log import log
 
 if SDL2:
-    from m64py.SDL2 import *
+    from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
+    from m64py.SDL2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
+    from m64py.SDL2 import SDL_JoystickNumAxes, SDL_JoystickNumButtons, SDL_JoystickNumHats, SDL_JoystickNumBalls
+    from m64py.SDL2 import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate
 else:
-    from m64py.SDL import *
+    from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
+    from m64py.SDL import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickName
+    from m64py.SDL import SDL_JoystickNumAxes, SDL_JoystickNumButtons, SDL_JoystickNumHats, SDL_JoystickNumBalls
+    from m64py.SDL import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate
 
 JOYSTICK_DEADZONE = 0
 JOYSTICK_SENSITIVITY = 0
@@ -71,7 +77,10 @@ class Joystick(QObject):
         if not SDL_WasInit(SDL_INIT_JOYSTICK):
             if SDL_InitSubSystem(SDL_INIT_JOYSTICK) == 0:
                 for i in range(SDL_NumJoysticks()):
-                    self.joystick_names.append(SDL_JoystickNameForIndex(i))
+                    if SDL2:
+                        self.joystick_names.append(SDL_JoystickNameForIndex(i))
+                    else:
+                        self.joystick_names.append(SDL_JoystickName(i))
                 self.connect(self.joystick_timer, SIGNAL("timeout()"),
                         self.process_events)
             else:
