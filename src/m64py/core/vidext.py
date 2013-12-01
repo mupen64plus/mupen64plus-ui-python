@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
 from m64py.core.defs import *
@@ -67,6 +67,8 @@ class Video():
         """Creates a rendering window."""
         self.glcontext.makeCurrent()
         if self.glcontext.isValid():
+            self.widget.qglClearColor(Qt.black)
+            self.widget.swapBuffers()
             return M64ERR_SUCCESS
         else:
             return M64ERR_SYSTEM_FAIL
