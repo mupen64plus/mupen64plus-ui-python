@@ -14,15 +14,40 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import Qt, SIGNAL
+import ctypes
+
+from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
 from m64py.core.defs import *
+from m64py.opts import SDL2
 from m64py.frontend.log import log
 
-MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
-        (1280, 960), (1152, 864), (1024, 768),
-        (800, 600), (640, 480), (320, 240)]
+if SDL2:
+    from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+    from m64py.SDL2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
+else:
+    from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+    from m64py.SDL import SDL_ListModes, SDL_FULLSCREEN, SDL_HWSURFACE
+
+try:
+    if not SDL_WasInit(SDL_INIT_VIDEO):
+        SDL_InitSubSystem(SDL_INIT_VIDEO)
+    if SDL2:
+        MODES = []
+        for mode in range(SDL_GetNumDisplayModes(0)):
+            display = SDL_DisplayMode()
+            ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
+            MODES.append((display.w, display.h))
+    else:
+        MODES = [(mode.w, mode.h) for mode in SDL_ListModes(
+            None, SDL_FULLSCREEN|SDL_HWSURFACE)]
+    SDL_QuitSubSystem(SDL_INIT_VIDEO)
+except Exception, err:
+    log.warn(str(err))
+    MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
+            (1280, 960), (1152, 864), (1024, 768),
+            (800, 600), (640, 480), (320, 240)]
 
 class Video():
     """Mupen64Plus video extension"""
@@ -67,8 +92,6 @@ class Video():
         """Creates a rendering window."""
         self.glcontext.makeCurrent()
         if self.glcontext.isValid():
-            self.widget.qglClearColor(Qt.black)
-            self.widget.swapBuffers()
             return M64ERR_SUCCESS
         else:
             return M64ERR_SYSTEM_FAIL
