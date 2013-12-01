@@ -71,7 +71,7 @@ class Joystick(QObject):
         if not SDL_WasInit(SDL_INIT_JOYSTICK):
             if SDL_InitSubSystem(SDL_INIT_JOYSTICK) == 0:
                 for i in range(SDL_NumJoysticks()):
-                    self.joystick_names.append(SDL_JoystickName(i))
+                    self.joystick_names.append(SDL_JoystickNameForIndex(i))
                 self.connect(self.joystick_timer, SIGNAL("timeout()"),
                         self.process_events)
             else:
