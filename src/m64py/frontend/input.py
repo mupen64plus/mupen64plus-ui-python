@@ -27,9 +27,9 @@ from m64py.frontend.keymap import QT2SDL, SCANCODE2KEYCODE, KEYCODE2SCANCODE
 from m64py.ui.input_ui import Ui_InputDialog
 
 if SDL2:
-    from m64py.SDL2 import *
+    from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 else:
-    from m64py.SDL import *
+    from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 
 KEY_RE = re.compile("([a-z]+)\((.*)\)")
 AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
@@ -385,6 +385,7 @@ class Input(QDialog, Ui_InputDialog):
             except:
                 return "Select..."
         else:
+            from m64py.SDL.keyboard import SDL_GetKeyName
             text = SDL_GetKeyName(int(sdl_key)).title()
         if not text:
             return "Select..."
