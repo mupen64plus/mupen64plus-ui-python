@@ -94,14 +94,33 @@ class LibraryLoader(object):
                 yield path
 
             path = ctypes.util.find_library(libname)
-            if path: yield path
+            if path:
+                yield path
 
     def getplatformpaths(self, libname):
         return []
 
 class DarwinLibraryLoader(LibraryLoader):
     name_formats = ["lib%s.dylib", "lib%s.so", "lib%s.bundle",
-            "%s.dylib", "%s.so", "%s.bundle", "%s"]
+            "%s.dylib", "%s.framework", "%s.so", "%s.bundle", "%s"]
+
+    def find_library(self, libname):
+        paths = self.getpaths(libname)
+        for path in paths:
+            if os.path.exists(path):
+                if os.path.isdir(path) and path.endswith(".framework"):
+                    path = os.path.join(path, libname)
+                return os.path.realpath(path)
+        return None
+
+    def load_library(self, libname):
+        paths = self.getpaths(libname)
+        for path in paths:
+            if os.path.exists(path):
+                if os.path.isdir(path) and path.endswith(".framework"):
+                    path = os.path.join(path, libname)
+                return self.load(os.path.realpath(path))
+        raise ImportError("%s not found." % libname)
 
     def getplatformpaths(self, libname):
         if os.path.pathsep in libname:
@@ -114,7 +133,7 @@ class DarwinLibraryLoader(LibraryLoader):
                 yield os.path.join(dirname, name)
 
     def getdirs(self, libname):
-        '''Implements the dylib search as specified in Apple documentation:
+        """Implements the dylib search as specified in Apple documentation:
 
         http://developer.apple.com/documentation/DeveloperTools/Conceptual/
             DynamicLibraries/Articles/DynamicLibraryUsageGuidelines.html
@@ -122,8 +141,7 @@ class DarwinLibraryLoader(LibraryLoader):
         Before commencing the standard search, the method first checks
         the bundle's ``Frameworks`` directory if the application is running
         within a bundle (OS X .app).
-        '''
-
+        """
         dyld_fallback_library_path = _environ_path("DYLD_FALLBACK_LIBRARY_PATH")
         if not dyld_fallback_library_path:
             dyld_fallback_library_path = [os.path.expanduser('~/lib'),
@@ -137,13 +155,14 @@ class DarwinLibraryLoader(LibraryLoader):
             dirs.extend(_environ_path("DYLD_LIBRARY_PATH"))
 
         dirs.extend(self.other_dirs)
+
         dirs.append(".")
 
-        if hasattr(sys, 'frozen') and sys.frozen == 'macosx_app':
-            dirs.append(os.path.join(
-                os.environ['RESOURCEPATH'],
-                '..',
-                'Frameworks'))
+        dirs.append(os.path.realpath(os.path.join(
+            os.path.dirname(sys.executable), '..', 'Frameworks')))
+
+        dirs.append(os.path.realpath(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..', 'Frameworks')))
 
         dirs.extend(dyld_fallback_library_path)
         return dirs
