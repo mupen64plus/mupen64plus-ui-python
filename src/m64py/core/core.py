@@ -114,7 +114,7 @@ class Core:
 
                 if LDD_CMD:
                     proc = subprocess.Popen(LDD_CMD % self.core_path, shell=True,
-                            preexec_fn=lambda:signal.signal(signal.SIGPIPE, signal.SIG_DFL))
+                            preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL))
                     proc.communicate()
                     if proc.returncode == 0:
                         self.core_sdl2 = True

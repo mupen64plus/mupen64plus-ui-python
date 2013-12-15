@@ -1,3 +1,10 @@
+m64py (0.1.7-1) unstable; urgency=low
+
+  * log viewer dialog
+  * bug fixes
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Sun, 15 Dec 2013 18:14:09 +0100
+
 m64py (0.1.6-1) unstable; urgency=low
 
   * SDL2 support
