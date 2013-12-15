@@ -6,4 +6,4 @@ Type=Application
 Icon=m64py
 Comment=A frontend for Mupen64Plus
 Categories=Game;Emulator;
-MimeType=application/x-m64py
+MimeType=application/x-m64py;
