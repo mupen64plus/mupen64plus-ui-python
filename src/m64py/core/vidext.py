@@ -19,6 +19,12 @@ import ctypes
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
+try:
+    # nvidia hack
+    from OpenGL import GL
+except ImportError:
+    pass
+
 from m64py.core.defs import *
 from m64py.opts import SDL2
 from m64py.frontend.log import log
@@ -35,14 +41,15 @@ try:
         SDL_InitSubSystem(SDL_INIT_VIDEO)
     if SDL2:
         MODES = []
+        display = SDL_DisplayMode()
         for mode in range(SDL_GetNumDisplayModes(0)):
-            display = SDL_DisplayMode()
             ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
             MODES.append((display.w, display.h))
     else:
         MODES = [(mode.w, mode.h) for mode in SDL_ListModes(
             None, SDL_FULLSCREEN|SDL_HWSURFACE)]
-    SDL_QuitSubSystem(SDL_INIT_VIDEO)
+    if SDL_WasInit(SDL_INIT_VIDEO):
+        SDL_QuitSubSystem(SDL_INIT_VIDEO)
 except Exception, err:
     log.warn(str(err))
     MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
