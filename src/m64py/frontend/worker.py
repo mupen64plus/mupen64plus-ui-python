@@ -52,8 +52,8 @@ class Worker(QThread):
             self.settings.m64p_handle = self.m64p.get_handle()
 
             if self.parent.args:
-                self.parent.emit(SIGNAL("file_open(PyQt_PyObject)"),
-                        self.parent.args[0])
+                self.parent.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"),
+                        self.parent.args[0], None)
         else:
             self.parent.emit(SIGNAL("state_changed(PyQt_PyObject)"),
                 (False, False, False, False))
