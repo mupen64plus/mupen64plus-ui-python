@@ -22,8 +22,9 @@ from PyQt4.QtOpenGL import QGLFormat
 try:
     # nvidia hack
     from OpenGL import GL
+    glimport = True
 except ImportError:
-    pass
+    glimport = False
 
 from m64py.core.defs import *
 from m64py.opts import SDL2
@@ -99,6 +100,10 @@ class Video():
         """Creates a rendering window."""
         self.glcontext.makeCurrent()
         if self.glcontext.isValid():
+            if glimport:
+                GL.glClearColor(0.0, 0.0, 0.0, 1.0);
+                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+                self.widget.swapBuffers()
             return M64ERR_SUCCESS
         else:
             return M64ERR_SYSTEM_FAIL
