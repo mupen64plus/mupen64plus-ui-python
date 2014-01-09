@@ -66,7 +66,7 @@ class InputButton(QPushButton):
             text = self.key
             self.setCheckable(False)
         elif key == Qt.Key_Backspace:
-            text = "Select..."
+            text = self.tr("Select...")
             self.setCheckable(False)
         else:
             if SDL2 or self.input.parent.worker.m64p.core_sdl2:
@@ -85,10 +85,10 @@ class InputButton(QPushButton):
         if self.input.is_joystick:
             self.joystick.init()
             self.joystick.open(self.input.device)
-        self.setText("Press Key")
+        self.setText(self.tr("Press Key"))
         self.setCheckable(True)
         self.window().statusLabel.setText(
-                "Press <em>Escape</em> to cancel, <em>Backspace</em> to delete.")
+                self.tr("Press <em>Escape</em> to cancel, <em>Backspace</em> to delete."))
 
     def focusOutEvent(self, event):
         if self.input.is_joystick:

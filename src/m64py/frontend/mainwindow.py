@@ -57,7 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbarLabel = QLabel()
         self.statusbarLabel.setIndent(2)
         self.statusbar.addPermanentWidget(self.statusbarLabel, 1)
-        self.update_status("Welcome to M64Py version %s." % FRONTEND_VERSION)
+        self.update_status(self.tr("Welcome to M64Py version %s." % FRONTEND_VERSION))
 
         self.sizes = {
             SIZE_1X: self.action1X,
@@ -321,7 +321,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog.setFileMode(QFileDialog.ExistingFile)
         last_dir = self.settings.qset.value("last_dir")
         filepath = dialog.getOpenFileName(
-                self, "Load ROM Image", last_dir,
+                self, self.tr("Load ROM Image"), last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
         if filepath:
             self.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), filepath, None)
@@ -354,7 +354,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
         file_path = dialog.getOpenFileName(
-                self, "Load State From File",
+                self, self.tr("Load State From File"),
                 os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
                 "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
         if file_path:
@@ -365,7 +365,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Saves state to file."""
         dialog = QFileDialog()
         file_path, file_filter = dialog.getSaveFileNameAndFilter(
-                self, "Save State To File",
+                self, self.tr("Save State To File"),
                 os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
                 ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
                 M64P_SAVES[M64SAV_M64P][0])

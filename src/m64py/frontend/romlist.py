@@ -149,7 +149,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         if not path_roms or path_roms == "None":
             self.parent.emit(SIGNAL(
                 "info_dialog(PyQt_PyObject)"),
-                "ROMs directory not found.")
+                self.tr("ROMs directory not found."))
             self.checkAvailable.setChecked(False)
             self.labelAvailable.setText("")
         else:

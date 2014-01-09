@@ -65,9 +65,9 @@ class Settings(QDialog, Ui_Settings):
                     self.input)}
 
         self.emumode = [
-                QRadioButton("Pure Interpreter"),
-                QRadioButton("Cached Interpreter"),
-                QRadioButton("Dynamic Recompiler")]
+                QRadioButton(self.tr("Pure Interpreter")),
+                QRadioButton(self.tr("Cached Interpreter")),
+                QRadioButton(self.tr("Dynamic Recompiler"))]
 
         vbox = QVBoxLayout(self.groupEmuMode)
         for widget in self.emumode:

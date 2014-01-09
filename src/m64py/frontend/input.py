@@ -83,18 +83,18 @@ class Input(QDialog, Ui_InputDialog):
     def add_items(self):
         for controller in range(1, 5):
             self.comboController.addItem(
-                    "Controller %s" % controller, controller)
+                    self.tr("Controller %s" % controller), controller)
 
-        for plugin, ptype in [("None", 1), ("Mem pak", 2), ("Rumble pak", 5)]:
+        for plugin, ptype in [(self.tr("None"), 1), (self.tr("Mem pak"), 2), (self.tr("Rumble pak"), 5)]:
             self.comboPlugin.addItem(plugin, ptype)
 
-        for mode, mtype in [("Fully Manual", 0),
-                ("Auto with named SDL device", 1), ("Fully Automatic", 2)]:
+        for mode, mtype in [(self.tr("Fully Manual"), 0),
+                (self.tr("Auto with named SDL device"), 1), (self.tr("Fully Automatic"), 2)]:
             self.comboMode.addItem(mode, mtype)
 
-        devices = [("Keyboard/Mouse", -1)]
+        devices = [(self.tr("Keyboard/Mouse"), -1)]
         for num, joy in enumerate(self.joystick.joystick_names):
-            devices.append(("Joystick %s (%s)" % (num, joy), num))
+            devices.append((self.tr("Joystick %s (%s)" % (num, joy), num)))
 
         for device, dtype in devices:
             self.comboDevice.addItem(device, dtype)
@@ -268,7 +268,7 @@ class Input(QDialog, Ui_InputDialog):
             if key.startswith("X Axis") or key.startswith("Y Axis"):
                 self.set_axis(key, ckey, widget)
             elif not ckey:
-                widget.setText("Select...")
+                widget.setText(self.tr("Select..."))
             elif self.is_joystick:
                 widget.setText(str(ckey))
             else:
@@ -304,7 +304,7 @@ class Input(QDialog, Ui_InputDialog):
                     elif "R" in key:
                         widget.setText("%s(%s)" % (axis[0][0], axis[0][2]))
             else:
-                widget.setText("Select...")
+                widget.setText(self.tr("Select..."))
         elif key.startswith("Y Axis"):
             axis = self.get_axis("Y Axis")
             if axis:
@@ -316,7 +316,7 @@ class Input(QDialog, Ui_InputDialog):
                     elif "D" in key:
                         widget.setText("%s(%s)" % (axis[0][0], axis[0][2]))
             else:
-                widget.setText("Select...")
+                widget.setText(self.tr("Select..."))
 
     def save_axis(self):
         xl = KEY_RE.findall(str(self.pushX_Axis_L.text()))
@@ -377,18 +377,18 @@ class Input(QDialog, Ui_InputDialog):
 
     def get_key_name(self, sdl_key):
         if not sdl_key:
-            return "Select..."
+            return self.tr("Select...")
         if SDL2 or self.parent.worker.m64p.core_sdl2:
             from m64py.SDL2.keyboard import SDL_GetScancodeName
             try:
                 text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])
             except:
-                return "Select..."
+                return self.tr("Select...")
         else:
             from m64py.SDL.keyboard import SDL_GetKeyName
             text = SDL_GetKeyName(int(sdl_key)).title()
         if not text:
-            return "Select..."
+            return self.tr("Select...")
         if "Shift" in text or "Ctrl" in text or "Alt" in text:
             text = text.replace("Left ", "")
         return text.title()

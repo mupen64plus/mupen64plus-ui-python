@@ -58,7 +58,7 @@ class Worker(QThread):
             self.parent.emit(SIGNAL("state_changed(PyQt_PyObject)"),
                 (False, False, False, False))
             self.parent.emit(SIGNAL("info_dialog(PyQt_PyObject)"),
-                "Mupen64Plus library not found.")
+                self.tr("Mupen64Plus library not found."))
 
     def set_filepath(self, filepath, filename=None):
         """Sets rom file path."""

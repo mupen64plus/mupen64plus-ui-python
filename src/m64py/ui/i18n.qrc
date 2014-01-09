@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/">
+    <file>i18n/m64py_en.ts</file>
+  </qresource>
+</RCC>

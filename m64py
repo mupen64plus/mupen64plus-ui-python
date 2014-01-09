@@ -29,7 +29,7 @@ try:
     sip.setapi('QString', 2)
     sip.setapi('QVariant', 2)
     from PyQt4.QtGui import QApplication
-    from PyQt4.QtCore import Qt
+    from PyQt4.QtCore import Qt, QLocale, QTranslator
 except ImportError, err:
     sys.stderr.write("This application needs PyQt4 module%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
@@ -55,8 +55,15 @@ def main():
 
     app = QApplication(sys.argv)
     from m64py.opts import opts, args
+
+    locale = QLocale.system().name()
+    translator = QTranslator()
+    if translator.load(":i18n/m64py_" + locale, ":/"):
+        app.installTranslator(translator)
+
     sys.stderr.write("%s\nM64Py - A frontend for Mupen64Plus version %s\n\n" % (
         LOGO, FRONTEND_VERSION))
+
     from m64py.frontend.mainwindow import MainWindow
     window = MainWindow((opts, args))
     window.show()

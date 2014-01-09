@@ -276,7 +276,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>0</string>
+    <string notr="true">0</string>
    </property>
   </action>
   <action name="slot1">
@@ -284,7 +284,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>1</string>
+    <string notr="true">1</string>
    </property>
   </action>
   <action name="slot2">
@@ -292,7 +292,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>2</string>
+    <string notr="true">2</string>
    </property>
   </action>
   <action name="slot3">
@@ -300,7 +300,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>3</string>
+    <string notr="true">3</string>
    </property>
   </action>
   <action name="slot4">
@@ -308,7 +308,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>4</string>
+    <string notr="true">4</string>
    </property>
   </action>
   <action name="slot5">
@@ -316,7 +316,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>5</string>
+    <string notr="true">5</string>
    </property>
   </action>
   <action name="slot6">
@@ -324,7 +324,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>6</string>
+    <string notr="true">6</string>
    </property>
   </action>
   <action name="slot7">
@@ -332,7 +332,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>7</string>
+    <string notr="true">7</string>
    </property>
   </action>
   <action name="slot8">
@@ -340,7 +340,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>8</string>
+    <string notr="true">8</string>
    </property>
   </action>
   <action name="slot9">
@@ -348,7 +348,7 @@ QStatusBar { margin:0px; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>9</string>
+    <string notr="true">9</string>
    </property>
   </action>
   <action name="actionQuit">
