@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict><key>CFBundleShortVersionString</key>
+<string>0.1.8</string>
+<key>CFBundleExecutable</key>
+<string>m64py.sh</string>
+<key>CFBundleName</key>
+<string>M64Py</string>
+<key>CFBundleInfoDictionaryVersion</key>
+<string>6.0</string>
+<key>CFBundleDisplayName</key>
+<string>M64Py</string>
+<key>CFBundleIconFile</key>
+<string>m64py.icns</string>
+<key>CFBundlePackageType</key>
+<string>APPL</string>
+<key>LSBackgroundOnly</key>
+<string>1</string>
+</dict>
+</plist>
