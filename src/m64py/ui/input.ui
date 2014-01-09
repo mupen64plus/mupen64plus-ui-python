@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
+    <width>858</width>
     <height>654</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -750,7 +750,7 @@ QGroupBox::title {
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="images.qrc">:/images/controller.png</pixmap>
+              <pixmap resource="images.qrc">:/images/controller.svg</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
