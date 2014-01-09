@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 
-a = Analysis([os.path.join(HOMEPATH,'support\\_mountzlib.py'), 'c:\\m64py\\m64py'],
-	pathex=['c:\\m64py\\pyinstaller', 'c:\\m64py\\src'])
+a = Analysis(['c:\\m64py\\m64py'],
+	pathex=['c:\\m64py\\pyinstaller-2.1', 'c:\\m64py\\src'])
 
 pyz = PYZ(a.pure)
 
@@ -12,7 +12,8 @@ exe = EXE(pyz,
 	debug=False,
 	strip=False,
 	upx=True,
-	console=False, icon='c:\\m64py\\dist\\windows\\m64py.ico')
+	console=False,
+	icon='c:\\m64py\\dist\\windows\\m64py.ico')
 
 coll = COLLECT(exe,
 	a.binaries,

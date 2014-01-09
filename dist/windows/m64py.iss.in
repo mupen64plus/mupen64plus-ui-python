@@ -60,13 +60,3 @@ Filename: {app}\m64py.exe; Description: {cm:LaunchProgram,m64py}; Flags: nowait 
 
 [Dirs]
 Tasks: desktopicon; Name: C:\m64py\dist\windows\m64py;
-
-[Code]
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-begin
-  if CurUninstallStep = usPostUninstall then
-  begin
-    if RegKeyExists(HKEY_CURRENT_USER, 'Software\M64Py') then
-        RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\M64Py');
-  end;
-end;
