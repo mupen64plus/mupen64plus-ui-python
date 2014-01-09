@@ -30,7 +30,7 @@ class build_qt(Command):
             uic.compileUi(ui_file, fp)
             fp.close()
         except Exception, err:
-            self.warn('Unable to compile ui %s: %s' % (ui_file, err))
+            self.warn('Unable to compile ui file %s: %s' % (ui_file, err))
             if not os.path.exists(py_file):
                 sys.exit(1)
             return
