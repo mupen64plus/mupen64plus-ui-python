@@ -53,7 +53,7 @@ class Settings(QDialog, Ui_Settings):
         self.combomap = {
                 M64PLUGIN_RSP: (
                     self.comboRSP, self.pushButtonRSP,
-                    None),
+                    Plugin(self.parent)),
                 M64PLUGIN_GFX: (
                     self.comboVideo, self.pushButtonVideo,
                     Plugin(self.parent)),
