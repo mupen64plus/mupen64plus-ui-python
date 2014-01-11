@@ -94,7 +94,7 @@ class Input(QDialog, Ui_InputDialog):
 
         devices = [(self.tr("Keyboard/Mouse"), -1)]
         for num, joy in enumerate(self.joystick.joystick_names):
-            devices.append((self.tr("Joystick %s (%s)" % (num, joy), num)))
+            devices.append((self.tr("Joystick %s (%s)" % (num, joy)), num))
 
         for device, dtype in devices:
             self.comboDevice.addItem(device, dtype)
