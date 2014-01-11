@@ -620,6 +620,10 @@ QStatusBar { margin:0px; }</string>
    </property>
   </action>
   <action name="actionLog">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/action_log_viewer.png</normaloff>:/icons/action_log_viewer.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Log Viewer</string>
    </property>
