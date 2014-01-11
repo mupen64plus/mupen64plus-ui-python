@@ -2,14 +2,21 @@
 
 import os
 import sys
+import urllib
+import shutil
+import zipfile
+import tempfile
+import subprocess
+from os.path import join, dirname, basename, realpath
 from fnmatch import fnmatch
 from distutils.core import setup, Command
 from distutils.dep_util import newer
 from distutils.command.build import build
 from distutils.command.clean import clean
 
-sys.path.append(os.path.realpath("src"))
+sys.path.append(realpath("src"))
 from m64py.core.defs import FRONTEND_VERSION
+BASE_DIR = dirname(realpath(__file__))
 
 class build_qt(Command):
     user_options = []
@@ -21,46 +28,154 @@ class build_qt(Command):
         pass
 
     def compile_ui(self, ui_file):
-        try:
-            from PyQt4 import uic
-            py_file = os.path.splitext(ui_file)[0] + "_ui.py"
-            if not newer(ui_file, py_file):
-                return
-            fp = open(py_file, 'w')
-            uic.compileUi(ui_file, fp)
-            fp.close()
-        except Exception, err:
-            self.warn('Unable to compile ui file %s: %s' % (ui_file, err))
-            if not os.path.exists(py_file):
-                sys.exit(1)
+        from PyQt4 import uic
+        py_file = os.path.splitext(ui_file)[0] + "_ui.py"
+        if not newer(ui_file, py_file):
             return
+        fp = open(py_file, "w")
+        uic.compileUi(ui_file, fp)
+        fp.close()
 
     def compile_rc(self, qrc_file):
         import PyQt4
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
         if not newer(qrc_file, py_file):
             return
-        origpath = os.getenv('PATH')
+        origpath = os.getenv("PATH")
         path = origpath.split(os.pathsep)
-        pyqtfolder = os.path.dirname(PyQt4.__file__)
-        path.append(os.path.join(pyqtfolder, 'bin'))
-        os.putenv('PATH', os.pathsep.join(path))
-        if os.system('pyrcc4 "%s" -o "%s"' % (qrc_file, py_file)) > 0:
+        path.append(dirname(PyQt4.__file__))
+        os.putenv("PATH", os.pathsep.join(path))
+        if subprocess.call(["pyrcc4", qrc_file, "-o", py_file]) > 0:
             self.warn("Unable to compile resource file %s" % (qrc_file))
             if not os.path.exists(py_file):
                 sys.exit(1)
         os.putenv('PATH', origpath)
 
     def run(self):
-        basepath = os.path.join(os.path.dirname(__file__), 'src', 'm64py', 'ui')
+        basepath = join(dirname(__file__),
+                'src', 'm64py', 'ui')
         for dirpath, dirs, filenames in os.walk(basepath):
             for filename in filenames:
                 if filename.endswith('.ui'):
-                    self.compile_ui(os.path.join(dirpath, filename))
+                    self.compile_ui(join(dirpath, filename))
                 elif filename.endswith('.qrc'):
-                    self.compile_rc(os.path.join(dirpath, filename))
+                    self.compile_rc(join(dirpath, filename))
 
-class clean_qt(Command):
+class build_exe(Command):
+    """Needs PyQt4, pyUnRAR2, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
+
+    user_options = []
+    arch = "i686-w64-mingw32"
+    url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
+    dist_dir = join(BASE_DIR, "dist", "windows")
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def set_rthook(self):
+        import PyInstaller
+        hook_file = ""
+        module_dir = dirname(PyInstaller.__file__)
+        rthook = join(module_dir,
+                "loader", "rthooks", "pyi_rth_qt4plugins.py")
+        with open(rthook, "r") as hook: data = hook.read()
+        if "sip.setapi" not in data:
+            lines = data.split("\n")
+            for line in lines:
+                hook_file += line + "\n"
+                if "MEIPASS" in line:
+                    hook_file += "\nimport sip\n"
+                    hook_file += "sip.setapi('QString', 2)\n"
+                    hook_file += "sip.setapi('QVariant', 2)\n"
+            with open(rthook, "w") as hook: hook.write(hook_file)
+
+    def copy_emulator(self):
+        tempdir = tempfile.mkdtemp()
+        zippath = join(tempdir, basename(self.url))
+        urllib.urlretrieve(self.url, zippath)
+        zf = zipfile.ZipFile(zippath)
+        for name in zf.namelist():
+            if self.arch in name:
+                dirn = basename(dirname(name))
+                filen = basename(name)
+                if not filen: continue
+                dest_path = join(self.dist_dir, "m64py")
+                if dirn == self.arch:
+                    fullpath = join(dest_path, filen)
+                else:
+                    fullpath = join(dest_path, dirn, filen)
+                    if not os.path.exists(join(dest_path, dirn)):
+                        os.makedirs(join(dest_path, dirn))
+                unpacked = open(fullpath, "wb")
+                unpacked.write(zf.read(name))
+                unpacked.close()
+        zf.close()
+        shutil.rmtree(tempdir)
+
+    def copy_files(self):
+        import UnRAR2
+        unrar_dir = join(dirname(UnRAR2.__file__), "UnRARDLL")
+        unrar_dll = join(unrar_dir, "unrar.dll")
+        unrar_lic = join(unrar_dir, "license.txt")
+        dest_path = join(self.dist_dir, "m64py")
+        shutil.copy(unrar_dll, dest_path)
+        shutil.copyfile(unrar_lic, join(dest_path, "doc", "unrar-license"))
+        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README"]:
+            shutil.copy(join(BASE_DIR, file), dest_path)
+
+    def remove_files(self):
+        dest_path = join(self.dist_dir, "m64py")
+        for dirname in ["api", "include", "man6"]:
+            shutil.rmtree(join(dest_path, dirname))
+
+    def set_sdl2(self):
+        opts_file = ""
+        opts_path = join(BASE_DIR, "src", "m64py", "opts.py")
+        with open(opts_path, "r") as opts: data = opts.read()
+        lines = data.split("\n")
+        for line in lines:
+            if "sdl2" in line:
+                line = line.replace("default=False", "default=True")
+            opts_file += line + "\n"
+        with open(opts_path, "w") as opts: opts.write(opts_file)
+
+    def run_build_installer(self):
+        iss_file = ""
+        iss_in = join(self.dist_dir, "m64py.iss.in")
+        iss_out = join(self.dist_dir, "m64py.iss")
+        with open(iss_in, "r") as iss: data = iss.read()
+        lines = data.split("\n")
+        for line in lines:
+            line = line.replace("{ICON}", realpath(join(self.dist_dir, "m64py")))
+            line = line.replace("{VERSION}", FRONTEND_VERSION)
+            iss_file += line + "\n"
+        with open(iss_out, "w") as iss: iss.write(iss_file)
+        iscc = join(os.environ["ProgramFiles(x86)"], "Inno Setup 5", "ISCC.exe")
+        subprocess.call([iscc, iss_out])
+
+    def run_build(self):
+        import PyInstaller.build
+        work_path = join(self.dist_dir, "build")
+        spec_file = join(self.dist_dir, "m64py.spec")
+        os.environ["BASE_DIR"] = BASE_DIR
+        os.environ["DIST_DIR"] = self.dist_dir
+        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None}
+        PyInstaller.build.main(None, spec_file, True, **opts)
+
+    def run(self):
+        self.run_command("build_qt")
+        self.set_sdl2()
+        self.set_rthook()
+        self.run_build()
+        self.copy_emulator()
+        self.copy_files()
+        self.remove_files()
+        self.run_build_installer()
+
+class clean_local(Command):
     pats = ['*.py[co]', '*_ui.py', '*_rc.py']
     excludedirs = ['.git', 'build', 'dist']
     user_options = []
@@ -77,11 +192,11 @@ class clean_qt(Command):
 
     def _walkpaths(self, path):
         for root, _dirs, files in os.walk(path):
-            if any(root == os.path.join(path, e) or root.startswith(
-                os.path.join(path, e, '')) for e in self.excludedirs):
+            if any(root == join(path, e) or root.startswith(
+                join(path, e, '')) for e in self.excludedirs):
                 continue
             for e in files:
-                fpath = os.path.join(root, e)
+                fpath = join(root, e)
                 if any(fnmatch(fpath, p) for p in self.pats):
                     yield fpath
 
@@ -92,14 +207,15 @@ class mybuild(build):
 
 class myclean(clean):
     def run(self):
-        self.run_command("clean_qt")
+        self.run_command("clean_local")
         clean.run(self)
 
 cmdclass = {
         'build': mybuild,
         'build_qt': build_qt,
+        'build_exe': build_exe,
         'clean': myclean,
-        'clean_qt': clean_qt
+        'clean_local': clean_local
     }
 
 setup(name = "m64py",

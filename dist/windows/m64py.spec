@@ -1,19 +1,22 @@
-# -*- mode: python -*-
+import os
+from os.path import join
 
-a = Analysis(['c:\\m64py\\m64py'],
-	pathex=['c:\\m64py\\pyinstaller-2.1', 'c:\\m64py\\src'])
+DIST_DIR = os.environ["DIST_DIR"]
+BASE_DIR = os.environ["BASE_DIR"]
+
+a = Analysis([join(BASE_DIR, 'm64py')], pathex=[join(BASE_DIR, 'src')])
 
 pyz = PYZ(a.pure)
 
 exe = EXE(pyz,
 	a.scripts,
 	exclude_binaries=1,
-	name=os.path.join('build\\pyi.win32\\m64py', 'm64py.exe'),
+	name=join(DIST_DIR, 'build', 'pyi.win32', 'm64py', 'm64py.exe'),
 	debug=False,
 	strip=False,
 	upx=True,
 	console=False,
-	icon='c:\\m64py\\dist\\windows\\m64py.ico')
+	icon=join(DIST_DIR, 'm64py.ico'))
 
 coll = COLLECT(exe,
 	a.binaries,

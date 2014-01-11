@@ -59,4 +59,4 @@ Root: HKCR; SubKey: Mupen64Plus.Document\shell\open\command; ValueType: string; 
 Filename: {app}\m64py.exe; Description: {cm:LaunchProgram,m64py}; Flags: nowait postinstall skipifsilent;
 
 [Dirs]
-Tasks: desktopicon; Name: C:\m64py\dist\windows\m64py;
+Tasks: desktopicon; Name: {ICON};
