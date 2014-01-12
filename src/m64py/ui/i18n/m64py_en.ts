@@ -80,52 +80,52 @@
 <context>
     <name>Input</name>
     <message>
-        <location filename="input.py" line="85"/>
+        <location filename="input.py" line="104"/>
         <source>Controller %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="88"/>
+        <location filename="input.py" line="107"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="88"/>
+        <location filename="input.py" line="107"/>
         <source>Mem pak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="88"/>
+        <location filename="input.py" line="107"/>
         <source>Rumble pak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="91"/>
+        <location filename="input.py" line="110"/>
         <source>Fully Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="92"/>
+        <location filename="input.py" line="111"/>
         <source>Auto with named SDL device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="92"/>
+        <location filename="input.py" line="111"/>
         <source>Fully Automatic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="95"/>
+        <location filename="input.py" line="114"/>
         <source>Keyboard/Mouse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="97"/>
+        <location filename="input.py" line="116"/>
         <source>Joystick %s (%s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.py" line="391"/>
+        <location filename="input.py" line="414"/>
         <source>Select...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -151,142 +151,142 @@
 <context>
     <name>InputDialog</name>
     <message>
-        <location filename="input.ui" line="57"/>
+        <location filename="input.ui" line="54"/>
         <source>Input-SDL-Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="109"/>
-        <source>Plugged</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="input.ui" line="122"/>
-        <source>Mouse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="input.ui" line="151"/>
         <source>Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="184"/>
-        <source>Device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="input.ui" line="217"/>
+        <location filename="input.ui" line="165"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="275"/>
+        <location filename="input.ui" line="198"/>
+        <source>Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="input.ui" line="227"/>
+        <source>Plugged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="input.ui" line="240"/>
+        <source>Mouse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="input.ui" line="272"/>
         <source>AnalogDeadzone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="371"/>
+        <location filename="input.ui" line="364"/>
         <source>X:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="391"/>
+        <location filename="input.ui" line="384"/>
         <source>Y:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="348"/>
+        <location filename="input.ui" line="341"/>
         <source>AnalogPeak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1397"/>
+        <location filename="input.ui" line="1390"/>
         <source>Select...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="483"/>
+        <location filename="input.ui" line="476"/>
         <source>L Trigger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="513"/>
+        <location filename="input.ui" line="506"/>
         <source>R Trigger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="562"/>
+        <location filename="input.ui" line="555"/>
         <source>Digital Pad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="958"/>
+        <location filename="input.ui" line="951"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1000"/>
+        <location filename="input.ui" line="993"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1042"/>
+        <location filename="input.ui" line="1035"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1084"/>
+        <location filename="input.ui" line="1077"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="775"/>
+        <location filename="input.ui" line="768"/>
         <source>C - Buttons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="950"/>
+        <location filename="input.ui" line="943"/>
         <source>Analog Stick</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1134"/>
+        <location filename="input.ui" line="1127"/>
         <source>Buttons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1142"/>
+        <location filename="input.ui" line="1135"/>
         <source>B Button</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1181"/>
+        <location filename="input.ui" line="1174"/>
         <source>A Button</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1220"/>
+        <location filename="input.ui" line="1213"/>
         <source>Mempak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1259"/>
+        <location filename="input.ui" line="1252"/>
         <source>Rumblepak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1354"/>
+        <location filename="input.ui" line="1347"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1384"/>
+        <location filename="input.ui" line="1377"/>
         <source>Z Trigger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="input.ui" line="1457"/>
+        <location filename="input.ui" line="1450"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -674,67 +674,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="27"/>
+        <location filename="settings.ui" line="35"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.ui" line="51"/>
         <source>Paths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="58"/>
+        <location filename="settings.ui" line="81"/>
         <source>Library file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="210"/>
+        <location filename="settings.ui" line="233"/>
         <source>Browse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="103"/>
+        <location filename="settings.ui" line="126"/>
         <source>Plugins directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="148"/>
+        <location filename="settings.ui" line="171"/>
         <source>Data directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="193"/>
+        <location filename="settings.ui" line="216"/>
         <source>ROMs directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="224"/>
+        <location filename="settings.ui" line="248"/>
         <source>Emulator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="258"/>
+        <location filename="settings.ui" line="276"/>
         <source>CPU Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="299"/>
+        <location filename="settings.ui" line="311"/>
         <source>Compatibility</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="313"/>
+        <location filename="settings.ui" line="323"/>
         <source>No Compiled Jump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="320"/>
+        <location filename="settings.ui" line="330"/>
         <source>Disable Extra Memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="327"/>
+        <location filename="settings.ui" line="337"/>
         <source>Delay SI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="349"/>
+        <location filename="settings.ui" line="357"/>
         <source>cycles per emulated instruction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -744,93 +749,88 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="419"/>
+        <location filename="settings.ui" line="411"/>
         <source>On Screen Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="429"/>
+        <location filename="settings.ui" line="421"/>
         <source>Disables ScreenSaver when emulator is running</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="432"/>
+        <location filename="settings.ui" line="424"/>
         <source>Disable ScreenSaver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="439"/>
+        <location filename="settings.ui" line="431"/>
         <source>Enable embedding of OpenGL window. This option needs restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="442"/>
+        <location filename="settings.ui" line="434"/>
         <source>Enable Video Extension</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="452"/>
+        <location filename="settings.ui" line="444"/>
         <source>Maintain aspect-ratio on resizing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="455"/>
+        <location filename="settings.ui" line="447"/>
         <source>Keep Aspect Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="489"/>
+        <location filename="settings.ui" line="479"/>
         <source>Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="501"/>
+        <location filename="settings.ui" line="493"/>
         <source>Fullscreen, used only when video extension is disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="504"/>
+        <location filename="settings.ui" line="496"/>
         <source>Fullscreen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="525"/>
+        <location filename="settings.ui" line="515"/>
         <source>Used only when video extension is disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="552"/>
+        <location filename="settings.ui" line="541"/>
         <source>Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="583"/>
+        <location filename="settings.ui" line="563"/>
         <source>Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="815"/>
+        <location filename="settings.ui" line="795"/>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="648"/>
+        <location filename="settings.ui" line="628"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="713"/>
+        <location filename="settings.ui" line="693"/>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="778"/>
+        <location filename="settings.ui" line="758"/>
         <source>Rsp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="settings.ui" line="847"/>
-        <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
