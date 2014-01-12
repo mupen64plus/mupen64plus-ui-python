@@ -1,26 +1,35 @@
-# -*- mode: python -*-
 import os
-a = Analysis(['/Users/milann/Projects/m64py/m64py'],
-             pathex=['/Users/milann/Projects/m64py'],
-             hiddenimports=[],
-             hookspath=None,
-             runtime_hooks=None)
-a.binaries + [('libQtCLucene.4.dylib', '/usr/local/lib/libQtCLucene.4.dylib', 'BINARY')]
+from os.path import join
+
+DIST_DIR = os.environ["DIST_DIR"]
+BASE_DIR = os.environ["BASE_DIR"]
+
+a = Analysis([join(BASE_DIR, 'm64py')], pathex=[join(BASE_DIR, 'src')],
+    hiddenimports=[],
+    hookspath=None,
+    runtime_hooks=None)
+
+a.binaries + [('libQtCLucene.4.dylib',
+    '/usr/local/lib/libQtCLucene.4.dylib', 'BINARY')]
+
 pyz = PYZ(a.pure)
+
 exe = EXE(pyz,
-          a.scripts,
-          exclude_binaries=True,
-          name='m64py',
-          debug=False,
-          strip=None,
-          upx=True,
-          console=False )
+    a.scripts,
+    exclude_binaries=True,
+    name='m64py',
+    debug=False,
+    strip=None,
+    upx=True,
+    console=False)
+
 coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=None,
-               upx=True,
-               name=os.path.join('dist', 'macosx', 'm64py'))
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=None,
+    upx=True,
+    name=join('dist', 'macosx', 'm64py'))
+
 app = BUNDLE(coll,
-    name=os.path.join('dist', 'macosx', 'M64Py.app'))
+    name=join('dist', 'macosx', 'M64Py.app'))

@@ -13,6 +13,7 @@ from distutils.core import setup, Command
 from distutils.dep_util import newer
 from distutils.command.build import build
 from distutils.command.clean import clean
+from distutils.dir_util import copy_tree
 
 sys.path.append(realpath("src"))
 from m64py.core.defs import FRONTEND_VERSION
@@ -75,23 +76,6 @@ class build_exe(Command):
     def finalize_options(self):
         pass
 
-    def set_rthook(self):
-        import PyInstaller
-        hook_file = ""
-        module_dir = dirname(PyInstaller.__file__)
-        rthook = join(module_dir,
-                "loader", "rthooks", "pyi_rth_qt4plugins.py")
-        with open(rthook, "r") as hook: data = hook.read()
-        if "sip.setapi" not in data:
-            lines = data.split("\n")
-            for line in lines:
-                hook_file += line + "\n"
-                if "MEIPASS" in line:
-                    hook_file += "\nimport sip\n"
-                    hook_file += "sip.setapi('QString', 2)\n"
-                    hook_file += "sip.setapi('QVariant', 2)\n"
-            with open(rthook, "w") as hook: hook.write(hook_file)
-
     def copy_emulator(self):
         tempdir = tempfile.mkdtemp()
         zippath = join(tempdir, basename(self.url))
@@ -131,17 +115,6 @@ class build_exe(Command):
         for dirname in ["api", "include", "man6"]:
             shutil.rmtree(join(dest_path, dirname))
 
-    def set_sdl2(self):
-        opts_file = ""
-        opts_path = join(BASE_DIR, "src", "m64py", "opts.py")
-        with open(opts_path, "r") as opts: data = opts.read()
-        lines = data.split("\n")
-        for line in lines:
-            if "sdl2" in line:
-                line = line.replace("default=False", "default=True")
-            opts_file += line + "\n"
-        with open(opts_path, "w") as opts: opts.write(opts_file)
-
     def run_build_installer(self):
         iss_file = ""
         iss_in = join(self.dist_dir, "m64py.iss.in")
@@ -167,13 +140,115 @@ class build_exe(Command):
 
     def run(self):
         self.run_command("build_qt")
-        self.set_sdl2()
-        self.set_rthook()
+        set_sdl2()
+        set_rthook()
         self.run_build()
         self.copy_emulator()
         self.copy_files()
         self.remove_files()
         self.run_build_installer()
+
+class build_dmg(Command):
+    user_options = []
+    dist_dir = join(BASE_DIR, "dist", "macosx")
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def set_plist(self):
+        info_plist = join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Info.plist")
+        shutil.copy(join(self.dist_dir, "m64py.icns"),
+                join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources"))
+        shutil.copy(join(self.dist_dir, "m64py.sh"),
+                join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS"))
+        with open(info_plist, "r") as opts: data = opts.read()
+        plist_file = ""
+        lines = data.split("\n")
+        for line in lines:
+            if "0.0.0" in line:
+                line = line.replace("0.0.0", FRONTEND_VERSION)
+            elif "icon-windowed.icns" in line:
+                line = line.replace("icon-windowed.icns", "m64py.icns")
+            elif "MacOS/m64py" in line:
+                line = line.replace("MacOS/m64py", "m64py.sh")
+            plist_file += line + "\n"
+        with open(info_plist, "w") as opts: opts.write(plist_file)
+
+    def copy_emulator(self):
+        src_path = join(self.dist_dir, "mupen64plus", "Contents")
+        dest_path = join(self.dist_dir, "dmg", "M64Py.app", "Contents")
+        copy_tree(src_path, dest_path)
+
+    def copy_files(self):
+        dest_path = join(self.dist_dir, "dmg")
+        if not os.path.exists(dest_path):
+            os.mkdir(dest_path)
+        shutil.move(join(self.dist_dir, "M64Py.app"), dest_path)
+        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README"]:
+            shutil.copy(join(BASE_DIR, file), dest_path)
+        shutil.copy(join(BASE_DIR, "test", "mupen64plus.v64"), dest_path)
+
+    def remove_files(self):
+        dest_path = join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS")
+        for dirname in ["include", "lib"]:
+            shutil.rmtree(join(dest_path, dirname))
+        os.remove(join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources", "icon-windowed.icns"))
+
+    def run_build_dmg(self):
+        src_path = join(self.dist_dir, "dmg")
+        dst_path = join(self.dist_dir, "m64py-%s.dmg" % FRONTEND_VERSION)
+        subprocess.call(["hdiutil", "create", dst_path, "-srcfolder", src_path])
+
+    def run_build(self):
+        import PyInstaller.build
+        work_path = join(self.dist_dir, "build")
+        spec_file = join(self.dist_dir, "m64py.spec")
+        os.environ["BASE_DIR"] = BASE_DIR
+        os.environ["DIST_DIR"] = self.dist_dir
+        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None}
+        PyInstaller.build.main(None, spec_file, True, **opts)
+
+    def run(self):
+        self.run_command("build_qt")
+        set_sdl2()
+        set_rthook()
+        self.run_build()
+        self.copy_files()
+        self.copy_emulator()
+        self.remove_files()
+        self.set_plist()
+        self.run_build_dmg()
+
+def set_sdl2():
+    opts_file = ""
+    opts_path = join(BASE_DIR, "src", "m64py", "opts.py")
+    with open(opts_path, "r") as opts: data = opts.read()
+    lines = data.split("\n")
+    for line in lines:
+        if "sdl2" in line:
+            line = line.replace("default=False", "default=True")
+        opts_file += line + "\n"
+    with open(opts_path, "w") as opts: opts.write(opts_file)
+
+def set_rthook():
+    import PyInstaller
+    hook_file = ""
+    module_dir = dirname(PyInstaller.__file__)
+    rthook = join(module_dir,
+            "loader", "rthooks", "pyi_rth_qt4plugins.py")
+    with open(rthook, "r") as hook: data = hook.read()
+    if "sip.setapi" not in data:
+        lines = data.split("\n")
+        for line in lines:
+            hook_file += line + "\n"
+            if "MEIPASS" in line:
+                hook_file += "\nimport sip\n"
+                hook_file += "sip.setapi('QString', 2)\n"
+                hook_file += "sip.setapi('QVariant', 2)\n"
+        with open(rthook, "w") as hook: hook.write(hook_file)
 
 class clean_local(Command):
     pats = ['*.py[co]', '*_ui.py', '*_rc.py']
@@ -214,6 +289,7 @@ cmdclass = {
         'build': mybuild,
         'build_qt': build_qt,
         'build_exe': build_exe,
+        'build_dmg': build_dmg,
         'clean': myclean,
         'clean_local': clean_local
     }
