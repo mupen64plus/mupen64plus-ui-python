@@ -580,7 +580,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="624"/>
+        <location filename="mainwindow.ui" line="628"/>
         <source>&amp;Log Viewer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -709,117 +709,127 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="261"/>
+        <location filename="settings.ui" line="258"/>
         <source>CPU Core</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="296"/>
+        <location filename="settings.ui" line="299"/>
         <source>Compatibility</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="310"/>
+        <location filename="settings.ui" line="313"/>
         <source>No Compiled Jump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="317"/>
+        <location filename="settings.ui" line="320"/>
         <source>Disable Extra Memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="368"/>
+        <location filename="settings.ui" line="327"/>
+        <source>Delay SI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.ui" line="349"/>
+        <source>cycles per emulated instruction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settings.ui" line="399"/>
         <source>Graphics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="388"/>
+        <location filename="settings.ui" line="419"/>
         <source>On Screen Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="398"/>
+        <location filename="settings.ui" line="429"/>
         <source>Disables ScreenSaver when emulator is running</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="401"/>
+        <location filename="settings.ui" line="432"/>
         <source>Disable ScreenSaver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="408"/>
+        <location filename="settings.ui" line="439"/>
         <source>Enable embedding of OpenGL window. This option needs restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="411"/>
+        <location filename="settings.ui" line="442"/>
         <source>Enable Video Extension</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="421"/>
+        <location filename="settings.ui" line="452"/>
         <source>Maintain aspect-ratio on resizing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="424"/>
+        <location filename="settings.ui" line="455"/>
         <source>Keep Aspect Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="458"/>
+        <location filename="settings.ui" line="489"/>
         <source>Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="470"/>
+        <location filename="settings.ui" line="501"/>
         <source>Fullscreen, used only when video extension is disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="473"/>
+        <location filename="settings.ui" line="504"/>
         <source>Fullscreen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="494"/>
+        <location filename="settings.ui" line="525"/>
         <source>Used only when video extension is disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="521"/>
+        <location filename="settings.ui" line="552"/>
         <source>Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="552"/>
+        <location filename="settings.ui" line="583"/>
         <source>Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="784"/>
+        <location filename="settings.ui" line="815"/>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="617"/>
+        <location filename="settings.ui" line="648"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="682"/>
+        <location filename="settings.ui" line="713"/>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="747"/>
+        <location filename="settings.ui" line="778"/>
         <source>Rsp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="816"/>
+        <location filename="settings.ui" line="847"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>

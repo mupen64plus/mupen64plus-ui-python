@@ -253,6 +253,14 @@ class Settings(QDialog, Ui_Settings):
                 self.m64p.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
                 self.m64p.config.get_parameter_help("DisableExtraMem"))
+        self.checkDelaySI.setChecked(
+                self.m64p.config.get_parameter("DelaySI"))
+        self.checkDelaySI.setToolTip(
+                self.m64p.config.get_parameter_help("DelaySI"))
+        self.spinCountPerOp.setValue(
+                self.m64p.config.get_parameter("CountPerOp"))
+        self.spinCountPerOp.setToolTip(
+                self.m64p.config.get_parameter_help("CountPerOp"))
 
     def set_plugins(self):
         plugin_map = self.m64p.plugin_map
@@ -307,6 +315,10 @@ class Settings(QDialog, Ui_Settings):
                 self.checkNoCompiledJump.isChecked())
         self.m64p.config.set_parameter("DisableExtraMem",
                 self.checkDisableExtraMem.isChecked())
+        self.m64p.config.set_parameter("DelaySI",
+                self.checkDelaySI.isChecked())
+        self.m64p.config.set_parameter("CountPerOp",
+                self.spinCountPerOp.value())
         self.m64p.config.set_parameter("SharedDataPath",
                 self.pathData.text())
 

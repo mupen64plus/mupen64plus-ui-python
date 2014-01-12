@@ -20,7 +20,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -223,29 +223,26 @@ QGroupBox::title {
       <attribute name="title">
        <string>Emulator</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QGroupBox" name="groupEmuMode">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>461</width>
-         <height>211</height>
+         <x>11</x>
+         <y>11</y>
+         <width>459</width>
+         <height>102</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_10">
-        <item>
-         <widget class="QGroupBox" name="groupEmuMode">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QGroupBox {
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QGroupBox {
 	border: 1px solid #7F7F7F;
 	border-radius: 3px;
 	margin-top: 1ex;
@@ -256,31 +253,37 @@ QGroupBox::title {
 	subcontrol-position: top left; 
 	padding: 0 2px;
  }</string>
-          </property>
-          <property name="title">
-           <string>CPU Core</string>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupEmuMode_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QGroupBox {
+       </property>
+       <property name="title">
+        <string>CPU Core</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupEmuMode_2">
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>119</y>
+         <width>461</width>
+         <height>141</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QGroupBox {
 	border: 1px solid #7F7F7F;
 	border-radius: 3px;
 	margin-top: 1ex;
@@ -291,37 +294,65 @@ QGroupBox::title {
 	subcontrol-position: top left; 
 	padding: 0 2px;
  }</string>
-          </property>
-          <property name="title">
-           <string>Compatibility</string>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_17">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_16">
-             <item>
-              <widget class="QCheckBox" name="checkNoCompiledJump">
-               <property name="text">
-                <string>No Compiled Jump</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="checkDisableExtraMem">
-               <property name="text">
-                <string>Disable Extra Memory</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
+       </property>
+       <property name="title">
+        <string>Compatibility</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_16">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QCheckBox" name="checkNoCompiledJump">
+            <property name="text">
+             <string>No Compiled Jump</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkDisableExtraMem">
+            <property name="text">
+             <string>Disable Extra Memory</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkDelaySI">
+            <property name="text">
+             <string>Delay SI</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QSpinBox" name="spinCountPerOp">
+              <property name="maximum">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>cycles per emulated instruction</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -330,7 +361,7 @@ QGroupBox::title {
       <attribute name="title">
        <string>Graphics</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>11</x>
