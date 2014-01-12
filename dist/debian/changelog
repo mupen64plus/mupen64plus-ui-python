@@ -1,3 +1,9 @@
+m64py (0.1.9-1) unstable; urgency=low
+
+  * bug fixes
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Sun, 12 Jan 2014 02:18:17 +0100
+
 m64py (0.1.8-1) unstable; urgency=low
 
   * translations support
