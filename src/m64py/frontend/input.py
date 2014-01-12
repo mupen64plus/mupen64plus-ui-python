@@ -42,6 +42,8 @@ class Input(QDialog, Ui_InputDialog):
         self.parent = parent
         self.config = None
         self.controller = 1
+        self.mode = 0
+        self.device = -1
         self.is_joystick = False
         self.set_section("Input-SDL-Control%d" % self.controller)
         self.joystick = Joystick()
@@ -60,13 +62,17 @@ class Input(QDialog, Ui_InputDialog):
                 self.on_device_changed)
         self.comboController.currentIndexChanged.connect(
                 self.on_controller_changed)
+        self.comboMode.currentIndexChanged.connect(
+                self.on_mode_changed)
 
     def show_dialog(self):
         self.config = self.parent.worker.m64p.config
         self.config.open_section(self.section)
+        self.mode = self.config.get_parameter("mode")
         self.device = self.config.get_parameter("device")
         self.is_joystick = bool(self.device >= 0)
         self.set_items()
+        self.set_enabled()
         self.show()
 
     def set_items(self):
@@ -79,6 +85,19 @@ class Input(QDialog, Ui_InputDialog):
 
     def set_section(self, section):
         self.section = section
+
+    def set_enabled(self):
+        enabled = bool(self.mode == 0)
+        for key, val in self.keys.items():
+            ckey, widget = val
+            widget.setEnabled(enabled)
+        for key, val in self.opts.items():
+            param, tooltip, widget, ptype = val
+            if key in ["AnalogDeadzone", "AnalogPeak"]:
+                for spin in widget:
+                    spin.setEnabled(enabled)
+            elif key not in ["device", "mode"]:
+                widget.setEnabled(enabled)
 
     def add_items(self):
         for controller in range(1, 5):
@@ -118,6 +137,10 @@ class Input(QDialog, Ui_InputDialog):
         if not self.config.parameters[self.section]:
             self.set_default()
         self.set_items()
+
+    def on_mode_changed(self, index):
+        self.mode = self.comboMode.itemData(index)
+        self.set_enabled()
 
     def set_default(self):
         for key in self.keys.keys():
