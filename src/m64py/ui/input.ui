@@ -28,11 +28,8 @@
   <property name="toolTip">
    <string notr="true"/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_8">
-   <property name="margin">
-    <number>10</number>
-   </property>
-   <item>
+  <layout class="QGridLayout" name="gridLayout_17">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -86,6 +83,127 @@ QGroupBox::title {
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="1">
+              <spacer name="horizontalSpacer_29">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_17">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Plugin</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QComboBox" name="comboDevice">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <spacer name="horizontalSpacer_31">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="2">
+              <widget class="QComboBox" name="comboMode">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <spacer name="horizontalSpacer_30">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="2">
+              <widget class="QComboBox" name="comboPlugin">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Device</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox_4">
           <property name="sizePolicy">
@@ -94,8 +212,8 @@ QGroupBox::title {
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
               <widget class="QCheckBox" name="checkPlugged">
@@ -128,127 +246,6 @@ QGroupBox::title {
           </layout>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <item>
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Plugin</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <spacer name="horizontalSpacer_29">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="2">
-              <widget class="QComboBox" name="comboPlugin">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Device</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <spacer name="horizontalSpacer_30">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="2">
-              <widget class="QComboBox" name="comboDevice">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Mode</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <spacer name="horizontalSpacer_31">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="2">
-              <widget class="QComboBox" name="comboMode">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="0" column="2">
          <widget class="QGroupBox" name="groupBox_3">
           <property name="sizePolicy">
@@ -260,10 +257,10 @@ QGroupBox::title {
           <property name="title">
            <string/>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_14">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_28">
-             <item>
+          <layout class="QGridLayout" name="gridLayout_16">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_15">
+             <item row="0" column="0" colspan="2">
               <widget class="QLabel" name="label_3">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -276,7 +273,7 @@ QGroupBox::title {
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="2">
               <spacer name="horizontalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -287,19 +284,19 @@ QGroupBox::title {
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>13</width>
-                 <height>20</height>
+                 <height>14</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item>
+             <item row="0" column="3">
               <widget class="QLabel" name="label_13">
                <property name="text">
                 <string>X:</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="4">
               <widget class="QSpinBox" name="spinDeadzoneX">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -312,14 +309,14 @@ QGroupBox::title {
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="5">
               <widget class="QLabel" name="label_14">
                <property name="text">
                 <string>Y:</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="6">
               <widget class="QSpinBox" name="spinDeadzoneY">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -332,11 +329,7 @@ QGroupBox::title {
                </property>
               </widget>
              </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_25">
-             <item>
+             <item row="1" column="0">
               <widget class="QLabel" name="label_4">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -349,7 +342,7 @@ QGroupBox::title {
                </property>
               </widget>
              </item>
-             <item>
+             <item row="1" column="1" colspan="2">
               <spacer name="horizontalSpacer_5">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -359,20 +352,20 @@ QGroupBox::title {
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>13</width>
-                 <height>20</height>
+                 <width>31</width>
+                 <height>13</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item>
+             <item row="1" column="3">
               <widget class="QLabel" name="label_15">
                <property name="text">
                 <string>X:</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="1" column="4">
               <widget class="QSpinBox" name="spinPeakX">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -385,14 +378,14 @@ QGroupBox::title {
                </property>
               </widget>
              </item>
-             <item>
+             <item row="1" column="5">
               <widget class="QLabel" name="label_16">
                <property name="text">
                 <string>Y:</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="1" column="6">
               <widget class="QSpinBox" name="spinPeakY">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -561,8 +554,8 @@ QGroupBox::title {
              <property name="title">
               <string>Digital Pad</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="0" column="0">
                <layout class="QGridLayout" name="gridLayout_3">
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_26">
@@ -774,8 +767,8 @@ QGroupBox::title {
              <property name="title">
               <string>C - Buttons</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="0" column="0">
                <layout class="QGridLayout" name="gridLayout_5">
                 <item row="0" column="2">
                  <widget class="InputButton" name="pushC_Button_U">
@@ -949,8 +942,8 @@ QGroupBox::title {
              <property name="title">
               <string>Analog Stick</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
                <layout class="QGridLayout" name="gridLayout_4">
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_50">
@@ -1133,8 +1126,8 @@ QGroupBox::title {
              <property name="title">
               <string>Buttons</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
                <layout class="QGridLayout" name="gridLayout_6">
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_7">
@@ -1429,7 +1422,7 @@ QGroupBox::title {
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="statusLabel">
