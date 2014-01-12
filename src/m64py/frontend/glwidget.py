@@ -88,8 +88,7 @@ class GLWidget(QGLWidget):
         if window.isFullScreen():
             self.parent.menubar.show()
             self.parent.statusbar.show()
-            window.setWindowState(Qt.WindowActive)
         else:
             self.parent.menubar.hide()
             self.parent.statusbar.hide()
-            window.setWindowState(Qt.WindowFullScreen)
+        window.setWindowState(window.windowState() ^ Qt.WindowFullScreen)

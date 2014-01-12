@@ -65,6 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             SIZE_3X: self.action3X}
 
         self.cheats = None
+        self.maximized = False
         self.widgets_height = None
         self.worker = Worker(self)
         self.settings = self.worker.settings
@@ -78,6 +79,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self.settings.qset.sync()
         self.worker.core_shutdown()
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.WindowStateChange:
+            if event.oldState() == Qt.WindowMaximized:
+                self.maximized = False
+            elif event.oldState() == Qt.WindowNoState and \
+                    self.windowState() == Qt.WindowMaximized:
+                self.maximized = True
 
     def resizeEvent(self, event):
         event.ignore()
@@ -137,6 +146,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def keep_aspect(self, size):
         """Keeps 4:3 aspect ratio."""
         width, height = size
+        if self.maximized:
+            return width, height
         fixed_ratio = 1.3333333333333333
         current_ratio = float(width)/float(height)
         if fixed_ratio > current_ratio:
