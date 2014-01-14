@@ -15,7 +15,7 @@ from distutils.command.build import build
 from distutils.command.clean import clean
 from distutils.dir_util import copy_tree
 
-sys.path.append(realpath("src"))
+sys.path.insert(0, realpath("src"))
 from m64py.core.defs import FRONTEND_VERSION
 BASE_DIR = dirname(realpath(__file__))
 
