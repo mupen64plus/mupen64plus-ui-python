@@ -66,7 +66,7 @@ class Input(QDialog, Ui_InputDialog):
                 self.on_mode_changed)
 
     def show_dialog(self):
-        self.config = self.parent.worker.m64p.config
+        self.config = self.parent.worker.core.config
         self.config.open_section(self.section)
         self.mode = self.config.get_parameter("mode")
         self.device = self.config.get_parameter("device")
@@ -386,7 +386,7 @@ class Input(QDialog, Ui_InputDialog):
         return [0, 0]
 
     def get_sdl_key(self, text):
-        if SDL2 or self.parent.worker.m64p.core_sdl2:
+        if SDL2 or self.parent.worker.core.core_sdl2:
             from m64py.SDL2.keyboard import SDL_GetScancodeFromName
             if "Shift" in text or "Ctrl" in text or "Alt" in text:
                 text = "Left %s" % text
@@ -401,7 +401,7 @@ class Input(QDialog, Ui_InputDialog):
     def get_key_name(self, sdl_key):
         if not sdl_key:
             return self.tr("Select...")
-        if SDL2 or self.parent.worker.m64p.core_sdl2:
+        if SDL2 or self.parent.worker.core.core_sdl2:
             from m64py.SDL2.keyboard import SDL_GetScancodeName
             try:
                 text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])

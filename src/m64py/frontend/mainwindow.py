@@ -23,14 +23,15 @@ from PyQt4.QtCore import *
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
 from m64py.archive import EXT_FILTER
-from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.log import logview
+from m64py.frontend.cheat import Cheat
 from m64py.frontend.worker import Worker
 from m64py.frontend.rominfo import RomInfo
 from m64py.frontend.romlist import ROMList
-from m64py.frontend.recentfiles import RecentFiles
+from m64py.frontend.settings import Settings
 from m64py.frontend.glwidget import GLWidget
-from m64py.frontend.cheat import Cheat
+from m64py.ui.mainwindow_ui import Ui_MainWindow
+from m64py.frontend.recentfiles import RecentFiles
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Frontend main window"""
@@ -57,7 +58,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbarLabel = QLabel()
         self.statusbarLabel.setIndent(2)
         self.statusbar.addPermanentWidget(self.statusbarLabel, 1)
-        self.update_status(self.tr("Welcome to M64Py version %s." % FRONTEND_VERSION))
+        self.update_status(self.tr(
+            "Welcome to M64Py version %s." % FRONTEND_VERSION))
 
         self.sizes = {
             SIZE_1X: self.action1X,
@@ -67,8 +69,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cheats = None
         self.maximized = False
         self.widgets_height = None
+
+        self.settings = Settings(self)
         self.worker = Worker(self)
-        self.settings = self.worker.settings
+
+        self.vidext = bool(int(
+            self.settings.qset.value("enable_vidext", 1)))
 
         self.create_state_slots()
         self.create_widgets()
@@ -77,8 +83,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.worker.init()
 
     def closeEvent(self, event):
-        self.settings.qset.sync()
-        self.worker.core_shutdown()
+        self.worker.quit()
 
     def changeEvent(self, event):
         if event.type() == QEvent.WindowStateChange:
@@ -111,17 +116,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def window_size_triggered(self, size):
         width, height = size
-        fullscreen = self.window().isFullScreen()
-        if self.worker.use_vidext and self.worker.m64p.get_handle():
+        if self.vidext and self.worker.core.get_handle():
+            fullscreen = self.window().isFullScreen()
             # event.ignore() doesn't work on windows
             if not sys.platform == "win32":
                 if not fullscreen and \
                         bool(int(self.settings.qset.value("keep_aspect", 1))):
                     width, height = self.keep_aspect(size)
 
-            self.worker.m64p.config.open_section("Video-General")
-            self.worker.m64p.config.set_parameter("ScreenWidth", width)
-            self.worker.m64p.config.set_parameter("ScreenHeight", height)
+            self.worker.core.config.open_section("Video-General")
+            self.worker.core.config.set_parameter("ScreenWidth", width)
+            self.worker.core.config.set_parameter("ScreenHeight", height)
 
             if not fullscreen:
                 video_size = (width << 16) + height
@@ -194,7 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setCentralWidget(self.stack)
         self.view = View(self)
         self.stack.addWidget(self.view)
-        if self.worker.use_vidext:
+        if self.vidext:
             self.glwidget = GLWidget(self)
             self.worker.video.set_widget(self)
             self.stack.addWidget(self.glwidget)
@@ -305,16 +310,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionPlugins.setEnabled(not action)
 
     def on_rom_opened(self):
-        if self.worker.use_vidext:
+        if self.vidext:
             self.stack.setCurrentWidget(self.glwidget)
             self.glwidget.setFocus(True)
         if not self.cheats:
             self.cheats = Cheat(self)
-        self.update_status(self.worker.m64p.rom_settings.goodname)
+        self.update_status(self.worker.core.rom_settings.goodname)
         QTimer.singleShot(2000, self.worker.toggle_actions)
 
     def on_rom_closed(self):
-        if self.worker.use_vidext and self.isFullScreen():
+        if self.vidext and self.isFullScreen():
             self.glwidget.emit(SIGNAL("toggle_fs()"))
         self.stack.setCurrentWidget(self.view)
         self.actionMute.setChecked(False)
@@ -366,7 +371,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog.setFileMode(QFileDialog.ExistingFile)
         file_path = dialog.getOpenFileName(
                 self, self.tr("Load State From File"),
-                os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
+                os.path.join(self.worker.core.config.get_path("UserData"), "save"),
                 "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
         if file_path:
             self.worker.state_load(file_path)
@@ -377,7 +382,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog = QFileDialog()
         file_path, file_filter = dialog.getSaveFileNameAndFilter(
                 self, self.tr("Save State To File"),
-                os.path.join(self.worker.m64p.config.get_path("UserData"), "save"),
+                os.path.join(self.worker.core.config.get_path("UserData"), "save"),
                 ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
                 M64P_SAVES[M64SAV_M64P][0])
         if file_path:
@@ -487,6 +492,6 @@ class View(QGraphicsView):
         self.setContentsMargins(QMargins())
         self.setStyleSheet("QGraphicsView {border:0px solid;margin:0px;}")
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-        self.setScene(QGraphicsScene())
+        self.setScene(QGraphicsScene(self))
         self.scene().addItem(
                 QGraphicsPixmapItem(QPixmap(":/images/front.png")))

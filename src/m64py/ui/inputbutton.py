@@ -69,7 +69,7 @@ class InputButton(QPushButton):
             text = self.tr("Select...")
             self.setCheckable(False)
         else:
-            if SDL2 or self.input.parent.worker.m64p.core_sdl2:
+            if SDL2 or self.input.parent.worker.core.core_sdl2:
                 from m64py.SDL2.keyboard import SDL_GetScancodeName
                 text = SDL_GetScancodeName(QT2SDL2[key])
             else:

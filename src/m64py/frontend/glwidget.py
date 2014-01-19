@@ -37,7 +37,6 @@ class GLWidget(QGLWidget):
         self.connect(self, SIGNAL("toggle_fs()"), self.toggle_fs)
 
     def showEvent(self, event):
-        self.qglClearColor(Qt.black)
         self.setFocus(True)
 
     def resizeEvent(self, event):
@@ -63,7 +62,7 @@ class GLWidget(QGLWidget):
                 self.worker.save_snapshot()
             else:
                 try:
-                    if SDL2 or self.worker.m64p.core_sdl2:
+                    if SDL2 or self.worker.core.core_sdl2:
                         sdl_key = QT2SDL2[key]
                     else:
                         sdl_key = QT2SDL[key]
@@ -75,7 +74,7 @@ class GLWidget(QGLWidget):
         if self.worker.state == M64EMU_RUNNING:
             key = event.key()
             try:
-                if SDL2 or self.worker.m64p.core_sdl2:
+                if SDL2 or self.worker.core.core_sdl2:
                     sdl_key = QT2SDL2[key]
                 else:
                     sdl_key = QT2SDL[key]

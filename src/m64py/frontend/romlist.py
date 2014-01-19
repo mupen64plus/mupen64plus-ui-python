@@ -42,7 +42,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.parent = parent
-        self.m64p = self.parent.worker.m64p
+        self.core = self.parent.worker.core
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.qset = self.parent.settings.qset
 
@@ -54,8 +54,8 @@ class ROMList(QMainWindow, Ui_ROMList):
 
         self.parser = ConfigParser.ConfigParser()
         self.reader = ROMReader(self)
-        self.user_data_path = self.m64p.config.get_path("UserData")
-        self.shared_data_path = self.m64p.config.get_path("SharedData")
+        self.user_data_path = self.core.config.get_path("UserData")
+        self.shared_data_path = self.core.config.get_path("SharedData")
 
         self.init()
         self.connect_signals()

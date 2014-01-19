@@ -35,8 +35,7 @@ class Settings(QDialog, Ui_Settings):
         QDialog.__init__(self, parent)
         self.parent = parent
         self.setupUi(self)
-        self.m64p = None
-        self.m64p_handle = None
+        self.core = None
         self.plugins = []
         self.qset = QSettings("m64py", "m64py")
         self.input = Input(self.parent)
@@ -80,14 +79,14 @@ class Settings(QDialog, Ui_Settings):
     def save_config(self):
         self.save_paths()
         self.save_plugins()
-        if self.m64p_handle:
+        if self.core.get_handle():
             self.save_video()
             self.save_core()
-            self.m64p.config.save_file()
+            self.core.config.save_file()
         self.qset.sync()
 
     def set_config(self):
-        if self.m64p_handle:
+        if self.core.get_handle():
             self.set_paths()
             self.set_plugins()
             self.set_video()
@@ -129,25 +128,21 @@ class Settings(QDialog, Ui_Settings):
         if not path: return
         widget.setText(path)
         if widget == self.pathLibrary:
-            if not self.m64p_handle:
-                self.parent.worker.core_load(path)
-                if self.parent.worker.m64p.get_handle():
-                    self.m64p = self.parent.worker.m64p
-                    self.m64p_handle = self.m64p.get_handle()
-
+            if not self.parent.worker.core.get_handle():
+                self.parent.worker.init(path)
+                if self.parent.worker.core.get_handle():
+                    self.core = self.parent.worker.core
                     self.set_core()
                     self.set_video()
-                    self.set_default_general()
                     size = self.qset.value("size", SIZE_1X)
                     self.parent.window_size_triggered(size)
-
                     self.parent.emit(SIGNAL(
                         "state_changed(PyQt_PyObject)"),
                         (True, False, False, False))
         elif widget == self.pathPlugins:
-            if self.m64p_handle:
-                self.m64p.plugins_unload()
-                self.parent.worker.plugin_load_try(path)
+            if self.parent.worker.core.get_handle():
+                self.parent.worker.plugins_unload()
+                self.parent.worker.plugins_load(path)
                 self.set_plugins()
 
     def get_section(self, combo):
@@ -163,9 +158,9 @@ class Settings(QDialog, Ui_Settings):
             if combo != self.comboInput:
                 section, desc = self.get_section(combo)
                 settings.set_section(section, desc)
-                self.m64p.config.open_section(section)
-                items = self.m64p.config.parameters[
-                        self.m64p.config.section].items()
+                self.core.config.open_section(section)
+                items = self.core.config.parameters[
+                        self.core.config.section].items()
                 if items:
                     button.setEnabled(True)
                 else:
@@ -175,26 +170,14 @@ class Settings(QDialog, Ui_Settings):
         else:
             button.setEnabled(False)
 
-    def set_default_general(self):
-        self.m64p.config.open_section("Video-General")
-        self.m64p.config.set_default(M64TYPE_INT, "ScreenWidth", 320,
-                "Width of output window or fullscreen width")
-        self.m64p.config.set_default(M64TYPE_INT, "ScreenHeight", 240,
-                "Height of output window or fullscreen height")
-        self.m64p.config.set_default(M64TYPE_INT, "Fullscreen", False,
-                "Use fullscreen mode if True, or windowed mode if False")
-        self.m64p.config.set_default(M64TYPE_BOOL, "VerticalSync", False,
-                "If true, activate the SDL_GL_SWAP_CONTROL attribute")
-        self.m64p.config.list_parameters()
-
     def set_paths(self):
         path_library = self.qset.value("Paths/Library", find_library(CORE_NAME))
         path_data = self.qset.value("Paths/Data",
-                self.m64p.config.get_path("SharedData"))
+                self.core.config.get_path("SharedData"))
         path_roms = self.qset.value("Paths/ROM")
         try:
             path_plugins = self.qset.value("Paths/Plugins", os.path.realpath(
-                os.path.dirname(self.m64p.plugin_files[0])))
+                os.path.dirname(self.parent.worker.plugin_files[0])))
         except IndexError:
             path_plugins = ""
 
@@ -210,19 +193,21 @@ class Settings(QDialog, Ui_Settings):
             self.comboResolution.addItem(
                     "%sx%s" % (width, height), (width, height))
         self.comboResolution.setCurrentIndex(0)
-        self.comboResolution.setEnabled(not self.parent.worker.use_vidext)
-
-        self.m64p.config.open_section("Video-General")
-        width = self.m64p.config.get_parameter("ScreenWidth")
-        height = self.m64p.config.get_parameter("ScreenHeight")
+        self.comboResolution.setEnabled(not self.parent.vidext)
+        self.core.config.open_section("Video-General")
+        width = self.core.config.get_parameter("ScreenWidth")
+        height = self.core.config.get_parameter("ScreenHeight")
         index = self.comboResolution.findText(
                 "%sx%s" % (width, height))
         if index == -1: index = 0
         self.comboResolution.setCurrentIndex(index)
 
+        self.checkEnableVidExt.setChecked(
+                bool(int(self.qset.value("enable_vidext", 1))))
+
         self.checkFullscreen.setChecked(
-                bool(self.m64p.config.get_parameter("Fullscreen")))
-        self.checkFullscreen.setEnabled(not self.parent.worker.use_vidext)
+                bool(self.core.config.get_parameter("Fullscreen")))
+        self.checkFullscreen.setEnabled(not self.parent.vidext)
 
         if sys.platform == "win32":
             self.checkKeepAspect.setChecked(False)
@@ -234,36 +219,33 @@ class Settings(QDialog, Ui_Settings):
         disable_screensaver = bool(int(self.qset.value("disable_screensaver", 1)))
         self.checkDisableScreenSaver.setChecked(disable_screensaver)
 
-        enable_vidext = bool(int(self.qset.value("enable_vidext", 1)))
-        self.checkEnableVidExt.setChecked(enable_vidext)
-
     def set_core(self):
-        self.m64p.config.open_section("Core")
-        mode = self.m64p.config.get_parameter("R4300Emulator")
+        self.core.config.open_section("Core")
+        mode = self.core.config.get_parameter("R4300Emulator")
         self.emumode[mode].setChecked(True)
         self.checkOSD.setChecked(
-                self.m64p.config.get_parameter("OnScreenDisplay"))
+                self.core.config.get_parameter("OnScreenDisplay"))
         self.checkOSD.setToolTip(
-                self.m64p.config.get_parameter_help("OnScreenDisplay"))
+                self.core.config.get_parameter_help("OnScreenDisplay"))
         self.checkNoCompiledJump.setChecked(
-                self.m64p.config.get_parameter("NoCompiledJump"))
+                self.core.config.get_parameter("NoCompiledJump"))
         self.checkNoCompiledJump.setToolTip(
-                self.m64p.config.get_parameter_help("NoCompiledJump"))
+                self.core.config.get_parameter_help("NoCompiledJump"))
         self.checkDisableExtraMem.setChecked(
-                self.m64p.config.get_parameter("DisableExtraMem"))
+                self.core.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
-                self.m64p.config.get_parameter_help("DisableExtraMem"))
+                self.core.config.get_parameter_help("DisableExtraMem"))
         self.checkDelaySI.setChecked(
-                self.m64p.config.get_parameter("DelaySI"))
+                self.core.config.get_parameter("DelaySI"))
         self.checkDelaySI.setToolTip(
-                self.m64p.config.get_parameter_help("DelaySI"))
+                self.core.config.get_parameter_help("DelaySI"))
         self.spinCountPerOp.setValue(
-                self.m64p.config.get_parameter("CountPerOp"))
+                self.core.config.get_parameter("CountPerOp"))
         self.spinCountPerOp.setToolTip(
-                self.m64p.config.get_parameter_help("CountPerOp"))
+                self.core.config.get_parameter_help("CountPerOp"))
 
     def set_plugins(self):
-        plugin_map = self.m64p.plugin_map
+        plugin_map = self.core.plugin_map
         for plugin_type in self.combomap:
             combo,button,settings = self.combomap[plugin_type]
             combo.clear()
@@ -293,33 +275,32 @@ class Settings(QDialog, Ui_Settings):
                 self.pathROM.text())
 
     def save_video(self):
-        self.m64p.config.open_section("Video-General")
-        if not self.parent.worker.use_vidext:
+        if not self.parent.vidext:
+            self.core.config.open_section("Video-General")
             width, height = self.comboResolution.currentText().split("x")
-            self.m64p.config.set_parameter("ScreenWidth", int(width))
-            self.m64p.config.set_parameter("ScreenHeight", int(height))
-        self.m64p.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
-
+            self.core.config.set_parameter("ScreenWidth", int(width))
+            self.core.config.set_parameter("ScreenHeight", int(height))
+            self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
         self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
 
     def save_core(self):
-        self.m64p.config.open_section("Core")
+        self.core.config.open_section("Core")
         emumode = [n for n,m in enumerate(self.emumode) if m.isChecked()][0]
-        self.m64p.config.set_parameter("R4300Emulator",
+        self.core.config.set_parameter("R4300Emulator",
                 emumode)
-        self.m64p.config.set_parameter("OnScreenDisplay",
+        self.core.config.set_parameter("OnScreenDisplay",
                 self.checkOSD.isChecked())
-        self.m64p.config.set_parameter("NoCompiledJump",
+        self.core.config.set_parameter("NoCompiledJump",
                 self.checkNoCompiledJump.isChecked())
-        self.m64p.config.set_parameter("DisableExtraMem",
+        self.core.config.set_parameter("DisableExtraMem",
                 self.checkDisableExtraMem.isChecked())
-        self.m64p.config.set_parameter("DelaySI",
+        self.core.config.set_parameter("DelaySI",
                 self.checkDelaySI.isChecked())
-        self.m64p.config.set_parameter("CountPerOp",
+        self.core.config.set_parameter("CountPerOp",
                 self.spinCountPerOp.value())
-        self.m64p.config.set_parameter("SharedDataPath",
+        self.core.config.set_parameter("SharedDataPath",
                 self.pathData.text())
 
     def save_plugins(self):

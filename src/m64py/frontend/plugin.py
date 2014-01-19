@@ -39,7 +39,7 @@ class Plugin(QDialog, Ui_PluginDialog):
         self.close()
 
     def show_dialog(self):
-        self.config = self.parent.worker.m64p.config
+        self.config = self.parent.worker.core.config
         self.config.open_section(self.section)
         self.rm_items()
         self.add_items()

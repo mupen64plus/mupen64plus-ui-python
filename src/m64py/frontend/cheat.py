@@ -38,7 +38,7 @@ class Cheat(QDialog, Ui_CheatDialog):
         self.cheats = self.read_file()
         if not self.cheats:
             log.info("no cheat codes found for ROM image %s" % (
-                self.parent.worker.m64p.rom_header.Name))
+                self.parent.worker.core.rom_header.Name))
             return
         group = self.group_cheats(self.cheats)
         self.build_tree(group)
@@ -184,16 +184,16 @@ class Cheat(QDialog, Ui_CheatDialog):
         cheat_codes = []
 
         cheat_file = os.path.join(
-                self.parent.worker.m64p.config.get_path(
+                self.parent.worker.core.config.get_path(
                     "SharedData"), 'mupencheat.txt')
         if not os.path.isfile(cheat_file) or not os.access(cheat_file, os.R_OK):
             log.warn("cheat code database file '%s' not found." % cheat_file)
             return None
 
         rom_section = "%x-%x-C:%x" % (
-                sl(self.parent.worker.m64p.rom_header.CRC1),
-                sl(self.parent.worker.m64p.rom_header.CRC2),
-                self.parent.worker.m64p.rom_header.Country_code)
+                sl(self.parent.worker.core.rom_header.CRC1),
+                sl(self.parent.worker.core.rom_header.CRC2),
+                self.parent.worker.core.rom_header.Country_code)
         rom_section = rom_section.upper()
 
         code_re = re.compile(
