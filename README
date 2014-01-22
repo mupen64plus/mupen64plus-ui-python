@@ -27,6 +27,10 @@ provides a user-friendly interface over Mupen64Plus shared library.
     * PyQt4
     * SDL-1.2 or SDL-2.0
 
+=== Install ===
+    Run *python setup.py install* to install
+    Run *python setup.py build_qt* before you can start it from source dir
+
 === License ===
 
   M64Py is free/libre software released under the terms of the GNU GPL license,
