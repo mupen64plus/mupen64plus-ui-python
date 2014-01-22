@@ -34,6 +34,7 @@ Install
 -------
 
 Run *python setup.py install* to install
+
 Run *python setup.py build_qt* before you can start ./m64py from source dir
 
 License
