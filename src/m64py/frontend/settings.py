@@ -181,10 +181,10 @@ class Settings(QDialog, Ui_Settings):
         except IndexError:
             path_plugins = ""
 
-        self.pathLibrary.setText(str(path_library))
-        self.pathPlugins.setText(str(path_plugins))
-        self.pathData.setText(str(path_data))
-        self.pathROM.setText(str(path_roms))
+        self.pathLibrary.setText(path_library)
+        self.pathPlugins.setText(path_plugins)
+        self.pathData.setText(path_data)
+        self.pathROM.setText(path_roms)
 
     def set_video(self):
         self.comboResolution.clear()
