@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
+    <width>631</width>
     <height>470</height>
    </rect>
   </property>
@@ -45,16 +45,10 @@ QGroupBox::title {
  }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
-       <number>9</number>
-      </property>
-      <property name="topMargin">
-       <number>9</number>
-      </property>
       <item row="0" column="0">
        <widget class="QScrollArea" name="scrollArea">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -75,13 +69,23 @@ QGroupBox::title {
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>592</width>
+           <width>593</width>
            <height>390</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <layout class="QGridLayout" name="gridLayout"/>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+           </layout>
           </item>
          </layout>
         </widget>

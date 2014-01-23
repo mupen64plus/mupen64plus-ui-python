@@ -62,10 +62,7 @@ class Plugin(QDialog, Ui_PluginDialog):
 
     def add_items(self):
         self.widgets = {}
-        size = QSizePolicy()
-        size.setHorizontalStretch(0)
-        row1, row2, row3 = 0, 0, 0
-
+        row1, row2 = 0, 0
         for count, item in enumerate(self.items):
             param_name, param_type = item
             param_help = self.config.get_parameter_help(param_name)
@@ -75,21 +72,21 @@ class Plugin(QDialog, Ui_PluginDialog):
                 row1 += 1
                 widget = QLineEdit()
                 widget.setToolTip(param_help)
-                widget.setSizePolicy(size)
                 self.gridLayout.addWidget(
-                        QLabel(format_label(param_name)), row1, 1)
-                self.gridLayout.addWidget(widget, row1, 2)
+                        QLabel(format_label(param_name)), row1, 1, Qt.AlignRight)
+                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_INT:
-                row2 += 1
+                row1 += 1
                 if not opts:
                     widget = QSpinBox()
                     widget.setMaximum(65535)
                     if param_help: widget.setToolTip(param_help)
-                    widget.setSizePolicy(size)
                 else:
                     widget = QComboBox()
                     widget.setToolTip(param_help)
+                    widget.setMinimumContentsLength(14)
+                    widget.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
                     for idx, key in enumerate(sorted(opts.keys())):
                         value = opts[key]
                         opts[key] = (idx, value)
@@ -97,15 +94,15 @@ class Plugin(QDialog, Ui_PluginDialog):
                         widget.addItem(value)
                         widget.setItemData(idx, data)
                 self.gridLayout.addWidget(
-                        QLabel(format_label(param_name)), row2, 3)
-                self.gridLayout.addWidget(widget, row2, 4)
+                        QLabel(format_label(param_name)), row1, 1, Qt.AlignRight)
+                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_BOOL:
-                row3 += 1
+                row2 += 1
                 widget = QCheckBox()
                 widget.setText(format_label(param_name))
                 if param_help: widget.setToolTip(param_help)
-                self.gridLayout.addWidget(widget, row3, 5)
+                self.gridLayout.addWidget(widget, row2, 3)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
 
     def set_items(self):
