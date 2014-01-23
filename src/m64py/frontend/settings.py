@@ -239,9 +239,9 @@ class Settings(QDialog, Ui_Settings):
                 self.core.config.get_parameter("DelaySI"))
         self.checkDelaySI.setToolTip(
                 self.core.config.get_parameter_help("DelaySI"))
-        self.spinCountPerOp.setValue(
+        self.comboCountPerOp.setCurrentIndex(
                 self.core.config.get_parameter("CountPerOp"))
-        self.spinCountPerOp.setToolTip(
+        self.comboCountPerOp.setToolTip(
                 self.core.config.get_parameter_help("CountPerOp"))
 
     def set_plugins(self):
@@ -299,7 +299,7 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("DelaySI",
                 self.checkDelaySI.isChecked())
         self.core.config.set_parameter("CountPerOp",
-                self.spinCountPerOp.value())
+                self.comboCountPerOp.currentIndex())
         self.core.config.set_parameter("SharedDataPath",
                 self.pathData.text())
 

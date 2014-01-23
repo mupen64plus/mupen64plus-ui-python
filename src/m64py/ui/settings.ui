@@ -281,6 +281,7 @@ QGroupBox::title {
          <property name="checkable">
           <bool>false</bool>
          </property>
+         <zorder>groupEmuMode_2</zorder>
         </widget>
        </item>
        <item row="1" column="0">
@@ -331,7 +332,7 @@ QGroupBox::title {
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item row="2" column="0">
            <widget class="QCheckBox" name="checkDelaySI">
             <property name="text">
              <string>Delay SI</string>
@@ -339,10 +340,41 @@ QGroupBox::title {
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QSpinBox" name="spinCountPerOp">
-            <property name="maximum">
-             <number>10</number>
+           <widget class="QComboBox" name="comboCountPerOp">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
+            <property name="minimumContentsLength">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="3" column="1">
@@ -355,9 +387,6 @@ QGroupBox::title {
             </property>
             <property name="text">
              <string>cycles per emulated instruction</string>
-            </property>
-            <property name="buddy">
-             <cstring>spinCountPerOp</cstring>
             </property>
            </widget>
           </item>
@@ -484,52 +513,51 @@ QGroupBox::title {
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QGridLayout" name="gridLayout_10">
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="1" column="1">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>361</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0">
+           <widget class="QComboBox" name="comboResolution">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Used only when video extension is disabled</string>
+            </property>
+            <property name="minimumContentsLength">
+             <number>7</number>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="checkFullscreen">
-              <property name="toolTip">
-               <string>Fullscreen, used only when video extension is disabled</string>
-              </property>
-              <property name="text">
-               <string>Fullscreen</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QComboBox" name="comboResolution">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>Used only when video extension is disabled</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>361</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <widget class="QCheckBox" name="checkFullscreen">
+            <property name="toolTip">
+             <string>Fullscreen, used only when video extension is disabled</string>
+            </property>
+            <property name="text">
+             <string>Fullscreen</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
