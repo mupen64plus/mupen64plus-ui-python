@@ -31,7 +31,7 @@ Source: "m64py\*.exe"; DestDir: "{app}";
 Source: "m64py\*.dll"; DestDir: "{app}";
 Source: "m64py\AUTHORS"; DestDir: "{app}";
 Source: "m64py\COPYING"; DestDir: "{app}";
-Source: "m64py\README"; DestDir: "{app}";
+Source: "m64py\README.md"; DestDir: "{app}";
 Source: "m64py\ChangeLog"; DestDir: "{app}";
 Source: "m64py\*.v64"; DestDir: "{app}\test";
 Source: "m64py\qt4_plugins\codecs\*.dll"; DestDir: "{app}\qt4_plugins\codecs";

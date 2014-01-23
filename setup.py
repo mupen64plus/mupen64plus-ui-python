@@ -107,7 +107,7 @@ class build_exe(Command):
         dest_path = join(self.dist_dir, "m64py")
         shutil.copy(unrar_dll, dest_path)
         shutil.copyfile(unrar_lic, join(dest_path, "doc", "unrar-license"))
-        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README"]:
+        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
             shutil.copy(join(BASE_DIR, file), dest_path)
 
     def remove_files(self):
@@ -187,7 +187,7 @@ class build_dmg(Command):
         if not os.path.exists(dest_path):
             os.mkdir(dest_path)
         shutil.move(join(self.dist_dir, "M64Py.app"), dest_path)
-        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README"]:
+        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
             shutil.copy(join(BASE_DIR, file), dest_path)
         shutil.copy(join(BASE_DIR, "test", "mupen64plus.v64"), dest_path)
 
