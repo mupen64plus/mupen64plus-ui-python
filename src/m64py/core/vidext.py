@@ -84,6 +84,7 @@ class Video():
         """Shuts down the video system."""
         if self.glcontext:
             self.glcontext.doneCurrent()
+            self.glcontext = None
         return M64ERR_SUCCESS
 
     def list_fullscreen_modes(self, size_array, num_sizes):
