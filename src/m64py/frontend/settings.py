@@ -171,20 +171,26 @@ class Settings(QDialog, Ui_Settings):
             button.setEnabled(False)
 
     def set_paths(self):
-        path_library = self.qset.value("Paths/Library", find_library(CORE_NAME))
+        path_library = self.qset.value("Paths/Library",
+                find_library(CORE_NAME))
         path_data = self.qset.value("Paths/Data",
                 self.core.config.get_path("SharedData"))
         path_roms = self.qset.value("Paths/ROM")
+
         try:
             path_plugins = self.qset.value("Paths/Plugins", os.path.realpath(
                 os.path.dirname(self.parent.worker.plugin_files[0])))
         except IndexError:
             path_plugins = ""
 
+        try:
+            self.pathROM.setText(path_roms)
+        except TypeError:
+            pass
+
         self.pathLibrary.setText(path_library)
         self.pathPlugins.setText(path_plugins)
         self.pathData.setText(path_data)
-        self.pathROM.setText(path_roms)
 
     def set_video(self):
         self.comboResolution.clear()
