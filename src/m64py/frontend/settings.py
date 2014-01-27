@@ -150,7 +150,7 @@ class Settings(QDialog, Ui_Settings):
         index = combo.findText(plugin)
         desc = combo.itemData(index)
         name = os.path.splitext(plugin)[0][12:]
-        section = "-".join([n.capitalize() for n in name.split("-")])
+        section = "-".join([n.capitalize() for n in name.split("-")[0:2]])
         return (section, desc)
 
     def set_section(self, combo, button, settings):
