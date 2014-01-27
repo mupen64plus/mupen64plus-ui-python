@@ -1,3 +1,13 @@
+m64py (0.2.0-1) unstable; urgency=low
+
+  * New DelaySI and CountPerOp core settings
+  * Input settings are now disabled if mode is not fully manual
+  * Aspect ratio is not preserved when window is maximized
+  * Added more in-game preview images
+  * Code refactoring and bug fixes
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Mon, 27 Jan 2014 15:15:18 +0100
+
 m64py (0.1.9-1) unstable; urgency=low
 
   * bug fixes
