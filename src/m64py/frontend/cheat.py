@@ -190,10 +190,10 @@ class Cheat(QDialog, Ui_CheatDialog):
             log.warn("cheat code database file '%s' not found." % cheat_file)
             return None
 
-        rom_section = "%x-%x-C:%x" % (
+        rom_section = "%08X-%08X-C:%X" % (
                 sl(self.parent.worker.core.rom_header.CRC1),
                 sl(self.parent.worker.core.rom_header.CRC2),
-                self.parent.worker.core.rom_header.Country_code)
+                self.parent.worker.core.rom_header.Country_code & 0xff)
         rom_section = rom_section.upper()
 
         code_re = re.compile(
