@@ -29,6 +29,7 @@ from m64py.core.vidext import video
 from m64py.archive import Archive
 from m64py.platform import DLL_EXT, DEFAULT_DYNLIB, SEARCH_DIRS
 
+
 class Worker(QThread):
     """Mupen64Plus thread worker"""
 
@@ -38,6 +39,9 @@ class Worker(QThread):
         self.parent = parent
         self.video = video
         self.plugin_files = []
+        self.archive = None
+        self.filepath = None
+        self.filename = None
         self.library_path = None
         self.state = M64EMU_STOPPED
         self.settings = self.parent.settings
@@ -53,13 +57,13 @@ class Worker(QThread):
 
             self.parent.settings.core = self.core
             if self.parent.args:
-                self.parent.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"),
-                        self.parent.args[0], None)
+                self.parent.emit(SIGNAL(
+                    "file_open(PyQt_PyObject, PyQt_PyObject)"), self.parent.args[0], None)
         else:
-            self.parent.emit(SIGNAL("state_changed(PyQt_PyObject)"),
-                (False, False, False, False))
-            self.parent.emit(SIGNAL("info_dialog(PyQt_PyObject)"),
-                self.tr("Mupen64Plus library not found."))
+            self.parent.emit(SIGNAL(
+                "state_changed(PyQt_PyObject)"), (False, False, False, False))
+            self.parent.emit(SIGNAL(
+                "info_dialog(PyQt_PyObject)"), self.tr("Mupen64Plus library not found."))
 
     def quit(self):
         if self.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
@@ -87,7 +91,7 @@ class Worker(QThread):
             self.library_path = path
         else:
             self.library_path = self.settings.qset.value(
-                    "Paths/Library", find_library(CORE_NAME))
+                "Paths/Library", find_library(CORE_NAME))
         self.core.core_load(str(self.library_path))
 
     def core_unload(self):
@@ -101,7 +105,7 @@ class Worker(QThread):
         """Startups core library."""
         if self.core.get_handle():
             self.core.core_startup(
-                    str(self.library_path), self.parent.vidext)
+                str(self.library_path), self.parent.vidext)
 
 
     def core_shutdown(self):
@@ -142,7 +146,7 @@ class Worker(QThread):
         for plugin_type in self.core.plugin_map.keys():
             for plugin_map in self.core.plugin_map[plugin_type].values():
                 (plugin_handle, plugin_path, plugin_name,
-                        plugin_desc, plugin_version) = plugin_map
+                    plugin_desc, plugin_version) = plugin_map
                 unload_library(plugin_handle)
                 del plugin_handle
 
@@ -151,7 +155,7 @@ class Worker(QThread):
         for plugin_type in self.core.plugin_map.keys():
             for plugin_map in self.core.plugin_map[plugin_type].values():
                 (plugin_handle, plugin_path, plugin_name,
-                        plugin_desc, plugin_version) = plugin_map
+                    plugin_desc, plugin_version) = plugin_map
                 self.core.plugin_startup(plugin_handle, plugin_name, plugin_desc)
 
     def plugins_shutdown(self):
@@ -159,7 +163,7 @@ class Worker(QThread):
         for plugin_type in self.core.plugin_map.keys():
             for plugin_map in self.core.plugin_map[plugin_type].values():
                 (plugin_handle, plugin_path, plugin_name,
-                        plugin_desc, plugin_version) = plugin_map
+                    plugin_desc, plugin_version) = plugin_map
                 self.core.plugin_shutdown(plugin_handle, plugin_desc)
 
     def rom_open(self):
@@ -180,7 +184,7 @@ class Worker(QThread):
             self.core.rom_get_header()
             self.core.rom_get_settings()
             if bool(int(self.settings.qset.value(
-                "disable_screensaver", 1))):
+                    "disable_screensaver", 1))):
                 screensaver.disable()
             self.parent.emit(SIGNAL("rom_opened()"))
             self.parent.recent_files.add(self.filepath)
@@ -189,7 +193,7 @@ class Worker(QThread):
         """Closes ROM."""
         self.core.rom_close()
         if bool(int(self.settings.qset.value(
-            "disable_screensaver", 1))):
+                "disable_screensaver", 1))):
             screensaver.enable()
         self.parent.emit(SIGNAL("rom_closed()"))
 
@@ -208,7 +212,7 @@ class Worker(QThread):
     def get_screenshot(self, path):
         """Gets last saved screenshot."""
         rom_name = str(self.core.rom_header.Name).replace(
-                ' ', '_').lower()
+            ' ', '_').lower()
         screenshots = []
         for filename in os.listdir(path):
             if filename.startswith(rom_name):
@@ -226,15 +230,14 @@ class Worker(QThread):
         if not os.path.isdir(dst_path):
             os.makedirs(dst_path)
         screenshot = self.get_screenshot(
-                os.path.join(data_path, "screenshot"))
+            os.path.join(data_path, "screenshot"))
         if screenshot:
             image_name = "%s.png" % self.core.rom_settings.MD5
             try:
-                shutil.copyfile(screenshot,
-                        os.path.join(dst_path, image_name))
+                shutil.copyfile(screenshot, os.path.join(dst_path, image_name))
                 log.info("Captured %s" % capture)
             except IOError:
-                log.exception("couldn't save image %s" % image)
+                log.exception("couldn't save image %s" % image_name)
 
     def save_title(self):
         """Saves title."""
@@ -309,12 +312,12 @@ class Worker(QThread):
         if self.state == M64EMU_RUNNING:
             self.core.pause()
             if bool(int(self.settings.qset.value(
-                "disable_screensaver", 1))):
+                    "disable_screensaver", 1))):
                 screensaver.enable()
         elif self.state == M64EMU_PAUSED:
             self.core.resume()
             if bool(int(self.settings.qset.value(
-                "disable_screensaver", 1))):
+                    "disable_screensaver", 1))):
                 screensaver.disable()
         self.toggle_actions()
 
@@ -339,13 +342,13 @@ class Worker(QThread):
         self.state = self.core_state_query(M64CORE_EMU_STATE)
         cheat = bool(self.parent.cheats.cheats) if self.parent.cheats else False
         if self.state == M64EMU_STOPPED:
-            (load,pause,action,cheats) = True,False,False,False
+            (load, pause, action, cheats) = True, False, False, False
         elif self.state == M64EMU_PAUSED:
-            (load,pause,action,cheats) = True,True,True,cheat
+            (load, pause, action, cheats) = True, True, True, cheat
         elif self.state == M64EMU_RUNNING:
-            (load,pause,action,cheats) = True,True,True,cheat
+            (load, pause, action, cheats) = True, True, True, cheat
         self.parent.emit(SIGNAL(
-            "state_changed(PyQt_PyObject)"), (load,pause,action,cheats))
+            "state_changed(PyQt_PyObject)"), (load, pause, action, cheats))
 
     def stop(self):
         """Stops thread."""
@@ -356,7 +359,7 @@ class Worker(QThread):
         """Starts thread."""
         self.rom_open()
         self.core.attach_plugins(
-                self.get_plugins())
+            self.get_plugins())
         self.core.execute()
         self.core.detach_plugins()
         self.rom_close()

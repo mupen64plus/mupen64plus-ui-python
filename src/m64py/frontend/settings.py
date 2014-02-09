@@ -28,6 +28,7 @@ from m64py.frontend.plugin import Plugin
 from m64py.frontend.input import Input
 from m64py.ui.settings_ui import Ui_Settings
 
+
 class Settings(QDialog, Ui_Settings):
     """Settings dialog"""
 
@@ -37,6 +38,8 @@ class Settings(QDialog, Ui_Settings):
         self.setupUi(self)
         self.core = None
         self.plugins = []
+        self.emumode = []
+        self.combomap = {}
         self.qset = QSettings("m64py", "m64py")
         self.input = Input(self.parent)
         self.add_items()
@@ -50,23 +53,25 @@ class Settings(QDialog, Ui_Settings):
 
     def add_items(self):
         self.combomap = {
-                M64PLUGIN_RSP: (
-                    self.comboRSP, self.pushButtonRSP,
-                    Plugin(self.parent)),
-                M64PLUGIN_GFX: (
-                    self.comboVideo, self.pushButtonVideo,
-                    Plugin(self.parent)),
-                M64PLUGIN_AUDIO: (
-                    self.comboAudio, self.pushButtonAudio,
-                    Plugin(self.parent)),
-                M64PLUGIN_INPUT: (
-                    self.comboInput, self.pushButtonInput,
-                    self.input)}
+            M64PLUGIN_RSP: (
+                self.comboRSP, self.pushButtonRSP,
+                Plugin(self.parent)),
+            M64PLUGIN_GFX: (
+                self.comboVideo, self.pushButtonVideo,
+                Plugin(self.parent)),
+            M64PLUGIN_AUDIO: (
+                self.comboAudio, self.pushButtonAudio,
+                Plugin(self.parent)),
+            M64PLUGIN_INPUT: (
+                self.comboInput, self.pushButtonInput,
+                self.input)
+        }
 
         self.emumode = [
-                QRadioButton(self.tr("Pure Interpreter")),
-                QRadioButton(self.tr("Cached Interpreter")),
-                QRadioButton(self.tr("Dynamic Recompiler"))]
+            QRadioButton(self.tr("Pure Interpreter")),
+            QRadioButton(self.tr("Cached Interpreter")),
+            QRadioButton(self.tr("Dynamic Recompiler"))
+        ]
 
         vbox = QVBoxLayout(self.groupEmuMode)
         for widget in self.emumode:
@@ -94,22 +99,22 @@ class Settings(QDialog, Ui_Settings):
 
     def connect_signals(self):
         self.browseLibrary.clicked.connect(lambda: self.browse_dialog(
-                (self.pathLibrary, self.groupLibrary, False)))
+            (self.pathLibrary, self.groupLibrary, False)))
         self.browsePlugins.clicked.connect(lambda: self.browse_dialog(
-                (self.pathPlugins, self.groupPlugins, True)))
+            (self.pathPlugins, self.groupPlugins, True)))
         self.browseData.clicked.connect(lambda: self.browse_dialog(
-                (self.pathData, self.groupData, True)))
+            (self.pathData, self.groupData, True)))
         self.browseROM.clicked.connect(lambda: self.browse_dialog(
-                (self.pathROM, self.groupROM, True)))
+            (self.pathROM, self.groupROM, True)))
         for plugin_type in self.combomap:
             self.connect_combo_signals(self.combomap[plugin_type])
 
     def connect_combo_signals(self, combomap):
-        combo,button,settings = combomap
+        combo, button, settings = combomap
         if settings is not None:
             if combo != self.comboInput:
                 combo.activated.connect(
-                        lambda: self.set_section(combo,button,settings))
+                    lambda: self.set_section(combo, button, settings))
             button.clicked.connect(settings.show_dialog)
 
     def browse_dialog(self, args):
@@ -118,12 +123,12 @@ class Settings(QDialog, Ui_Settings):
         if directory:
             dialog.setFileMode(QFileDialog.Directory)
             path = dialog.getExistingDirectory(
-                    self, groupbox.title(), "", QFileDialog.ShowDirsOnly)
+                self, groupbox.title(), "", QFileDialog.ShowDirsOnly)
         else:
             dialog.setFileMode(QFileDialog.ExistingFile)
             path = dialog.getOpenFileName(
-                    self, groupbox.title(), "",
-                    "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
+                self, groupbox.title(), "",
+                "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
 
         if not path: return
         widget.setText(path)
@@ -151,7 +156,7 @@ class Settings(QDialog, Ui_Settings):
         desc = combo.itemData(index)
         name = os.path.splitext(plugin)[0][12:]
         section = "-".join([n.capitalize() for n in name.split("-")[0:2]])
-        return (section, desc)
+        return section, desc
 
     def set_section(self, combo, button, settings):
         if settings:
@@ -160,7 +165,7 @@ class Settings(QDialog, Ui_Settings):
                 settings.set_section(section, desc)
                 self.core.config.open_section(section)
                 items = self.core.config.parameters[
-                        self.core.config.section].items()
+                    self.core.config.section].items()
                 if items:
                     button.setEnabled(True)
                 else:
@@ -171,10 +176,10 @@ class Settings(QDialog, Ui_Settings):
             button.setEnabled(False)
 
     def set_paths(self):
-        path_library = self.qset.value("Paths/Library",
-                find_library(CORE_NAME))
-        path_data = self.qset.value("Paths/Data",
-                self.core.config.get_path("SharedData"))
+        path_library = self.qset.value(
+            "Paths/Library", find_library(CORE_NAME))
+        path_data = self.qset.value(
+            "Paths/Data", self.core.config.get_path("SharedData"))
         path_roms = self.qset.value("Paths/ROM")
 
         try:
@@ -197,22 +202,22 @@ class Settings(QDialog, Ui_Settings):
         for mode in MODES:
             width, height = mode
             self.comboResolution.addItem(
-                    "%sx%s" % (width, height), (width, height))
+                "%sx%s" % (width, height), (width, height))
         self.comboResolution.setCurrentIndex(0)
         self.comboResolution.setEnabled(not self.parent.vidext)
         self.core.config.open_section("Video-General")
         width = self.core.config.get_parameter("ScreenWidth")
         height = self.core.config.get_parameter("ScreenHeight")
         index = self.comboResolution.findText(
-                "%sx%s" % (width, height))
+            "%sx%s" % (width, height))
         if index == -1: index = 0
         self.comboResolution.setCurrentIndex(index)
 
         self.checkEnableVidExt.setChecked(
-                bool(int(self.qset.value("enable_vidext", 1))))
+            bool(int(self.qset.value("enable_vidext", 1))))
 
         self.checkFullscreen.setChecked(
-                bool(self.core.config.get_parameter("Fullscreen")))
+            bool(self.core.config.get_parameter("Fullscreen")))
         self.checkFullscreen.setEnabled(not self.parent.vidext)
 
         if sys.platform == "win32":
@@ -230,34 +235,34 @@ class Settings(QDialog, Ui_Settings):
         mode = self.core.config.get_parameter("R4300Emulator")
         self.emumode[mode].setChecked(True)
         self.checkOSD.setChecked(
-                self.core.config.get_parameter("OnScreenDisplay"))
+            self.core.config.get_parameter("OnScreenDisplay"))
         self.checkOSD.setToolTip(
-                self.core.config.get_parameter_help("OnScreenDisplay"))
+            self.core.config.get_parameter_help("OnScreenDisplay"))
         self.checkNoCompiledJump.setChecked(
-                self.core.config.get_parameter("NoCompiledJump"))
+            self.core.config.get_parameter("NoCompiledJump"))
         self.checkNoCompiledJump.setToolTip(
-                self.core.config.get_parameter_help("NoCompiledJump"))
+            self.core.config.get_parameter_help("NoCompiledJump"))
         self.checkDisableExtraMem.setChecked(
-                self.core.config.get_parameter("DisableExtraMem"))
+            self.core.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
-                self.core.config.get_parameter_help("DisableExtraMem"))
+            self.core.config.get_parameter_help("DisableExtraMem"))
         self.checkDelaySI.setChecked(
-                self.core.config.get_parameter("DelaySI"))
+            self.core.config.get_parameter("DelaySI"))
         self.checkDelaySI.setToolTip(
-                self.core.config.get_parameter_help("DelaySI"))
+            self.core.config.get_parameter_help("DelaySI"))
         self.comboCountPerOp.setCurrentIndex(
-                self.core.config.get_parameter("CountPerOp"))
+            self.core.config.get_parameter("CountPerOp"))
         self.comboCountPerOp.setToolTip(
-                self.core.config.get_parameter_help("CountPerOp"))
+            self.core.config.get_parameter_help("CountPerOp"))
 
     def set_plugins(self):
         plugin_map = self.core.plugin_map
         for plugin_type in self.combomap:
-            combo,button,settings = self.combomap[plugin_type]
+            combo, button, settings = self.combomap[plugin_type]
             combo.clear()
             for plugin in plugin_map[plugin_type].values():
                 (plugin_handle, plugin_path, plugin_name,
-                        plugin_desc, plugin_version) = plugin
+                    plugin_desc, plugin_version) = plugin
                 name = os.path.basename(plugin_path)
                 combo.addItem(name)
                 index = combo.findText(str(name))
@@ -266,19 +271,16 @@ class Settings(QDialog, Ui_Settings):
             current = self.qset.value("Plugins/%s" % (
                 PLUGIN_NAME[plugin_type]), PLUGIN_DEFAULT[plugin_type])
             index = combo.findText(current)
-            if index == -1: index = 0
+            if index == -1:
+                index = 0
             combo.setCurrentIndex(index)
             self.set_section(combo, button, settings)
 
     def save_paths(self):
-        self.qset.setValue("Paths/Library",
-                self.pathLibrary.text())
-        self.qset.setValue("Paths/Plugins",
-                self.pathPlugins.text())
-        self.qset.setValue("Paths/Data",
-                self.pathData.text())
-        self.qset.setValue("Paths/ROM",
-                self.pathROM.text())
+        self.qset.setValue("Paths/Library", self.pathLibrary.text())
+        self.qset.setValue("Paths/Plugins", self.pathPlugins.text())
+        self.qset.setValue("Paths/Data", self.pathData.text())
+        self.qset.setValue("Paths/ROM", self.pathROM.text())
 
     def save_video(self):
         if not self.parent.vidext:
@@ -294,24 +296,15 @@ class Settings(QDialog, Ui_Settings):
     def save_core(self):
         self.core.config.open_section("Core")
         emumode = [n for n,m in enumerate(self.emumode) if m.isChecked()][0]
-        self.core.config.set_parameter("R4300Emulator",
-                emumode)
-        self.core.config.set_parameter("OnScreenDisplay",
-                self.checkOSD.isChecked())
-        self.core.config.set_parameter("NoCompiledJump",
-                self.checkNoCompiledJump.isChecked())
-        self.core.config.set_parameter("DisableExtraMem",
-                self.checkDisableExtraMem.isChecked())
-        self.core.config.set_parameter("DelaySI",
-                self.checkDelaySI.isChecked())
-        self.core.config.set_parameter("CountPerOp",
-                self.comboCountPerOp.currentIndex())
-        self.core.config.set_parameter("SharedDataPath",
-                self.pathData.text())
+        self.core.config.set_parameter("R4300Emulator", emumode)
+        self.core.config.set_parameter("OnScreenDisplay", self.checkOSD.isChecked())
+        self.core.config.set_parameter("NoCompiledJump", self.checkNoCompiledJump.isChecked())
+        self.core.config.set_parameter("DisableExtraMem", self.checkDisableExtraMem.isChecked())
+        self.core.config.set_parameter("DelaySI", self.checkDelaySI.isChecked())
+        self.core.config.set_parameter("CountPerOp", self.comboCountPerOp.currentIndex())
+        self.core.config.set_parameter("SharedDataPath", self.pathData.text())
 
     def save_plugins(self):
         for plugin_type in self.combomap:
-            combo,button,settings = self.combomap[plugin_type]
-            self.qset.setValue("Plugins/%s" %
-                    PLUGIN_NAME[plugin_type],
-                    combo.currentText())
+            combo, button, settings = self.combomap[plugin_type]
+            self.qset.setValue("Plugins/%s" % PLUGIN_NAME[plugin_type], combo.currentText())

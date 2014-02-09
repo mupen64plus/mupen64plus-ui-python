@@ -31,6 +31,8 @@ class InputButton(QPushButton):
         QPushButton.__init__(self, parent)
         self.key = None
         self.parent = parent
+        self.input = None
+        self.joystick = None
         self.setFocusPolicy(Qt.ClickFocus)
 
     def showEvent(self, event):
@@ -46,14 +48,14 @@ class InputButton(QPushButton):
 
     def connect_signals(self):
         self.connect(self.joystick,
-                SIGNAL("axis_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                self.on_axis_value_changed)
+                     SIGNAL("axis_value_changed(PyQt_PyObject, PyQt_PyObject)"),
+                     self.on_axis_value_changed)
         self.connect(self.joystick,
-                SIGNAL("button_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                self.on_button_value_changed)
+                     SIGNAL("button_value_changed(PyQt_PyObject, PyQt_PyObject)"),
+                     self.on_button_value_changed)
         self.connect(self.joystick,
-                SIGNAL("hat_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                self.on_hat_value_changed)
+                     SIGNAL("hat_value_changed(PyQt_PyObject, PyQt_PyObject)"),
+                     self.on_hat_value_changed)
 
     def keyPressEvent(self, event):
         modifier = event.modifiers()
@@ -88,7 +90,7 @@ class InputButton(QPushButton):
         self.setText(self.tr("Press Key"))
         self.setCheckable(True)
         self.window().statusLabel.setText(
-                self.tr("Press <em>Escape</em> to cancel, <em>Backspace</em> to delete."))
+            self.tr("Press <em>Escape</em> to cancel, <em>Backspace</em> to delete."))
 
     def focusOutEvent(self, event):
         if self.input.is_joystick:

@@ -17,6 +17,7 @@
 from PyQt4.QtGui import QAction, QIcon, QPixmap
 from PyQt4.QtCore import QFileInfo, SIGNAL
 
+
 class RecentFiles():
     """Keeps track of last opened files."""
 
@@ -24,8 +25,9 @@ class RecentFiles():
         """Constructor"""
         self.parent = parent
         self.max_recent = 5
-        self.recent_actions = []
         self.recent_files = []
+        self.recent_actions = []
+        self.action_clear_history = QAction(self.parent)
         self.create()
         self.update()
 
@@ -36,19 +38,18 @@ class RecentFiles():
             action.setIcon(QIcon(QPixmap(":/icons/action_rom.png")))
             self.recent_actions.append(action)
             self.recent_actions[i].setVisible(False)
-            self.parent.connect(self.recent_actions[i],
-                    SIGNAL("triggered()"), self.parent.file_open)
+            self.parent.connect(
+                self.recent_actions[i], SIGNAL("triggered()"), self.parent.file_open)
             self.parent.menuRecent.addAction(self.recent_actions[i])
         self.parent.menuRecent.addSeparator()
-        self.actionClearHistory = QAction(self.parent)
-        self.actionClearHistory.setText("&Clear history")
-        self.actionClearHistory.setEnabled(False)
-        self.actionClearHistory.setVisible(True)
-        self.actionClearHistory.setIcon(
-                QIcon(QPixmap(":/icons/action_clear.png")))
-        self.parent.connect(self.actionClearHistory,
-                SIGNAL("triggered()"), self.clear)
-        self.parent.menuRecent.addAction(self.actionClearHistory)
+        self.action_clear_history.setText("&Clear history")
+        self.action_clear_history.setEnabled(False)
+        self.action_clear_history.setVisible(True)
+        self.action_clear_history.setIcon(
+            QIcon(QPixmap(":/icons/action_clear.png")))
+        self.parent.connect(
+            self.action_clear_history, SIGNAL("triggered()"), self.clear)
+        self.parent.menuRecent.addAction(self.action_clear_history)
 
     def update(self):
         """Updates list of recent files."""
@@ -63,7 +64,7 @@ class RecentFiles():
                 self.recent_files[i]).filePath())
         for j in range(num_files, self.max_recent):
             self.recent_actions[j].setVisible(False)
-        self.actionClearHistory.setEnabled((num_files > 0))
+        self.action_clear_history.setEnabled((num_files > 0))
 
     def add(self, filepath):
         """Adds file to recent files list."""
@@ -73,7 +74,7 @@ class RecentFiles():
         while len(self.recent_files) > 5:
             self.recent_files.pop(len(self.recent_files) - 1)
         self.parent.settings.qset.setValue(
-                "recent_files", self.recent_files)
+            "recent_files", self.recent_files)
         self.update()
 
     def clear(self):

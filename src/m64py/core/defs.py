@@ -120,47 +120,48 @@ M64TYPE_BOOL = 3
 M64TYPE_STRING = 4
 
 M64_CTYPE = {
-        M64TYPE_INT: C.c_int,
-        M64TYPE_FLOAT: C.c_float,
-        M64TYPE_BOOL: C.c_int,
-        M64TYPE_STRING: C.c_char_p
-        }
+    M64TYPE_INT: C.c_int,
+    M64TYPE_FLOAT: C.c_float,
+    M64TYPE_BOOL: C.c_int,
+    M64TYPE_STRING: C.c_char_p
+}
 
 PLUGIN_ORDER = [
-        M64PLUGIN_GFX,
-        M64PLUGIN_AUDIO,
-        M64PLUGIN_INPUT,
-        M64PLUGIN_RSP
-        ]
+    M64PLUGIN_GFX,
+    M64PLUGIN_AUDIO,
+    M64PLUGIN_INPUT,
+    M64PLUGIN_RSP
+]
 
 PLUGIN_NAME = {
-        M64PLUGIN_NULL: "NULL",
-        M64PLUGIN_RSP: "RSP",
-        M64PLUGIN_GFX: "Video",
-        M64PLUGIN_AUDIO: "Audio",
-        M64PLUGIN_INPUT: "Input"
-        }
+    M64PLUGIN_NULL: "NULL",
+    M64PLUGIN_RSP: "RSP",
+    M64PLUGIN_GFX: "Video",
+    M64PLUGIN_AUDIO: "Audio",
+    M64PLUGIN_INPUT: "Input"
+}
 
 PLUGIN_DEFAULT = {
-        M64PLUGIN_NULL: "NULL",
-        M64PLUGIN_RSP: "mupen64plus-rsp-hle%s" % DLL_EXT,
-        M64PLUGIN_GFX: "mupen64plus-video-rice%s" % DLL_EXT,
-        M64PLUGIN_AUDIO: "mupen64plus-audio-sdl%s" % DLL_EXT,
-        M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT
-        }
+    M64PLUGIN_NULL: "NULL",
+    M64PLUGIN_RSP: "mupen64plus-rsp-hle%s" % DLL_EXT,
+    M64PLUGIN_GFX: "mupen64plus-video-rice%s" % DLL_EXT,
+    M64PLUGIN_AUDIO: "mupen64plus-audio-sdl%s" % DLL_EXT,
+    M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT
+}
 
 M64SAV_M64P = 1
 M64SAV_PJ64C = 2
 M64SAV_PJ64 = 3
 
 M64P_SAVES = {
-        M64SAV_M64P: ("M64P (*.m64p)", "m64p"),
-        M64SAV_PJ64C: ("PJ64 compressed (*.zip)", "zip"),
-        M64SAV_PJ64: ("PJ64 (*.pj)", "pj")
-        }
+    M64SAV_M64P: ("M64P (*.m64p)", "m64p"),
+    M64SAV_PJ64C: ("PJ64 compressed (*.zip)", "zip"),
+    M64SAV_PJ64: ("PJ64 (*.pj)", "pj")
+}
 
 m64p_error = C.c_int
 m64p_GLattr = C.c_int
+
 
 class m64p_rom_header(C.Structure):
     _fields_ = [
@@ -179,7 +180,8 @@ class m64p_rom_header(C.Structure):
         ('Manufacturer_ID', C.c_uint),
         ('Cartridge_ID', C.c_ushort),
         ('Country_code', C.c_ushort)
-        ]
+    ]
+
 
 class m64p_rom_settings(C.Structure):
     _fields_ = [
@@ -189,19 +191,21 @@ class m64p_rom_settings(C.Structure):
         ('status', C.c_ubyte),
         ('players', C.c_ubyte),
         ('rumble', C.c_ubyte)
-        ]
+    ]
+
 
 class m64p_cheat_code(C.Structure):
     _fields_ = [
         ('address', C.c_uint),
         ('value', C.c_int),
-        ]
+    ]
+
 
 class m64p_2d_size(C.Structure):
     _fields_ = [
         ('uiWidth', C.c_uint),
         ('uiHeight', C.c_uint)
-        ]
+    ]
 
 FuncInit = C.CFUNCTYPE(m64p_error)
 FuncQuit = C.CFUNCTYPE(m64p_error)
@@ -214,6 +218,7 @@ FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
 FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
 FuncToggleFS = C.CFUNCTYPE(m64p_error)
 FuncResizeWindow = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int)
+
 
 class m64p_video_extension_functions(C.Structure):
     _fields_ = [
@@ -231,7 +236,7 @@ class m64p_video_extension_functions(C.Structure):
         ('VidExtFuncResizeWindow', FuncResizeWindow)
     ]
 
-LOGO  = " __  __                         __   _  _   ____  _            \n"
+LOGO = " __  __                         __   _  _   ____  _            \n"
 LOGO += "|  \/  |_   _ _ __   ___ _ __  / /_ | || | |  _ \| |_   _ ___  \n"
 LOGO += "| |\/| | | | | '_ \ / _ \ '_ \| '_ \| || |_| |_) | | | | / __| \n"
 LOGO += "| |  | | |_| | |_) |  __/ | | | (_) |__   _|  __/| | |_| \__ \ \n"

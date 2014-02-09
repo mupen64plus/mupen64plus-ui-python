@@ -23,6 +23,7 @@ from m64py.frontend.log import log
 SECTIONS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p)
 PARAMETERS_FUNC = C.CFUNCTYPE(None, C.c_void_p, C.c_char_p, C.c_int)
 
+
 class Config:
     """Mupen64Plus configuration"""
 
@@ -48,8 +49,7 @@ class Config:
         """Enumerates the list of sections in config file."""
         self.m64p.ConfigListSections.argtypes = [C.c_void_p, C.c_void_p]
         rval = self.m64p.ConfigListSections(
-                C.c_void_p(),
-                SECTIONS_FUNC(self.list_sections_callback))
+            C.c_void_p(), SECTIONS_FUNC(self.list_sections_callback))
         if rval != M64ERR_SUCCESS:
             log.debug("list_sections()")
             log.warn(self.core.error_message(rval))
@@ -66,7 +66,7 @@ class Config:
         config_ptr = C.c_void_p()
         self.m64p.ConfigOpenSection.argtypes = [C.c_char_p, C.c_void_p]
         rval = self.m64p.ConfigOpenSection(
-                C.c_char_p(section), C.byref(config_ptr))
+            C.c_char_p(section), C.byref(config_ptr))
         if rval != M64ERR_SUCCESS:
             log.debug("open_section()")
             log.warn(self.core.error_message(rval))
@@ -77,10 +77,10 @@ class Config:
     def list_parameters(self):
         """Enumerates the list of parameters in a section."""
         self.m64p.ConfigListParameters.argtypes = [
-                C.c_void_p, C.c_void_p, C.c_void_p]
+            C.c_void_p, C.c_void_p, C.c_void_p]
         rval = self.m64p.ConfigListParameters(
-                self.config_handle, C.c_void_p(),
-                PARAMETERS_FUNC(self.list_parameters_callback))
+            self.config_handle, C.c_void_p(),
+            PARAMETERS_FUNC(self.list_parameters_callback))
         if rval != M64ERR_SUCCESS:
             log.debug("list_parameters()")
             log.warn(self.core.error_message(rval))
@@ -144,10 +144,10 @@ class Config:
             param_arg_type = param_ctype
 
         self.m64p.ConfigSetParameter.argtypes = [
-                C.c_void_p, C.c_char_p, C.c_int, param_arg_type]
+            C.c_void_p, C.c_char_p, C.c_int, param_arg_type]
         rval = self.m64p.ConfigSetParameter(
-                self.config_handle, C.c_char_p(param_name),
-                C.c_int(param_type), param_value)
+            self.config_handle, C.c_char_p(param_name),
+            C.c_int(param_type), param_value)
         if rval != M64ERR_SUCCESS:
             log.debug("set_parameter()")
             log.warn(self.core.error_message(rval))
@@ -168,11 +168,10 @@ class Config:
             param_value = C.create_string_buffer(maxsize)
 
         self.m64p.ConfigGetParameter.argtypes = [
-                C.c_void_p, C.c_char_p, C.c_int, C.c_void_p, C.c_int]
+            C.c_void_p, C.c_char_p, C.c_int, C.c_void_p, C.c_int]
         rval = self.m64p.ConfigGetParameter(
-                self.config_handle, C.c_char_p(param_name),
-                C.c_int(param_type), param_value,
-                C.c_int(maxsize))
+            self.config_handle, C.c_char_p(param_name),
+            C.c_int(param_type), param_value, C.c_int(maxsize))
         if rval != M64ERR_SUCCESS:
             log.debug("get_parameter()")
             log.warn(self.core.error_message(rval))
@@ -187,10 +186,9 @@ class Config:
         """Retrieves the type of one of the emulator's parameters."""
         param_type = C.byref(C.c_int())
         self.m64p.ConfigGetParameterHelp.argtypes = [
-                C.c_void_p, C.c_char_p, C.POINTER(C.c_int)]
+            C.c_void_p, C.c_char_p, C.POINTER(C.c_int)]
         rval = self.m64p.ConfigGetParameterType(
-                self.config_handle, C.c_char_p(param_name),
-                param_type)
+            self.config_handle, C.c_char_p(param_name), param_type)
         if rval != M64ERR_SUCCESS:
             log.debug("get_parameter_type()")
             log.warn(self.core.error_message(rval))
@@ -202,7 +200,7 @@ class Config:
         self.m64p.ConfigGetParameterHelp.restype = C.c_char_p
         self.m64p.ConfigGetParameterHelp.argtypes = [C.c_void_p, C.c_char_p]
         rval = self.m64p.ConfigGetParameterHelp(
-                self.config_handle, C.c_char_p(param_name))
+            self.config_handle, C.c_char_p(param_name))
         return rval
 
     def set_default(self, param_type, param_name, param_value, param_help):
@@ -211,20 +209,20 @@ class Config:
         param_ctype = M64_CTYPE[param_type]
         if param_type == M64TYPE_INT:
             rval = self.m64p.ConfigSetDefaultInt(
-                    self.config_handle, C.c_char_p(param_name),
-                    param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name),
+                param_ctype(param_value), C.c_char_p(param_help))
         elif param_type == M64TYPE_FLOAT:
             rval = self.m64p.ConfigSetDefaultFloat(
-                    self.config_handle, C.c_char_p(param_name),
-                    param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name),
+                param_ctype(param_value), C.c_char_p(param_help))
         elif param_type == M64TYPE_BOOL:
             rval = self.m64p.ConfigSetDefaultBool(
-                    self.config_handle, C.c_char_p(param_name),
-                    param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name),
+                param_ctype(param_value), C.c_char_p(param_help))
         elif param_type == M64TYPE_STRING:
             rval = self.m64p.ConfigSetDefaultString(
-                    self.config_handle, C.c_char_p(param_name),
-                    param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name),
+                param_ctype(param_value), C.c_char_p(param_help))
         return rval
 
     def get_path(self, path="UserConfig"):
@@ -232,7 +230,7 @@ class Config:
         if path == "SharedData":
             self.m64p.ConfigGetSharedDataFilepath.restype = C.c_char_p
             rval = self.m64p.ConfigGetSharedDataFilepath(
-                    C.c_char_p("mupen64plus.ini"))
+                C.c_char_p("mupen64plus.ini"))
         elif path == "UserConfig":
             self.m64p.ConfigGetUserConfigPath.restype = C.c_char_p
             rval = self.m64p.ConfigGetUserConfigPath()

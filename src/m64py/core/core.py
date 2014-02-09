@@ -40,6 +40,7 @@ def debug_callback(context, level, message):
     elif level == M64MSG_VERBOSE and VERBOSE:
         sys.stderr.write("%s: %s\n" % (context, message))
 
+
 def state_callback(context, param, value):
     if param == M64CORE_VIDEO_SIZE:
         pass
@@ -51,6 +52,7 @@ STATEFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_int)
 
 DEBUG_CALLBACK = DEBUGFUNC(debug_callback)
 STATE_CALLBACK = STATEFUNC(state_callback)
+
 
 class Core:
     """Mupen64Plus Core library"""
@@ -71,6 +73,7 @@ class Core:
         self.rom_length = None
         self.rom_header = m64p_rom_header()
         self.rom_settings = m64p_rom_settings()
+        self.core_path = ""
         self.core_name = "Mupen64Plus Core"
         self.core_version = "Unknown"
         self.core_sdl2 = False
@@ -98,26 +101,41 @@ class Core:
         if version:
             plugin_type, plugin_version, plugin_api, plugin_name, plugin_cap = version
             if plugin_type != M64PLUGIN_CORE:
-                raise Exception("library '%s' is invalid, this is not the emulator core." % (
-                    os.path.basename(self.core_path)))
+                raise Exception(
+                    "library '%s' is invalid, "
+                    "this is not the emulator core." % (
+                        os.path.basename(self.core_path)))
             elif plugin_version < MINIMUM_CORE_VERSION:
-                raise Exception("library '%s' is incompatible, core version %s is below minimum supported %s." % (
-                    os.path.basename(self.core_path), version_split(plugin_version), version_split(MINIMUM_CORE_VERSION)))
+                raise Exception(
+                    "library '%s' is incompatible, "
+                    "core version %s is below minimum supported %s." % (
+                        os.path.basename(self.core_path),
+                        version_split(plugin_version),
+                        version_split(MINIMUM_CORE_VERSION)))
             elif plugin_api & 0xffff0000 != CORE_API_VERSION & 0xffff0000:
-                raise Exception("library '%s' is incompatible, core API major version %s doesn't match application (%s)." % (
-                    os.path.basename(self.core_path), version_split(plugin_version), version_split(CORE_API_VERSION)))
+                raise Exception(
+                    "library '%s' is incompatible, "
+                    "core API major version %s doesn't match application (%s)." % (
+                        os.path.basename(self.core_path),
+                        version_split(plugin_version),
+                        version_split(CORE_API_VERSION)))
             else:
                 config_ver, debug_ver, vidext_ver = self.get_api_versions()
                 if config_ver & 0xffff0000 != CONFIG_API_VERSION & 0xffff0000:
-                    raise Exception("emulator core '%s' is incompatible, config API major version %s doesn't match application: (%s)" % (
-                        os.path.basename(self.core_path), version_split(self.config_version), version_split(CONFIG_API_VERSION)))
+                    raise Exception(
+                        "emulator core '%s' is incompatible, "
+                        "config API major version %s doesn't match application: (%s)" % (
+                        os.path.basename(self.core_path),
+                        version_split(config_ver),
+                        version_split(CONFIG_API_VERSION)))
 
                 self.core_name = plugin_name
                 self.core_version = plugin_version
 
                 if LDD_CMD:
-                    proc = subprocess.Popen(LDD_CMD % self.core_path, shell=True,
-                            preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL))
+                    proc = subprocess.Popen(
+                        LDD_CMD % self.core_path, shell=True,
+                        preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL))
                     proc.communicate()
                     if proc.returncode == 0:
                         self.core_sdl2 = True
@@ -140,9 +158,9 @@ class Core:
     def core_startup(self, path, use_vidext):
         """Initializes libmupen64plus for use by allocating memory,
         creating data structures, and loading the configuration file."""
-        rval = self.m64p.CoreStartup(C.c_int(CORE_API_VERSION), None,
-                C.c_char_p(os.path.dirname(path)),
-                "Core", DEBUG_CALLBACK, "State", STATE_CALLBACK)
+        rval = self.m64p.CoreStartup(
+            C.c_int(CORE_API_VERSION), None, C.c_char_p(os.path.dirname(path)),
+            "Core", DEBUG_CALLBACK, "State", STATE_CALLBACK)
         if rval == M64ERR_SUCCESS:
             if use_vidext:
                 self.override_vidext()
@@ -167,7 +185,7 @@ class Core:
             name_ptr = C.pointer(C.c_char_p())
             cap_ptr = C.pointer(C.c_int())
             rval = handle.PluginGetVersion(
-                    type_ptr, ver_ptr, api_ptr, name_ptr, cap_ptr)
+                type_ptr, ver_ptr, api_ptr, name_ptr, cap_ptr)
         except AttributeError:
             unload_library(handle)
             log.warn("library '%s' is invalid, no PluginGetVersion() function found." % (
@@ -190,7 +208,7 @@ class Core:
         debug_ver_ptr = C.pointer(C.c_int())
         vidext_ver_ptr = C.pointer(C.c_int())
         rval = self.m64p.CoreGetAPIVersions(
-                config_ver_ptr, debug_ver_ptr, vidext_ver_ptr, None)
+            config_ver_ptr, debug_ver_ptr, vidext_ver_ptr, None)
         if rval == M64ERR_SUCCESS:
             return (config_ver_ptr.contents.value, debug_ver_ptr.contents.value,
                     vidext_ver_ptr.contents.value)
@@ -206,18 +224,18 @@ class Core:
         if version:
             plugin_type, plugin_version, plugin_api, plugin_desc, plugin_cap = version
             plugin_name = os.path.basename(plugin_path)
-            self.plugin_map[plugin_type][plugin_name] = (plugin_handle, plugin_path,
-                    PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
+            self.plugin_map[plugin_type][plugin_name] = (
+                plugin_handle, plugin_path, PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
 
     def plugin_startup(self, handle, name, desc):
         """This function initializes plugin for use by allocating memory,
         creating data structures, and loading the configuration data."""
         rval = handle.PluginStartup(C.c_void_p(self.m64p._handle),
-                name, DEBUG_CALLBACK)
+                                    name, DEBUG_CALLBACK)
         if rval != M64ERR_SUCCESS:
             log.debug("plugin_startup()")
             log.warn(self.error_message(rval))
-            log.warn("%s failed to start." % (desc))
+            log.warn("%s failed to start." % desc)
 
     def plugin_shutdown(self, handle, desc):
         """This function destroys data structures and releases
@@ -226,9 +244,9 @@ class Core:
         if rval != M64ERR_SUCCESS:
             log.debug("plugin_shutdown()")
             log.warn(self.error_message(rval))
-            log.warn("%s failed to stop." % (desc))
+            log.warn("%s failed to stop." % desc)
 
-    def attach_plugins(self, plugins={}):
+    def attach_plugins(self, plugins):
         """Attaches plugins to the emulator core."""
         self.plugins = plugins
         for plugin_type in PLUGIN_ORDER:
@@ -238,11 +256,10 @@ class Core:
             else:
                 plugin_map = self.plugin_map[plugin_type][plugin]
             (plugin_handle, plugin_path, plugin_name,
-                    plugin_desc, plugin_version) = plugin_map
+             plugin_desc, plugin_version) = plugin_map
 
             rval = self.m64p.CoreAttachPlugin(
-                    C.c_int(plugin_type),
-                    C.c_void_p(plugin_handle._handle))
+                C.c_int(plugin_type), C.c_void_p(plugin_handle._handle))
             if rval != M64ERR_SUCCESS:
                 log.debug("attach_plugins()")
                 log.warn(self.error_message(rval))
@@ -262,7 +279,7 @@ class Core:
             else:
                 plugin_map = self.plugin_map[plugin_type][plugin]
             (plugin_handle, plugin_path, plugin_name,
-                    plugin_desc, plugin_version) = plugin_map
+             plugin_desc, plugin_version) = plugin_map
 
             rval = self.m64p.CoreDetachPlugin(plugin_type)
             if rval != M64ERR_SUCCESS:
@@ -278,19 +295,18 @@ class Core:
         romlength = C.c_int(self.rom_length)
         rombuffer = C.c_buffer(romfile)
         rval = self.m64p.CoreDoCommand(
-                M64CMD_ROM_OPEN, romlength, C.byref(rombuffer))
+            M64CMD_ROM_OPEN, romlength, C.byref(rombuffer))
         if rval != M64ERR_SUCCESS:
             log.debug("rom_open()")
             log.warn(self.error_message(rval))
-            log.error("core failed to open ROM file '%s'." % (
-                filename))
+            log.error("core failed to open ROM file.")
         del rombuffer
         return rval
 
     def rom_close(self):
         """Closes any currently open ROM."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_ROM_CLOSE)
+            M64CMD_ROM_CLOSE)
         if rval != M64ERR_SUCCESS:
             log.debug("rom_close()")
             log.warn(self.error_message(rval))
@@ -300,9 +316,9 @@ class Core:
     def rom_get_header(self):
         """Retrieves the header data of the currently open ROM."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_ROM_GET_HEADER,
-                C.c_int(C.sizeof(self.rom_header)),
-                C.pointer(self.rom_header))
+            M64CMD_ROM_GET_HEADER,
+            C.c_int(C.sizeof(self.rom_header)),
+            C.pointer(self.rom_header))
         if rval != M64ERR_SUCCESS:
             log.debug("rom_get_header()")
             log.warn("core failed to get ROM header.")
@@ -311,9 +327,9 @@ class Core:
     def rom_get_settings(self):
         """Retrieves the settings data of the currently open ROM."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_ROM_GET_SETTINGS,
-                C.c_int(C.sizeof(self.rom_settings)),
-                C.pointer(self.rom_settings))
+            M64CMD_ROM_GET_SETTINGS,
+            C.c_int(C.sizeof(self.rom_settings)),
+            C.pointer(self.rom_settings))
         if rval != M64ERR_SUCCESS:
             log.debug("rom_get_settings()")
             log.warn("core failed to get ROM settings.")
@@ -322,7 +338,7 @@ class Core:
     def execute(self):
         """Starts the emulator and begin executing the ROM image."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_EXECUTE, 0, None)
+            M64CMD_EXECUTE, 0, None)
         if rval != M64ERR_SUCCESS:
             log.warn(self.error_message(rval))
         return rval
@@ -330,7 +346,7 @@ class Core:
     def stop(self):
         """Stops the emulator, if it is currently running."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STOP, 0, None)
+            M64CMD_STOP, 0, None)
         if rval != M64ERR_SUCCESS:
             log.debug("stop()")
             log.warn(self.error_message(rval))
@@ -339,7 +355,7 @@ class Core:
     def pause(self):
         """Pause the emulator if it is running."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_PAUSE, 0, None)
+            M64CMD_PAUSE, 0, None)
         if rval != M64ERR_SUCCESS:
             log.debug("pause()")
             log.warn(self.error_message(rval))
@@ -348,7 +364,7 @@ class Core:
     def resume(self):
         """Resumes execution of the emulator if it is paused."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_RESUME, 0, None)
+            M64CMD_RESUME, 0, None)
         if rval != M64ERR_SUCCESS:
             log.debug("resume()")
             log.warn(self.error_message(rval))
@@ -359,8 +375,7 @@ class Core:
         value of a state parameter."""
         state_ptr = C.pointer(C.c_int())
         rval = self.m64p.CoreDoCommand(
-                M64CMD_CORE_STATE_QUERY,
-                C.c_int(state), state_ptr)
+            M64CMD_CORE_STATE_QUERY, C.c_int(state), state_ptr)
         if rval != M64ERR_SUCCESS:
             log.debug("core_state_query()")
             log.warn(self.error_message(rval))
@@ -371,8 +386,7 @@ class Core:
         parameter in the emulator core."""
         value_ptr = C.pointer(C.c_int(value))
         rval = self.m64p.CoreDoCommand(
-                M64CMD_CORE_STATE_SET,
-                C.c_int(state), value_ptr)
+            M64CMD_CORE_STATE_SET, C.c_int(state), value_ptr)
         if rval != M64ERR_SUCCESS:
             log.debug("core_state_set()")
             log.warn(self.error_message(rval))
@@ -382,7 +396,7 @@ class Core:
         """Loads a saved state file from the current slot."""
         path = C.c_char_p(state_path) if state_path else None
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STATE_LOAD, C.c_int(1), path)
+            M64CMD_STATE_LOAD, C.c_int(1), path)
         if rval != M64ERR_SUCCESS:
             log.debug("state_load()")
             log.warn(self.error_message(rval))
@@ -392,7 +406,7 @@ class Core:
         """Saves a state file to the current slot."""
         path = C.c_char_p(state_path) if state_path else None
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STATE_SAVE, C.c_int(state_type), path)
+            M64CMD_STATE_SAVE, C.c_int(state_type), path)
         if rval != M64ERR_SUCCESS:
             log.debug("state_save()")
             log.warn(self.error_message(rval))
@@ -401,7 +415,7 @@ class Core:
     def state_set_slot(self, slot):
         """Sets the currently selected save slot index."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_STATE_SET_SLOT, C.c_int(slot))
+            M64CMD_STATE_SET_SLOT, C.c_int(slot))
         if rval != M64ERR_SUCCESS:
             log.debug("state_set_slot()")
             log.warn(self.error_message(rval))
@@ -411,7 +425,7 @@ class Core:
         """Injects an SDL_KEYDOWN event into
         the emulator's core event loop."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_SEND_SDL_KEYDOWN, C.c_int(key))
+            M64CMD_SEND_SDL_KEYDOWN, C.c_int(key))
         if rval != M64ERR_SUCCESS:
             log.debug("send_sdl_keydown()")
             log.warn(self.error_message(rval))
@@ -421,7 +435,7 @@ class Core:
         """Injects an SDL_KEYUP event into
         the emulator's core event loop."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_SEND_SDL_KEYUP, C.c_int(key))
+            M64CMD_SEND_SDL_KEYUP, C.c_int(key))
         if rval != M64ERR_SUCCESS:
             log.debug("send_sdl_keyup()")
             log.warn(self.error_message(rval))
@@ -430,7 +444,7 @@ class Core:
     def take_next_screenshot(self):
         """Saves a screenshot at the next possible opportunity."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_TAKE_NEXT_SCREENSHOT)
+            M64CMD_TAKE_NEXT_SCREENSHOT)
         if rval != M64ERR_SUCCESS:
             log.debug("take_next_screenshot()")
             log.warn(self.error_message(rval))
@@ -439,7 +453,7 @@ class Core:
     def reset(self, soft=False):
         """Reset the emulated machine."""
         rval = self.m64p.CoreDoCommand(
-                M64CMD_RESET, C.c_int(int(soft)))
+            M64CMD_RESET, C.c_int(int(soft)))
         if rval != M64ERR_SUCCESS:
             log.debug("reset()")
             log.warn(self.error_message(rval))
@@ -458,8 +472,9 @@ class Core:
     def add_cheat(self, cheat_name, cheat_code):
         """Adds a Cheat Function to a list of currently active cheats
         which are applied to the open ROM, and set its state to Enabled"""
-        rval = self.m64p.CoreAddCheat(C.c_char_p(cheat_name),
-                C.pointer(cheat_code), C.c_int(C.sizeof(cheat_code)))
+        rval = self.m64p.CoreAddCheat(
+            C.c_char_p(cheat_name), C.pointer(cheat_code),
+            C.c_int(C.sizeof(cheat_code)))
         if rval != M64ERR_SUCCESS:
             log.debug("add_cheat()")
             log.info("CoreAddCheat() failed for cheat code '%s'" % cheat_name)
@@ -471,7 +486,7 @@ class Core:
     def cheat_enabled(self, cheat_name, enabled=True):
         """Enables or disables a specified Cheat Function"""
         rval = self.m64p.CoreCheatEnabled(
-                C.c_char_p(cheat_name), C.c_int(enabled))
+            C.c_char_p(cheat_name), C.c_int(enabled))
         if rval != M64ERR_SUCCESS:
             log.debug("cheat_enabled()")
             log.info("CoreCheatEnabled() failed for cheat code '%s'" % cheat_name)

@@ -39,6 +39,7 @@ JOYSTICK_SENSITIVITY = 0
 SDL_JOYSTICK_DEFAULT_EVENT_TIMEOUT = 25
 SDL_JOYSTICK_DEFAULT_AUTOREPEAT_DELAY = 250
 
+
 class Joystick(QObject):
 
     axis_value_changed = pyqtSignal(int, int)
@@ -47,12 +48,11 @@ class Joystick(QObject):
     trackball_value_changed = pyqtSignal(int, int, int)
 
     def __init__(self, do_auto_repeat=True,
-            repeat_delay=SDL_JOYSTICK_DEFAULT_AUTOREPEAT_DELAY,
-            joystick_event_timeout=SDL_JOYSTICK_DEFAULT_EVENT_TIMEOUT,
-            joystick_deadzone=JOYSTICK_DEADZONE,
-            joystick_sensitivity=JOYSTICK_SENSITIVITY):
+                 repeat_delay=SDL_JOYSTICK_DEFAULT_AUTOREPEAT_DELAY,
+                 joystick_event_timeout=SDL_JOYSTICK_DEFAULT_EVENT_TIMEOUT,
+                 joystick_deadzone=JOYSTICK_DEADZONE,
+                 joystick_sensitivity=JOYSTICK_SENSITIVITY):
         QObject.__init__(self)
-
         self.joystick_timer = QTimer()
 
         self.deadzones = {}
@@ -81,8 +81,7 @@ class Joystick(QObject):
                         self.joystick_names.append(SDL_JoystickNameForIndex(i))
                     else:
                         self.joystick_names.append(SDL_JoystickName(i))
-                self.connect(self.joystick_timer, SIGNAL("timeout()"),
-                        self.process_events)
+                self.connect(self.joystick_timer, SIGNAL("timeout()"), self.process_events)
             else:
                 log.info("couldn't initialize SDL joystick support")
 

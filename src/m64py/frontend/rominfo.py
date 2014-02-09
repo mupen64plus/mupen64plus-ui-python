@@ -20,6 +20,7 @@ from PyQt4.QtGui import QMessageBox
 
 from m64py.utils import sl
 
+
 class RomInfo():
     """ROM information dialog"""
 
@@ -27,16 +28,16 @@ class RomInfo():
         self.parent = parent
         self.core = self.parent.worker.core
         rom_info = [
-                ('GoodName', self.core.rom_settings.goodname),
-                ('Name', self.core.rom_header.Name),
-                ('MD5', self.core.rom_settings.MD5),
-                ('CRC1', '%x' % sl(self.core.rom_header.CRC1)),
-                ('CRC2', '%x' % sl(self.core.rom_header.CRC2)),
-                ('Type', self.core.rom_type),
-                ('Size', self.get_rom_size()),
-                ('Country', self.get_country_name()),
-                ('Manufacturer', self.get_manufacturer())
-                ]
+            ('GoodName', self.core.rom_settings.goodname),
+            ('Name', self.core.rom_header.Name),
+            ('MD5', self.core.rom_settings.MD5),
+            ('CRC1', '%x' % sl(self.core.rom_header.CRC1)),
+            ('CRC2', '%x' % sl(self.core.rom_header.CRC2)),
+            ('Type', self.core.rom_type),
+            ('Size', self.get_rom_size()),
+            ('Country', self.get_country_name()),
+            ('Manufacturer', self.get_manufacturer())
+        ]
         info = os.linesep.join([k+': '+str(v) for k, v in rom_info if str(v)])
         QMessageBox.information(self.parent, 'ROM Information', info)
 
@@ -72,7 +73,7 @@ class RomInfo():
         elif code in [int(0x55), int(0x59)]:
             name = 'Australia'
         elif code in [int(0x50), int(0x58), int(0x20),
-                int(0x21), int(0x38), int(0x70)]:
+                      int(0x21), int(0x38), int(0x70)]:
             name = 'Europe'
         else:
             name = 'Unknown 0x%x' % code

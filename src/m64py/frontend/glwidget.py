@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtOpenGL import *
 
 from m64py.core.defs import *
 from m64py.opts import SDL2
 from m64py.frontend.keymap import QT2SDL, QT2SDL2
+
 
 class GLWidget(QGLWidget):
 
@@ -34,7 +34,7 @@ class GLWidget(QGLWidget):
         self.setContentsMargins(QMargins())
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFocus(True)
-        self.connect(self, SIGNAL("toggle_fs()"), self.toggle_fs)
+        self.connect(self, SIGNAL("toggle_fs()"), self.toggle_fullscreen)
 
     def showEvent(self, event):
         self.setFocus(True)
@@ -47,7 +47,7 @@ class GLWidget(QGLWidget):
         pass
 
     def mouseDoubleClickEvent(self, event):
-        self.toggle_fs()
+        self.emit(SIGNAL("toggle_fs()"))
 
     def keyPressEvent(self, event):
         if self.worker.state == M64EMU_RUNNING:
@@ -55,7 +55,7 @@ class GLWidget(QGLWidget):
             modifiers = event.modifiers()
             if modifiers & Qt.AltModifier and \
                     (key == Qt.Key_Enter or key == Qt.Key_Return):
-                self.toggle_fs()
+                self.emit(SIGNAL("toggle_fs()"))
             elif key == Qt.Key_F3:
                 self.worker.save_title()
             elif key == Qt.Key_F4:
@@ -82,7 +82,7 @@ class GLWidget(QGLWidget):
             except KeyError:
                 pass
 
-    def toggle_fs(self):
+    def toggle_fullscreen(self):
         window = self.window()
         if window.isFullScreen():
             self.parent.menubar.show()

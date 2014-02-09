@@ -34,6 +34,7 @@ else:
 KEY_RE = re.compile("([a-z]+)\((.*)\)")
 AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
 
+
 class Input(QDialog, Ui_InputDialog):
 
     def __init__(self, parent):
@@ -44,6 +45,9 @@ class Input(QDialog, Ui_InputDialog):
         self.controller = 1
         self.mode = 0
         self.device = -1
+        self.opts = {}
+        self.keys = {}
+        self.section = None
         self.is_joystick = False
         self.set_section("Input-SDL-Control%d" % self.controller)
         self.joystick = Joystick()
@@ -59,11 +63,11 @@ class Input(QDialog, Ui_InputDialog):
 
     def connect_signals(self):
         self.comboDevice.currentIndexChanged.connect(
-                self.on_device_changed)
+            self.on_device_changed)
         self.comboController.currentIndexChanged.connect(
-                self.on_controller_changed)
+            self.on_controller_changed)
         self.comboMode.currentIndexChanged.connect(
-                self.on_mode_changed)
+            self.on_mode_changed)
 
     def show_dialog(self):
         self.config = self.parent.worker.core.config
@@ -102,13 +106,20 @@ class Input(QDialog, Ui_InputDialog):
     def add_items(self):
         for controller in range(1, 5):
             self.comboController.addItem(
-                    self.tr("Controller %s" % controller), controller)
+                self.tr("Controller %s" % controller), controller)
 
-        for plugin, ptype in [(self.tr("None"), 1), (self.tr("Mem pak"), 2), (self.tr("Rumble pak"), 5)]:
+        for plugin, ptype in [
+            (self.tr("None"), 1),
+            (self.tr("Mem pak"), 2),
+            (self.tr("Rumble pak"), 5)
+        ]:
             self.comboPlugin.addItem(plugin, ptype)
 
-        for mode, mtype in [(self.tr("Fully Manual"), 0),
-                (self.tr("Auto with named SDL device"), 1), (self.tr("Fully Automatic"), 2)]:
+        for mode, mtype in [
+            (self.tr("Fully Manual"), 0),
+            (self.tr("Auto with named SDL device"), 1),
+            (self.tr("Fully Automatic"), 2)
+        ]:
             self.comboMode.addItem(mode, mtype)
 
         devices = [(self.tr("Keyboard/Mouse"), -1)]
@@ -148,7 +159,7 @@ class Input(QDialog, Ui_InputDialog):
                 continue
             self.config.set_default(M64TYPE_STRING, key, "", "")
         self.config.set_default(M64TYPE_STRING, "X Axis", "",
-                "Analog axis configuration mappings")
+                                "Analog axis configuration mappings")
         self.config.set_default(M64TYPE_STRING, "Y Axis", "", "")
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
@@ -196,7 +207,7 @@ class Input(QDialog, Ui_InputDialog):
                 self.config.get_parameter("AnalogPeak"),
                 self.config.get_parameter_help("AnalogPeak"),
                 (self.spinPeakX, self.spinPeakY), M64TYPE_STRING)
-            }
+        }
 
     def set_opts(self):
         for key, val in self.opts.items():
@@ -226,19 +237,19 @@ class Input(QDialog, Ui_InputDialog):
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
             if ptype == M64TYPE_BOOL:
-                self.config.set_parameter(key,
-                        widget.isChecked())
+                self.config.set_parameter(
+                    key, widget.isChecked())
             elif ptype == M64TYPE_INT:
-                self.config.set_parameter(key,
-                        widget.itemData(widget.currentIndex()))
+                self.config.set_parameter(
+                    key, widget.itemData(widget.currentIndex()))
             elif ptype == M64TYPE_STRING:
                 if key in ["AnalogDeadzone", "AnalogPeak"]:
                     spin1, spin2 = widget
                     self.config.set_parameter(key,"%s,%s" % (
                         spin1.value(), spin2.value()))
                 else:
-                    self.config.set_parameter(key,
-                            str(widget.text()))
+                    self.config.set_parameter(
+                        key, str(widget.text()))
 
     def get_keys(self):
         self.keys = {
@@ -282,8 +293,7 @@ class Input(QDialog, Ui_InputDialog):
                 self.get_key("Y Axis")[0], self.pushY_Axis_U),
             "Y Axis D": (
                 self.get_key("Y Axis")[1], self.pushY_Axis_D)
-            }
-
+        }
 
     def set_keys(self):
         for key, val in self.keys.items():
@@ -346,23 +356,23 @@ class Input(QDialog, Ui_InputDialog):
         xr = KEY_RE.findall(str(self.pushX_Axis_R.text()))
         if xl and xr:
             xl, xr = xl[0], xr[0]
-            self.config.set_parameter("X Axis", "%s(%s,%s)" % (xl[0],xl[1],xr[1]))
+            self.config.set_parameter("X Axis", "%s(%s,%s)" % (xl[0], xl[1], xr[1]))
         else:
             xl = self.get_sdl_key(self.pushX_Axis_L.text())
             xr = self.get_sdl_key(self.pushX_Axis_R.text())
             if xl and xr:
-                self.config.set_parameter("X Axis", "key(%s,%s)" % (xl,xr))
+                self.config.set_parameter("X Axis", "key(%s,%s)" % (xl, xr))
 
         yu = KEY_RE.findall(str(self.pushY_Axis_U.text()))
         yd = KEY_RE.findall(str(self.pushY_Axis_D.text()))
         if yu and yd:
             yu, yd = yu[0], yd[0]
-            self.config.set_parameter("Y Axis", "%s(%s,%s)" % (yu[0],yu[1],yd[1]))
+            self.config.set_parameter("Y Axis", "%s(%s,%s)" % (yu[0], yu[1], yd[1]))
         else:
             yu = self.get_sdl_key(self.pushY_Axis_U.text())
             yd = self.get_sdl_key(self.pushY_Axis_D.text())
             if yu and yd:
-                self.config.set_parameter("Y Axis", "key(%s,%s)" % (yu,yd))
+                self.config.set_parameter("Y Axis", "key(%s,%s)" % (yu, yd))
 
     def get_key(self, key):
         param = self.config.get_parameter(key)
@@ -405,7 +415,7 @@ class Input(QDialog, Ui_InputDialog):
             from m64py.SDL2.keyboard import SDL_GetScancodeName
             try:
                 text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])
-            except:
+            except Exception:
                 return self.tr("Select...")
         else:
             from m64py.SDL.keyboard import SDL_GetKeyName

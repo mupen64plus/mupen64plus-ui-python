@@ -23,6 +23,7 @@ from m64py.ui.about_ui import Ui_AboutDialog
 from m64py.ui.license_ui import Ui_LicenseDialog
 from m64py.ui.archive_ui import Ui_ArchiveDialog
 
+
 class AboutDialog(QDialog, Ui_AboutDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
@@ -37,11 +38,13 @@ class AboutDialog(QDialog, Ui_AboutDialog):
         self.labelAbout.setText(text)
         self.show()
 
+
 class LicenseDialog(QDialog, Ui_LicenseDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setupUi(self)
         self.show()
+
 
 class InfoDialog(QMessageBox):
     def __init__(self, parent=None, text=None):
@@ -49,6 +52,7 @@ class InfoDialog(QMessageBox):
         self.setText(text)
         self.setWindowTitle("Info")
         self.show()
+
 
 class ArchiveDialog(QDialog, Ui_ArchiveDialog):
     def __init__(self, parent, files):

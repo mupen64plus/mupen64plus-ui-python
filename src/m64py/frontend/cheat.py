@@ -27,6 +27,7 @@ from m64py.frontend.log import log
 from m64py.ui.cheat_ui import Ui_CheatDialog
 from m64py.ui.choices_ui import Ui_ChoicesDialog
 
+
 class Cheat(QDialog, Ui_CheatDialog):
     """Cheats dialog"""
 
@@ -106,13 +107,13 @@ class Cheat(QDialog, Ui_CheatDialog):
 
     def on_unmark_all(self):
         """Deactivates all cheats"""
-        iter = QTreeWidgetItemIterator(self.treeWidget)
-        while(iter.value()):
-            item = iter.value()
+        it = QTreeWidgetItemIterator(self.treeWidget)
+        while it.value():
+            item = it.value()
             state = item.checkState(0)
             if state == Qt.Checked:
                 item.setCheckState(0, Qt.Unchecked)
-            iter += 1
+            it += 1
 
     def activate_cheat(self, item, column):
         """Activates selected cheat"""
@@ -184,26 +185,23 @@ class Cheat(QDialog, Ui_CheatDialog):
         cheat_codes = []
 
         cheat_file = os.path.join(
-                self.parent.worker.core.config.get_path(
-                    "SharedData"), 'mupencheat.txt')
+            self.parent.worker.core.config.get_path( "SharedData"), 'mupencheat.txt')
         if not os.path.isfile(cheat_file) or not os.access(cheat_file, os.R_OK):
             log.warn("cheat code database file '%s' not found." % cheat_file)
             return None
 
         rom_section = "%08X-%08X-C:%X" % (
-                sl(self.parent.worker.core.rom_header.CRC1),
-                sl(self.parent.worker.core.rom_header.CRC2),
-                self.parent.worker.core.rom_header.Country_code & 0xff)
+            sl(self.parent.worker.core.rom_header.CRC1),
+            sl(self.parent.worker.core.rom_header.CRC2),
+            self.parent.worker.core.rom_header.Country_code & 0xff)
         rom_section = rom_section.upper()
 
-        code_re = re.compile(
-                '^([0-9A-F]{8})\s+([?|0-9A-F]{4})\s?(.*)$', re.M)
+        code_re = re.compile('^([0-9A-F]{8})\s+([?|0-9A-F]{4})\s?(.*)$', re.M)
 
         try:
             fd = open(cheat_file, 'r')
         except IOError:
-            log.warn("couldn't open cheat code database file '%s'." % (
-                        cheat_file))
+            log.warn("couldn't open cheat code database file '%s'." % cheat_file)
             return None
         else:
             lines = [line.strip() for line in fd.readlines()]
@@ -267,8 +265,9 @@ class Cheat(QDialog, Ui_CheatDialog):
 
             if line:
                 # otherwise we don't know what this line is
-                log.warn("unrecognized line in cheat file: '%s'" % (line))
+                log.warn("unrecognized line in cheat file: '%s'" % line)
         return None
+
 
 class Choices(QDialog, Ui_ChoicesDialog):
     """Choices dialog"""

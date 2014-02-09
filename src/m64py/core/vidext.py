@@ -54,8 +54,9 @@ try:
 except Exception, err:
     log.warn(str(err))
     MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
-            (1280, 960), (1152, 864), (1024, 768),
-            (800, 600), (640, 480), (320, 240)]
+             (1280, 960), (1152, 864), (1024, 768),
+             (800, 600), (640, 480), (320, 240)]
+
 
 class Video():
     """Mupen64Plus video extension"""
@@ -64,6 +65,7 @@ class Video():
         """Constructor."""
         self.parent = None
         self.widget = None
+        self.glformat = None
         self.glcontext = None
 
     def set_widget(self, parent):
@@ -114,8 +116,7 @@ class Video():
         """Sets the caption text of the
         emulator rendering window. """
         title = "M64Py :: %s" % title
-        self.parent.emit(
-                SIGNAL("set_caption(PyQt_PyObject)"), title)
+        self.parent.emit(SIGNAL("set_caption(PyQt_PyObject)"), title)
         return M64ERR_SUCCESS
 
     def toggle_fs(self):
@@ -136,16 +137,16 @@ class Video():
     def gl_set_attr(self, attr, value):
         """Sets OpenGL attributes."""
         attr_map = {
-                M64P_GL_DOUBLEBUFFER: self.glformat.setDoubleBuffer,
-                M64P_GL_BUFFER_SIZE: self.glformat.setDepthBufferSize,
-                M64P_GL_DEPTH_SIZE: self.glformat.setDepth,
-                M64P_GL_RED_SIZE: self.glformat.setRedBufferSize,
-                M64P_GL_GREEN_SIZE: self.glformat.setGreenBufferSize,
-                M64P_GL_BLUE_SIZE: self.glformat.setBlueBufferSize,
-                M64P_GL_ALPHA_SIZE: self.glformat.setAlphaBufferSize,
-                M64P_GL_SWAP_CONTROL: self.glformat.setSwapInterval,
-                M64P_GL_MULTISAMPLEBUFFERS: self.glformat.setSampleBuffers,
-                M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples
+            M64P_GL_DOUBLEBUFFER: self.glformat.setDoubleBuffer,
+            M64P_GL_BUFFER_SIZE: self.glformat.setDepthBufferSize,
+            M64P_GL_DEPTH_SIZE: self.glformat.setDepth,
+            M64P_GL_RED_SIZE: self.glformat.setRedBufferSize,
+            M64P_GL_GREEN_SIZE: self.glformat.setGreenBufferSize,
+            M64P_GL_BLUE_SIZE: self.glformat.setBlueBufferSize,
+            M64P_GL_ALPHA_SIZE: self.glformat.setAlphaBufferSize,
+            M64P_GL_SWAP_CONTROL: self.glformat.setSwapInterval,
+            M64P_GL_MULTISAMPLEBUFFERS: self.glformat.setSampleBuffers,
+            M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples
         }
         set_attr = attr_map[attr]
         set_attr(value)
@@ -154,16 +155,16 @@ class Video():
     def gl_get_attr(self, attr, value):
         """Gets OpenGL attributes."""
         attr_map = {
-                M64P_GL_DOUBLEBUFFER: self.glformat.doubleBuffer,
-                M64P_GL_BUFFER_SIZE: self.glformat.depthBufferSize,
-                M64P_GL_DEPTH_SIZE: self.glformat.depth,
-                M64P_GL_RED_SIZE: self.glformat.redBufferSize,
-                M64P_GL_GREEN_SIZE: self.glformat.greenBufferSize,
-                M64P_GL_BLUE_SIZE: self.glformat.blueBufferSize,
-                M64P_GL_ALPHA_SIZE: self.glformat.alphaBufferSize,
-                M64P_GL_SWAP_CONTROL: self.glformat.swapInterval,
-                M64P_GL_MULTISAMPLEBUFFERS: self.glformat.sampleBuffers,
-                M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples
+            M64P_GL_DOUBLEBUFFER: self.glformat.doubleBuffer,
+            M64P_GL_BUFFER_SIZE: self.glformat.depthBufferSize,
+            M64P_GL_DEPTH_SIZE: self.glformat.depth,
+            M64P_GL_RED_SIZE: self.glformat.redBufferSize,
+            M64P_GL_GREEN_SIZE: self.glformat.greenBufferSize,
+            M64P_GL_BLUE_SIZE: self.glformat.blueBufferSize,
+            M64P_GL_ALPHA_SIZE: self.glformat.alphaBufferSize,
+            M64P_GL_SWAP_CONTROL: self.glformat.swapInterval,
+            M64P_GL_MULTISAMPLEBUFFERS: self.glformat.sampleBuffers,
+            M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples
         }
         get_attr = attr_map[attr]
         new_value = int(get_attr())

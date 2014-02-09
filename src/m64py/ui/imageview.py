@@ -27,8 +27,8 @@ class ImageView(QGraphicsView):
         size = event.size()
         for item in self.scene().items():
             pixmap = item.pixmap()
-            pixmap = pixmap.scaled(size,
-                    Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = pixmap.scaled(
+                size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             item.setPixmap(pixmap)
             self.ensureVisible(item)
             self.centerOn(item)

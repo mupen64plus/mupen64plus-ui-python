@@ -17,6 +17,7 @@ import os
 import re
 from hashlib import md5
 
+
 def md5sum(filename=None, filedata=None, buf_size=8192):
     m = md5()
     if filename:
@@ -30,6 +31,7 @@ def md5sum(filename=None, filedata=None, buf_size=8192):
             data = filedata[i:i+buf_size]
             m.update(data)
     return m.hexdigest()
+
 
 def which(prog):
     def is_exe(fpath):
@@ -45,17 +47,20 @@ def which(prog):
                 return filename
     return None
 
+
 def version_split(ver):
     return "%d.%d.%d" % (
-            (((ver) >> 16) & 0xffff),
-            (((ver) >> 8) & 0xff),
-            (((ver) & 0xff)))
+        ((ver >> 16) & 0xffff),
+        ((ver >> 8) & 0xff),
+        ((ver & 0xff)))
+
 
 def sl(mot):
     return ((mot & 0x000000FF) << 24) |\
-            ((mot & 0x0000FF00) <<  8) |\
-            ((mot & 0x00FF0000) >>  8) |\
-            ((mot & 0xFF000000) >> 24)
+           ((mot & 0x0000FF00) << 8) |\
+           ((mot & 0x00FF0000) >> 8) |\
+           ((mot & 0xFF000000) >> 24)
+
 
 def format_tooltip(tooltip):
     if len(tooltip) > 80:
@@ -67,6 +72,7 @@ def format_tooltip(tooltip):
                 tooltip += "\n"
     return tooltip
 
+
 def format_label(label):
     words = label.split("_")
     if len(words) > 1:
@@ -75,12 +81,13 @@ def format_label(label):
         label = label.capitalize()
     return label
 
+
 def format_options(param_help):
     opts = {}
     if not param_help:
         return None
     items = re.findall(
-            "(\d+|[\d,-]+)\s?=\s?([\w %-]+)", param_help)
+        "(\d+|[\d,-]+)\s?=\s?([\w %-]+)", param_help)
     for item in items:
         key, value = item
         if '-' in key or ',' in key:

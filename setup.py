@@ -19,6 +19,7 @@ sys.path.insert(0, realpath("src"))
 from m64py.core.defs import FRONTEND_VERSION
 BASE_DIR = dirname(realpath(__file__))
 
+
 class build_qt(Command):
     user_options = []
 
@@ -47,7 +48,7 @@ class build_qt(Command):
         path.append(dirname(PyQt4.__file__))
         os.putenv("PATH", os.pathsep.join(path))
         if subprocess.call(["pyrcc4", qrc_file, "-o", py_file]) > 0:
-            self.warn("Unable to compile resource file %s" % (qrc_file))
+            self.warn("Unable to compile resource file %s" % qrc_file)
             if not os.path.exists(py_file):
                 sys.exit(1)
         os.putenv('PATH', origpath)
@@ -62,9 +63,9 @@ class build_qt(Command):
                 elif filename.endswith('.qrc'):
                     self.compile_rc(join(dirpath, filename))
 
+
 class build_exe(Command):
     """Needs PyQt4, pyUnRAR2, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
-
     user_options = []
     arch = "i686-w64-mingw32"
     url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
@@ -107,13 +108,13 @@ class build_exe(Command):
         dest_path = join(self.dist_dir, "m64py")
         shutil.copy(unrar_dll, dest_path)
         shutil.copyfile(unrar_lic, join(dest_path, "doc", "unrar-license"))
-        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
-            shutil.copy(join(BASE_DIR, file), dest_path)
+        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
+            shutil.copy(join(BASE_DIR, file_name), dest_path)
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "m64py")
-        for dirname in ["api", "include", "man6"]:
-            shutil.rmtree(join(dest_path, dirname))
+        for dir_name in ["api", "include", "man6"]:
+            shutil.rmtree(join(dest_path, dir_name))
 
     def run_build_installer(self):
         iss_file = ""
@@ -148,6 +149,7 @@ class build_exe(Command):
         self.remove_files()
         self.run_build_installer()
 
+
 class build_dmg(Command):
     user_options = []
     dist_dir = join(BASE_DIR, "dist", "macosx")
@@ -161,9 +163,9 @@ class build_dmg(Command):
     def set_plist(self):
         info_plist = join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Info.plist")
         shutil.copy(join(self.dist_dir, "m64py.icns"),
-                join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources"))
+                    join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources"))
         shutil.copy(join(self.dist_dir, "m64py.sh"),
-                join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS"))
+                    join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS"))
         with open(info_plist, "r") as opts: data = opts.read()
         plist_file = ""
         lines = data.split("\n")
@@ -187,14 +189,14 @@ class build_dmg(Command):
         if not os.path.exists(dest_path):
             os.mkdir(dest_path)
         shutil.move(join(self.dist_dir, "M64Py.app"), dest_path)
-        for file in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
-            shutil.copy(join(BASE_DIR, file), dest_path)
+        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
+            shutil.copy(join(BASE_DIR, file_name), dest_path)
         shutil.copy(join(BASE_DIR, "test", "mupen64plus.v64"), dest_path)
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS")
-        for dirname in ["include", "lib"]:
-            shutil.rmtree(join(dest_path, dirname))
+        for dir_name in ["include", "lib"]:
+            shutil.rmtree(join(dest_path, dir_name))
         os.remove(join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources", "icon-windowed.icns"))
 
     def run_build_dmg(self):
@@ -222,6 +224,7 @@ class build_dmg(Command):
         self.set_plist()
         self.run_build_dmg()
 
+
 def set_sdl2():
     opts_file = ""
     opts_path = join(BASE_DIR, "src", "m64py", "opts.py")
@@ -233,12 +236,12 @@ def set_sdl2():
         opts_file += line + "\n"
     with open(opts_path, "w") as opts: opts.write(opts_file)
 
+
 def set_rthook():
     import PyInstaller
     hook_file = ""
     module_dir = dirname(PyInstaller.__file__)
-    rthook = join(module_dir,
-            "loader", "rthooks", "pyi_rth_qt4plugins.py")
+    rthook = join(module_dir, "loader", "rthooks", "pyi_rth_qt4plugins.py")
     with open(rthook, "r") as hook: data = hook.read()
     if "sip.setapi" not in data:
         lines = data.split("\n")
@@ -249,6 +252,7 @@ def set_rthook():
                 hook_file += "sip.setapi('QString', 2)\n"
                 hook_file += "sip.setapi('QVariant', 2)\n"
         with open(rthook, "w") as hook: hook.write(hook_file)
+
 
 class clean_local(Command):
     pats = ['*.py[co]', '*_ui.py', '*_rc.py']
@@ -268,17 +272,19 @@ class clean_local(Command):
     def _walkpaths(self, path):
         for root, _dirs, files in os.walk(path):
             if any(root == join(path, e) or root.startswith(
-                join(path, e, '')) for e in self.excludedirs):
+                    join(path, e, '')) for e in self.excludedirs):
                 continue
             for e in files:
                 fpath = join(root, e)
                 if any(fnmatch(fpath, p) for p in self.pats):
                     yield fpath
 
+
 class mybuild(build):
     def run(self):
         self.run_command("build_qt")
         build.run(self)
+
 
 class myclean(clean):
     def run(self):
@@ -286,33 +292,34 @@ class myclean(clean):
         clean.run(self)
 
 cmdclass = {
-        'build': mybuild,
-        'build_qt': build_qt,
-        'build_exe': build_exe,
-        'build_dmg': build_dmg,
-        'clean': myclean,
-        'clean_local': clean_local
-    }
+    'build': mybuild,
+    'build_qt': build_qt,
+    'build_exe': build_exe,
+    'build_dmg': build_dmg,
+    'clean': myclean,
+    'clean_local': clean_local
+}
 
-setup(name = "m64py",
-        version = FRONTEND_VERSION,
-        description = "M64Py - A frontend for Mupen64Plus",
-        long_description = "M64Py is a Qt4 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.",
-        author = "Milan Nikolic",
-        author_email = "gen2brain@gmail.com",
-        license = "GNU GPLv3",
-        url = "http://m64py.sourceforge.net",
-        packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL", "m64py.SDL2"],
-        package_dir = {"": "src"},
-        scripts = ["m64py"],
-        requires = ["PyQt4"],
-        platforms = ["Linux", "Windows", "Darwin"],
-        cmdclass = cmdclass,
-        data_files = [
-            ("share/pixmaps", ["xdg/m64py.png"]),
-            ("share/applications", ["xdg/m64py.desktop"]),
-            ("share/mime/packages", ["xdg/application-x-m64py.xml"]),
-            ("share/icons/hicolor/96x96/mimetypes/application-x-m64py.png",
-                ["xdg/application-x-m64py.xml"])
-            ]
-        )
+setup(
+    name = "m64py",
+    version = FRONTEND_VERSION,
+    description = "M64Py - A frontend for Mupen64Plus",
+    long_description = "M64Py is a Qt4 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.",
+    author = "Milan Nikolic",
+    author_email = "gen2brain@gmail.com",
+    license = "GNU GPLv3",
+    url = "http://m64py.sourceforge.net",
+    packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL", "m64py.SDL2"],
+    package_dir = {"": "src"},
+    scripts = ["m64py"],
+    requires = ["PyQt4"],
+    platforms = ["Linux", "Windows", "Darwin"],
+    cmdclass = cmdclass,
+    data_files = [
+        ("share/pixmaps", ["xdg/m64py.png"]),
+        ("share/applications", ["xdg/m64py.desktop"]),
+        ("share/mime/packages", ["xdg/application-x-m64py.xml"]),
+        ("share/icons/hicolor/96x96/mimetypes/application-x-m64py.png",
+            ["xdg/application-x-m64py.xml"])
+    ]
+)

@@ -23,24 +23,24 @@ if sys.platform.startswith("linux"):
     DLL_FILTER = ".so.2"
     DEFAULT_DYNLIB = "libmupen64plus.so.2"
     SEARCH_DIRS = [
-            "/usr/local/lib/mupen64plus",
-            "/usr/lib/mupen64plus",
-            "/usr/games/lib64/mupen64plus",
-            "/usr/games/lib/mupen64plus",
-            "/usr/lib/x86_64-linux-gnu/mupen64plus",
-            "/usr/lib/i386-linux-gnu/mupen64plus",
-            "."
-            ]
+        "/usr/local/lib/mupen64plus",
+        "/usr/lib/mupen64plus",
+        "/usr/games/lib64/mupen64plus",
+        "/usr/games/lib/mupen64plus",
+        "/usr/lib/x86_64-linux-gnu/mupen64plus",
+        "/usr/lib/i386-linux-gnu/mupen64plus",
+        "."
+    ]
 elif sys.platform == "darwin":
     LDD_CMD = "otool -L %s | grep -q SDL2"
     DLL_EXT = ".dylib"
     DLL_FILTER = ".dylib"
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
     SEARCH_DIRS = [
-            "/usr/local/lib/mupen64plus",
-            "/usr/lib/mupen64plus",
-            "."
-            ]
+        "/usr/local/lib/mupen64plus",
+        "/usr/lib/mupen64plus",
+        "."
+    ]
 elif sys.platform == "win32":
     LDD_CMD = ""
     DLL_EXT = ".dll"

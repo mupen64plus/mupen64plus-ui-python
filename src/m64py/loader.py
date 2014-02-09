@@ -51,9 +51,10 @@ def _environ_path(name):
     else:
         return []
 
+
 class LibraryLoader(object):
     def __init__(self):
-        self.other_dirs=[]
+        self.other_dirs = []
 
     def find_library(self, libname):
         paths = self.getpaths(libname)
@@ -82,7 +83,7 @@ class LibraryLoader(object):
                 return ctypes.CDLL(path, ctypes.RTLD_GLOBAL)
             else:
                 return ctypes.cdll.LoadLibrary(path)
-        except OSError,e:
+        except OSError, e:
             raise ImportError(e)
 
     def getpaths(self, libname):
@@ -102,7 +103,7 @@ class LibraryLoader(object):
 
 class DarwinLibraryLoader(LibraryLoader):
     name_formats = ["lib%s.dylib", "lib%s.so", "lib%s.bundle",
-            "%s.dylib", "%s.framework", "%s.so", "%s.bundle", "%s"]
+                    "%s.dylib", "%s.framework", "%s.so", "%s.bundle", "%s"]
 
     def find_library(self, libname):
         paths = self.getpaths(libname)
@@ -126,7 +127,7 @@ class DarwinLibraryLoader(LibraryLoader):
         if os.path.pathsep in libname:
             names = [libname]
         else:
-            names = [format % libname for format in self.name_formats]
+            names = [f % libname for f in self.name_formats]
 
         for dirname in self.getdirs(libname):
             for name in names:
@@ -180,10 +181,10 @@ class PosixLibraryLoader(LibraryLoader):
 
         directories = []
         for name in ("LD_LIBRARY_PATH",
-                     "SHLIB_PATH", # HPUX
-                     "LIBPATH", # OS/2, AIX
-                     "LIBRARY_PATH", # BE/OS
-                    ):
+                     "SHLIB_PATH",  # HPUX
+                     "LIBPATH",  # OS/2, AIX
+                     "LIBRARY_PATH",  # BE/OS
+                     ):
             if name in os.environ:
                 directories.extend(os.environ[name].split(os.pathsep))
         directories.extend(self.other_dirs)
@@ -194,23 +195,23 @@ class PosixLibraryLoader(LibraryLoader):
         except IOError:
             pass
 
-        directories.extend(['/lib', '/usr/lib', '/lib64',
-            '/usr/lib64', '/usr/games/lib', '/usr/games/lib64',
-            '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
+        directories.extend(['/lib', '/usr/lib', '/lib64', '/usr/lib64',
+                            '/usr/games/lib', '/usr/games/lib64',
+                            '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
 
         cache = {}
         lib_re = re.compile(r'lib(.*)\.s[ol]')
-        for dir in directories:
+        for d in directories:
             try:
-                for path in glob.glob("%s/*.s[ol]*" % dir):
-                    file = os.path.basename(path)
+                for path in glob.glob("%s/*.s[ol]*" % d):
+                    f = os.path.basename(path)
 
                     # Index by filename
-                    if file not in cache:
-                        cache[file] = path
+                    if f not in cache:
+                        cache[f] = path
 
                     # Index by library name
-                    match = lib_re.match(file)
+                    match = lib_re.match(f)
                     if match:
                         library = match.group(1)
                         if library not in cache:
@@ -225,10 +226,13 @@ class PosixLibraryLoader(LibraryLoader):
             self._create_ld_so_cache()
 
         result = self._ld_so_cache.get(libname)
-        if result: yield result
+        if result:
+            yield result
 
         path = ctypes.util.find_library(libname)
-        if path: yield os.path.join("/lib",path)
+        if path:
+            yield os.path.join("/lib", path)
+
 
 class _WindowsLibrary(object):
     def __init__(self, path):
@@ -244,9 +248,11 @@ class _WindowsLibrary(object):
             self.windll = ctypes.windll.LoadLibrary(path)
 
     def __getattr__(self, name):
-        try: return getattr(self.cdll,name)
+        try:
+            return getattr(self.cdll, name)
         except AttributeError:
-            try: return getattr(self.windll,name)
+            try:
+                return getattr(self.windll, name)
             except AttributeError:
                 raise
 

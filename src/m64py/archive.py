@@ -28,7 +28,7 @@ try:
     import UnRAR2
     HAS_RAR = True
     RAR_CMD = None
-except:
+except ImportError:
     HAS_RAR = False
     RAR_CMD = which("rar") or which("unrar")
 
@@ -36,7 +36,7 @@ try:
     from py7zlib import Archive7z
     HAS_7Z = True
     LZMA_CMD = None
-except:
+except ImportError:
     HAS_7Z = False
     LZMA_CMD = which("7z")
 
@@ -52,6 +52,7 @@ ROM_TYPE = {
     '40123780': 'n64 (wordswapped)'
 }
 
+
 class Archive():
     """Extracts ROM file from archive."""
 
@@ -59,7 +60,7 @@ class Archive():
         """Opens archive."""
         self.file = os.path.realpath(filename)
         if not os.path.isfile(self.file) or not os.access(self.file, os.R_OK):
-            raise IOError("Cannot open %s. No such file." % (self.file))
+            raise IOError("Cannot open %s. No such file." % self.file)
 
         self.filetype = self.get_filetype()
 
@@ -77,16 +78,16 @@ class Archive():
             elif RAR_CMD:
                 self.fd = RarCmd(self.file)
             else:
-                raise IOError("UnRAR2 module or rar/unrar is needed for %s." % (self.file))
+                raise IOError("UnRAR2 module or rar/unrar is needed for %s." % self.file)
         elif self.filetype == LZMA:
             if HAS_7Z:
                 self.fd = Archive7z(open(self.file, 'rb'))
             elif LZMA_CMD:
                 self.fd = LzmaCmd(self.file)
             else:
-                raise IOError("lzma module or 7z is needed for %s." % (self.file))
+                raise IOError("lzma module or 7z is needed for %s." % self.file)
         else:
-            raise IOError("File %s is not a N64 ROM file." % (self.file))
+            raise IOError("File %s is not a N64 ROM file." % self.file)
 
         self.namelist = self.get_namelist()
 
@@ -163,6 +164,7 @@ class Archive():
             return ROM
         return None
 
+
 class RarCmd:
     """Extracts ROM file from RAR archive."""
 
@@ -170,6 +172,7 @@ class RarCmd:
         """Opens archive."""
         self.fd = None
         self.file = archive
+        self.filename = None
         self.namelist = self.namelist()
         self.tempdir = tempfile.mkdtemp()
 
@@ -200,6 +203,7 @@ class RarCmd:
             self.fd.close()
         shutil.rmtree(self.tempdir)
 
+
 class LzmaCmd:
     """Extracts ROM file from 7z archive."""
 
@@ -207,6 +211,7 @@ class LzmaCmd:
         """Opens archive."""
         self.fd = None
         self.file = archive
+        self.filename = None
         self.namelist = self.namelist()
         self.tempdir = tempfile.mkdtemp()
 

@@ -29,10 +29,9 @@ from m64py.ui.romlist_ui import Ui_ROMList
 try:
     from m64py.ui import title_rc
     from m64py.ui import snapshot_rc
-    bool(title_rc)
-    bool(snapshot_rc)
 except ImportError:
     pass
+
 
 class ROMList(QMainWindow, Ui_ROMList):
     """ROM list window"""
@@ -45,6 +44,11 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.core = self.parent.worker.core
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.qset = self.parent.settings.qset
+
+        self.romlist = {}
+        self.title_item = None
+        self.snapshot_item = None
+        self.roms = self.qset.value("rom_list", [])
 
         rect = self.frameGeometry()
         rect.moveCenter(QDesktopWidget().availableGeometry().center())
@@ -70,7 +74,6 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def init(self):
         self.read_rom_list()
-        self.roms = self.qset.value("rom_list", [])
         if bool(int(self.qset.value("show_available", 0))):
             self.add_available_items(self.roms)
         else:
@@ -78,29 +81,20 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def connect_signals(self):
         """Connects signals."""
-        self.listWidget.currentItemChanged.connect(
-                self.on_item_changed)
-        self.listWidget.itemDoubleClicked.connect(
-                self.on_item_activated)
-        self.listWidget.itemActivated.connect(
-                self.on_item_activated)
-        self.checkAvailable.clicked.connect(
-                self.on_available_clicked)
-        self.progressBar.valueChanged.connect(
-                self.on_progress_bar_changed)
-        self.pushRefresh.clicked.connect(
-                self.refresh_items)
-        self.pushOpen.clicked.connect(
-                self.on_item_open)
-        self.connect(self.reader, SIGNAL("finished()"),
-                self.add_available_items)
+        self.listWidget.currentItemChanged.connect(self.on_item_changed)
+        self.listWidget.itemDoubleClicked.connect(self.on_item_activated)
+        self.listWidget.itemActivated.connect(self.on_item_activated)
+        self.checkAvailable.clicked.connect(self.on_available_clicked)
+        self.progressBar.valueChanged.connect(self.on_progress_bar_changed)
+        self.pushRefresh.clicked.connect(self.refresh_items)
+        self.pushOpen.clicked.connect(self.on_item_open)
+        self.connect(self.reader, SIGNAL("finished()"), self.add_available_items)
 
     def read_rom_list(self):
         """Reads ROM list from ini file."""
         inifile = os.path.join(self.shared_data_path, "mupen64plus.ini")
         self.parser.read(inifile)
         sections = self.parser.sections()
-        self.romlist = {}
         for section in sections:
             items = self.parser.items(section)
             self.romlist[section] = dict(items)
@@ -180,7 +174,8 @@ class ROMList(QMainWindow, Ui_ROMList):
             self.file_open(path, fname)
 
     def on_item_changed(self, current, previous):
-        if not current: return
+        if not current:
+            return
         md5, path, fname = current.data(Qt.UserRole)
 
         title = QPixmap(os.path.join(
@@ -197,20 +192,20 @@ class ROMList(QMainWindow, Ui_ROMList):
             snapshot = QPixmap(":/images/default.png")
 
         if previous is not None:
-            self.titleView.scene().removeItem(self.titleItem)
-            self.snapshotView.scene().removeItem(self.snapshotItem)
+            self.titleView.scene().removeItem(self.title_item)
+            self.snapshotView.scene().removeItem(self.snapshot_item)
 
-        title_pixmap = title.scaled(self.titleView.size(),
-                Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        snapshot_pixmap = snapshot.scaled(self.snapshotView.size(),
-                Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        title_pixmap = title.scaled(
+            self.titleView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        snapshot_pixmap = snapshot.scaled(
+            self.snapshotView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        titleItem = QGraphicsPixmapItem(title_pixmap)
-        snapshotItem = QGraphicsPixmapItem(snapshot_pixmap)
-        self.titleView.scene().addItem(titleItem)
-        self.snapshotView.scene().addItem(snapshotItem)
-        self.titleItem = titleItem
-        self.snapshotItem = snapshotItem
+        title_item = QGraphicsPixmapItem(title_pixmap)
+        snapshot_item = QGraphicsPixmapItem(snapshot_pixmap)
+        self.titleView.scene().addItem(title_item)
+        self.snapshotView.scene().addItem(snapshot_item)
+        self.title_item = title_item
+        self.snapshot_item = snapshot_item
 
     def on_available_clicked(self):
         is_checked = self.checkAvailable.isChecked()
@@ -223,6 +218,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         else:
             self.reader.stop()
             self.add_items()
+
 
 class ROMReader(QThread):
     """ROM reader thread"""
@@ -269,8 +265,7 @@ class ROMReader(QThread):
                 log.warn(str(err))
                 continue
             percent = float(filenum) / float(num_files) * 100
-            self.parent.progressBar.emit(
-                    SIGNAL("valueChanged(int)"), percent)
+            self.parent.progressBar.emit(SIGNAL("valueChanged(int)"), percent)
         self.exit()
 
     def stop(self):

@@ -33,6 +33,7 @@ from m64py.frontend.glwidget import GLWidget
 from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.recentfiles import RecentFiles
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Frontend main window"""
 
@@ -55,9 +56,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         logview.setParent(self)
         logview.setWindowFlags(Qt.Dialog)
 
-        self.statusbarLabel = QLabel()
-        self.statusbarLabel.setIndent(2)
-        self.statusbar.addPermanentWidget(self.statusbarLabel, 1)
+        self.statusbar_label = QLabel()
+        self.statusbar_label.setIndent(2)
+        self.statusbar.addPermanentWidget(self.statusbar_label, 1)
         self.update_status(self.tr(
             "Welcome to M64Py version %s." % FRONTEND_VERSION))
 
@@ -66,6 +67,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             SIZE_2X: self.action2X,
             SIZE_3X: self.action3X}
 
+        self.slots = {}
+        self.view = None
+        self.stack = None
+        self.glwidget = None
         self.cheats = None
         self.maximized = False
         self.widgets_height = None
@@ -73,8 +78,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = Settings(self)
         self.worker = Worker(self)
 
-        self.vidext = bool(int(
-            self.settings.qset.value("enable_vidext", 1)))
+        self.vidext = bool(
+            int(self.settings.qset.value("enable_vidext", 1)))
 
         self.create_state_slots()
         self.create_widgets()
@@ -174,24 +179,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def connect_signals(self):
         """Connects signals."""
-        self.connect(self, SIGNAL("rom_opened()"),
-                self.on_rom_opened)
-        self.connect(self, SIGNAL("rom_closed()"),
-                self.on_rom_closed)
-        self.connect(self, SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"),
-                self.file_open)
-        self.connect(self, SIGNAL("file_opening(PyQt_PyObject)"),
-                self.on_file_opening)
-        self.connect(self, SIGNAL("set_caption(PyQt_PyObject)"),
-                self.on_set_caption)
-        self.connect(self, SIGNAL("state_changed(PyQt_PyObject)"),
-                self.on_state_changed)
-        self.connect(self, SIGNAL("save_image(PyQt_PyObject)"),
-                self.on_save_image)
-        self.connect(self, SIGNAL("info_dialog(PyQt_PyObject)"),
-                self.on_info_dialog)
-        self.connect(self, SIGNAL("archive_dialog(PyQt_PyObject)"),
-                self.on_archive_dialog)
+        self.connect(self, SIGNAL("rom_opened()"), self.on_rom_opened)
+        self.connect(self, SIGNAL("rom_closed()"), self.on_rom_closed)
+        self.connect(self, SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), self.file_open)
+        self.connect(self, SIGNAL("file_opening(PyQt_PyObject)"), self.on_file_opening)
+        self.connect(self, SIGNAL("set_caption(PyQt_PyObject)"), self.on_set_caption)
+        self.connect(self, SIGNAL("state_changed(PyQt_PyObject)"), self.on_state_changed)
+        self.connect(self, SIGNAL("save_image(PyQt_PyObject)"), self.on_save_image)
+        self.connect(self, SIGNAL("info_dialog(PyQt_PyObject)"), self.on_info_dialog)
+        self.connect(self, SIGNAL("archive_dialog(PyQt_PyObject)"), self.on_archive_dialog)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -207,7 +203,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def create_state_slots(self):
         """Creates state slot actions."""
-        self.slots = {}
         group = QActionGroup(self)
         group.setExclusive(True)
         for slot in range(10):
@@ -220,13 +215,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.slots[0].setChecked(True)
         for slot, action in self.slots.items():
             self.connect(action, SIGNAL("triggered()"),
-                    lambda s=slot:self.worker.state_set_slot(s))
+                         lambda s=slot: self.worker.state_set_slot(s))
 
     def create_size_actions(self):
         """Creates window size actions."""
         group = QActionGroup(self)
         group.setExclusive(True)
-        size = self.settings.qset.value("size", SIZE_1X)
         for num, size in enumerate(
                 sorted(self.sizes.keys()), 1):
             width, height = size
@@ -236,7 +230,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             action.setText("%dX" % num)
             action.setToolTip("%sx%s" % (width, height))
             self.connect(action, SIGNAL("triggered()"),
-                    lambda w=w,h=h:self.resize(w, h))
+                         lambda wi=w, he=h: self.resize(wi, he))
 
     def file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
@@ -252,7 +246,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_status(self, status):
         """Updates label in status bar."""
-        self.statusbarLabel.setText(status)
+        self.statusbar_label.setText(status)
 
     def on_set_caption(self, title):
         """Sets window title."""
@@ -284,7 +278,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_state_changed(self, states):
         """Toggles actions state."""
-        load,pause,action,cheats = states
+        load, pause, action, cheats = states
         self.menuLoad.setEnabled(load)
         self.menuRecent.setEnabled(load)
         self.menuStateSlot.setEnabled(load)
@@ -370,9 +364,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
         file_path = dialog.getOpenFileName(
-                self, self.tr("Load State From File"),
-                os.path.join(self.worker.core.config.get_path("UserData"), "save"),
-                "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
+            self, self.tr("Load State From File"),
+            os.path.join(self.worker.core.config.get_path("UserData"), "save"),
+            "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
         if file_path:
             self.worker.state_load(file_path)
 
@@ -381,10 +375,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Saves state to file."""
         dialog = QFileDialog()
         file_path, file_filter = dialog.getSaveFileNameAndFilter(
-                self, self.tr("Save State To File"),
-                os.path.join(self.worker.core.config.get_path("UserData"), "save"),
-                ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
-                M64P_SAVES[M64SAV_M64P][0])
+            self, self.tr("Save State To File"),
+            os.path.join(self.worker.core.config.get_path("UserData"), "save"),
+            ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
+            M64P_SAVES[M64SAV_M64P][0])
         if file_path:
             for save_type, filters in M64P_SAVES.items():
                 save_filter, save_ext = filters
@@ -485,6 +479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Shows log dialog."""
         logview.show()
 
+
 class View(QGraphicsView):
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
@@ -493,5 +488,4 @@ class View(QGraphicsView):
         self.setStyleSheet("QGraphicsView {border:0px solid;margin:0px;}")
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.setScene(QGraphicsScene(self))
-        self.scene().addItem(
-                QGraphicsPixmapItem(QPixmap(":/images/front.png")))
+        self.scene().addItem(QGraphicsPixmapItem(QPixmap(":/images/front.png")))

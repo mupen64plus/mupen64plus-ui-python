@@ -20,6 +20,7 @@ import subprocess
 
 from m64py.frontend.log import log
 
+
 class LinuxScreenSaver:
     cookie = None
     screensaver = None
@@ -28,14 +29,15 @@ class LinuxScreenSaver:
         try:
             import dbus
             self.screensaver = dbus.SessionBus().get_object(
-                    "org.freedesktop.ScreenSaver", "/ScreenSaver")
+                "org.freedesktop.ScreenSaver", "/ScreenSaver")
         except Exception, err:
             log.info("ScreenSaver not available: %s" % str(err))
 
     def disable(self):
         if self.screensaver:
             try:
-                self.cookie = self.screensaver.Inhibit("M64Py", "Emulation started")
+                self.cookie = self.screensaver.Inhibit(
+                    "M64Py", "Emulation started")
                 log.info("ScreenSaver disabled")
             except Exception, err:
                 log.exception(str(err))
@@ -49,26 +51,28 @@ class LinuxScreenSaver:
             except Exception, err:
                 log.exception(str(err))
 
+
 class DarwinScreenSaver:
     def __init__(self):
         try:
             self.idle_time = subprocess.check_output(
-                    "defaults -currentHost read com.apple.screensaver idleTime",
-                    shell=True).strip()
+                "defaults -currentHost read com.apple.screensaver idleTime",
+                shell=True).strip()
         except subprocess.CalledProcessError:
             self.idle_time = 0
 
     def disable(self):
         subprocess.call(
-                "defaults -currentHost write com.apple.screensaver idleTime 0",
-                shell=True)
+            "defaults -currentHost write com.apple.screensaver idleTime 0",
+            shell=True)
         log.info("ScreenSaver disabled")
 
     def enable(self):
         subprocess.call(
-                "defaults -currentHost write com.apple.screensaver idleTime %s" % self.idle_time,
-                shell=True)
+            "defaults -currentHost write com.apple.screensaver idleTime %s" % self.idle_time,
+            shell=True)
         log.info("ScreenSaver enabled")
+
 
 class WindowsScreenSaver:
     sys_param_info = None
