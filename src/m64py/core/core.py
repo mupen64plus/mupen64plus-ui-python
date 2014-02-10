@@ -459,6 +459,28 @@ class Core:
             log.warn(self.error_message(rval))
         return rval
 
+    def advance_frame(self):
+        """Advance one frame. The emulator will run
+        until the next frame, then pause."""
+        rval = self.m64p.CoreDoCommand(
+            M64CMD_ADVANCE_FRAME, C.c_int(), C.c_int())
+        if rval != M64ERR_SUCCESS:
+            log.debug("advance_frame()")
+            log.warn(self.error_message(rval))
+        return rval
+
+    def get_rom_settings(self, crc1, crc2):
+        """Searches through the data in the ini file for given crc hashes,
+        if found, fills in the RomSettings structure with the data."""
+        rom_settings = m64p_rom_settings()
+        rval = self.m64p.CoreGetRomSettings(
+            C.byref(rom_settings),
+            C.c_int(C.sizeof(rom_settings)),
+            C.c_int(crc1), C.c_int(crc2))
+        if rval != M64ERR_SUCCESS:
+            return None
+        return rom_settings
+
     def override_vidext(self):
         """Overrides the core's internal SDL-based OpenGL functions."""
         rval = self.m64p.CoreOverrideVidExt(C.pointer(vidext))
