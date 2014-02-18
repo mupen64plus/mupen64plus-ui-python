@@ -232,7 +232,8 @@ class Worker(QThread):
         screenshot = self.get_screenshot(
             os.path.join(data_path, "screenshot"))
         if screenshot:
-            image_name = "%s.png" % self.core.rom_settings.MD5
+            image_name = "%X%X.png" % (
+                sl(self.core.rom_header.CRC1), sl(self.core.rom_header.CRC2))
             try:
                 shutil.copyfile(screenshot, os.path.join(dst_path, image_name))
                 log.info("Captured %s" % capture)
