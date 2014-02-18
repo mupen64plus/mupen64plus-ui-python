@@ -25,7 +25,7 @@ from subprocess import Popen, PIPE
 from m64py.utils import which
 
 try:
-    import UnRAR2
+    import rarfile
     HAS_RAR = True
     RAR_CMD = None
 except ImportError:
@@ -65,23 +65,24 @@ class Archive():
         self.filetype = self.get_filetype()
 
         if self.filetype == ZIP:
-            self.fd = zipfile.ZipFile(self.file, 'r')
+            self.fd = zipfile.ZipFile(self.file, "r")
         elif self.filetype == GZIP:
-            self.fd = gzip.GzipFile(self.file, 'rb')
+            self.fd = gzip.GzipFile(self.file, "rb")
         elif self.filetype == BZIP:
-            self.fd = bz2.BZ2File(self.file, 'r')
+            self.fd = bz2.BZ2File(self.file, "r")
         elif self.filetype == ROM:
-            self.fd = open(self.file, 'rb')
+            self.fd = open(self.file, "rb")
         elif self.filetype == RAR:
             if HAS_RAR:
-                self.fd = UnRAR2.RarFile(self.file)
+                rarfile.USE_EXTRACT_HACK = 0
+                self.fd = rarfile.RarFile(self.file)
             elif RAR_CMD:
                 self.fd = RarCmd(self.file)
             else:
-                raise IOError("UnRAR2 module or rar/unrar is needed for %s." % self.file)
+                raise IOError("rarfile module or rar/unrar is needed for %s." % self.file)
         elif self.filetype == LZMA:
             if HAS_7Z:
-                self.fd = Archive7z(open(self.file, 'rb'))
+                self.fd = Archive7z(open(self.file, "rb"))
             elif LZMA_CMD:
                 self.fd = LzmaCmd(self.file)
             else:
@@ -91,36 +92,38 @@ class Archive():
 
         self.namelist = self.get_namelist()
 
-    def read(self, filename=None):
+    def read(self, filename=None, size=-1):
         """Reads data."""
         data = None
         fname = self.namelist[0] if not filename else filename
         if self.filetype == ZIP:
-            data = self.fd.read(fname)
+            fd = self.fd.open(fname)
+            data = fd.read(size)
         elif self.filetype == GZIP:
-            data = self.fd.read()
+            data = self.fd.read(size)
         elif self.filetype == BZIP:
-            data = self.fd.read()
+            data = self.fd.read(size)
         elif self.filetype == RAR:
             if HAS_RAR:
-                data = self.fd.read_files(fname)[0][1]
+                fd = self.fd.open(fname)
+                data = fd.read(size)
             elif RAR_CMD:
-                data = self.fd.read(fname)
+                data = self.fd.read(fname, size)
         elif self.filetype == LZMA:
             if HAS_7Z:
-                data = self.fd.getmember(fname).read()
+                fd = self.fd.getmember(fname)
+                if size != -1:
+                    fd.size = size
+                data = fd.read()
             elif LZMA_CMD:
-                data = self.fd.read(fname)
+                data = self.fd.read(fname, size)
         elif self.filetype == ROM:
-            data = self.fd.read()
+            data = self.fd.read(size)
         return data
 
     def close(self):
         """Closes file descriptor."""
-        if self.filetype in [RAR, LZMA]:
-            if RAR_CMD or LZMA_CMD:
-                self.fd.close()
-        else:
+        if self.filetype != LZMA:
             self.fd.close()
 
     def get_namelist(self):
@@ -133,21 +136,21 @@ class Archive():
             namelist = [os.path.basename(self.file)]
         elif self.filetype == RAR:
             if HAS_RAR:
-                namelist = [name.filename for name in self.fd.infoiter()]
+                namelist = [name.filename for name in self.fd.infolist()]
             elif RAR_CMD:
-                namelist = self.fd.namelist
+                namelist = self.fd.namelist()
         elif self.filetype == LZMA:
             if HAS_7Z:
                 namelist = self.fd.getnames()
             elif LZMA_CMD:
-                namelist = self.fd.namelist
+                namelist = self.fd.namelist()
         elif self.filetype == ROM:
             namelist = [os.path.basename(self.file)]
         return namelist
 
     def get_filetype(self):
         """Gets archive type."""
-        fd = open(self.file, 'rb')
+        fd = open(self.file, "rb")
         magic = fd.read(4)
         fd.close()
         if magic == 'PK\03\04':
@@ -173,7 +176,6 @@ class RarCmd:
         self.fd = None
         self.file = archive
         self.filename = None
-        self.namelist = self.namelist()
         self.tempdir = tempfile.mkdtemp()
 
     def namelist(self):
@@ -190,12 +192,12 @@ class RarCmd:
         if out[1] != '':
             raise IOError("Error extracting file %s: %s." % (self.file, out[1]))
 
-    def read(self, filename=None):
+    def read(self, filename=None, size=-1):
         """Reads data."""
-        self.filename = self.namelist[0] if not filename else filename
+        self.filename = filename if filename else self.namelist()[0]
         self.extract()
         self.fd = open(os.path.join(self.tempdir, self.filename), "rb")
-        return self.fd.read()
+        return self.fd.read(size)
 
     def close(self):
         """Closes file descriptor and clean resources."""
@@ -212,7 +214,6 @@ class LzmaCmd:
         self.fd = None
         self.file = archive
         self.filename = None
-        self.namelist = self.namelist()
         self.tempdir = tempfile.mkdtemp()
 
     def namelist(self):
@@ -230,12 +231,12 @@ class LzmaCmd:
             raise IOError("Error extracting file %s: %s." % (
                 self.file, out[0]))
 
-    def read(self, filename=None):
+    def read(self, filename=None, size=-1):
         """Reads data."""
-        self.filename = self.namelist[0] if not filename else filename
+        self.filename = filename if filename else self.namelist()[0]
         self.extract()
         self.fd = open(os.path.join(self.tempdir, self.filename), "rb")
-        return self.fd.read()
+        return self.fd.read(size)
 
     def close(self):
         """Closes file descriptor and clean resources."""

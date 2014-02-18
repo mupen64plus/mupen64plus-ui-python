@@ -65,7 +65,7 @@ class build_qt(Command):
 
 
 class build_exe(Command):
-    """Needs PyQt4, pyUnRAR2, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
+    """Needs PyQt4, rarfile, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
     user_options = []
     arch = "i686-w64-mingw32"
     url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
@@ -101,15 +101,17 @@ class build_exe(Command):
         shutil.rmtree(tempdir)
 
     def copy_files(self):
-        import UnRAR2
-        unrar_dir = join(dirname(UnRAR2.__file__), "UnRARDLL")
-        unrar_dll = join(unrar_dir, "unrar.dll")
-        unrar_lic = join(unrar_dir, "license.txt")
+        tempdir = tempfile.mkdtemp()
         dest_path = join(self.dist_dir, "m64py")
-        shutil.copy(unrar_dll, dest_path)
-        shutil.copyfile(unrar_lic, join(dest_path, "doc", "unrar-license"))
+        rar_dir = join(os.environ["ProgramFiles(x86)"], "Unrar")
+        if not os.path.isfile(join(rar_dir, "UnRAR.exe")):
+            urllib.urlretrieve("http://www.rarlab.com/rar/unrarw32.exe", join(tempdir, "unrar.exe"))
+            subprocess.call([join(tempdir, "unrar.exe"), "-s"])
+        shutil.copy(join(rar_dir, "UnRAR.exe"), dest_path)
+        shutil.copy(join(rar_dir, "license.txt"), join(dest_path, "doc", "unrar-license.txt"))
         for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
             shutil.copy(join(BASE_DIR, file_name), dest_path)
+        shutil.rmtree(tempdir)
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "m64py")
