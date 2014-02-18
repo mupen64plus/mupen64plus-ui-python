@@ -123,11 +123,11 @@ class Settings(QDialog, Ui_Settings):
         if directory:
             dialog.setFileMode(QFileDialog.Directory)
             path = dialog.getExistingDirectory(
-                self, groupbox.title(), "", QFileDialog.ShowDirsOnly)
+                self, groupbox.title(), widget.text(), QFileDialog.ShowDirsOnly)
         else:
             dialog.setFileMode(QFileDialog.ExistingFile)
             path = dialog.getOpenFileName(
-                self, groupbox.title(), "",
+                self, groupbox.title(), widget.text(),
                 "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
 
         if not path: return
