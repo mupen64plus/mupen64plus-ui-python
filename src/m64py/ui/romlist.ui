@@ -203,9 +203,19 @@ QGroupBox::title {
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="QCheckBox" name="checkAvailable">
+         <widget class="QPushButton" name="pushRefresh">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
-           <string>Show available ROMs</string>
+           <string>Refresh</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelAvailable">
+          <property name="text">
+           <string>TextLabel</string>
           </property>
          </widget>
         </item>
@@ -226,23 +236,6 @@ QGroupBox::title {
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushRefresh">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Refresh</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="labelAvailable">
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_3">
