@@ -31,6 +31,15 @@ if sys.platform.startswith("linux"):
         "/usr/lib/i386-linux-gnu/mupen64plus",
         "."
     ]
+elif sys.platform.startswith("openbsd"):
+    LDD_CMD = "ldd %s | grep -q SDL2"
+    DLL_EXT = ".so"
+    DLL_FILTER = ""
+    DEFAULT_DYNLIB = "libmupen64plus.so"
+    SEARCH_DIRS = [
+        "/usr/local/lib/mupen64plus",
+        "."
+    ]
 elif sys.platform == "darwin":
     LDD_CMD = "otool -L %s | grep -q SDL2"
     DLL_EXT = ".dylib"
