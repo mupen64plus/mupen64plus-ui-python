@@ -195,9 +195,8 @@ class PosixLibraryLoader(LibraryLoader):
         except IOError:
             pass
 
-        directories.extend(['/lib', '/usr/lib', '/lib64', '/usr/lib64',
-                            '/usr/games/lib', '/usr/games/lib64',
-                            '/usr/local/lib',
+        directories.extend(['/lib64', '/lib', '/usr/lib64', '/usr/lib',
+                            '/usr/games/lib64', '/usr/games/lib', '/usr/local/lib',
                             '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
 
         cache = {}
