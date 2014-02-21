@@ -366,7 +366,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file_path = dialog.getOpenFileName(
             self, self.tr("Load State From File"),
             os.path.join(self.worker.core.config.get_path("UserData"), "save"),
-            "M64P/PJ64 Saves (*.st* *.zip *.pj);;All files (*)")
+            "M64P/PJ64 Saves (*.st* *.m64p *.zip *.pj);;All files (*)")
         if file_path:
             self.worker.state_load(file_path)
 
