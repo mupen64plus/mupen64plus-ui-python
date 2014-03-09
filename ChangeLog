@@ -1,3 +1,9 @@
+v0.2.1  Mar 09, 2014:
+    * Greatly speed up reading ROM list
+    * Check if core supports DelaySI/CountPerOp options
+    * Add support for OpenBSD plugin paths
+    * Fix search for cheats in mupencheats.txt
+
 v0.2.0  Jan 27, 2014:
 
     * New DelaySI and CountPerOp core settings

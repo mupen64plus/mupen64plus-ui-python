@@ -1,3 +1,11 @@
+m64py (0.2.1-1) unstable; urgency=low
+  * Greatly speed up reading ROM list
+  * Check if core supports DelaySI/CountPerOp options
+  * Add support for OpenBSD plugin paths
+  * Fix search for cheats in mupencheats.txt
+
+ -- Milan Nikolic <gen2brain@gmail.com>  Sun, 09 Mar 2014 18:27:48 +0100
+
 m64py (0.2.0-1) unstable; urgency=low
 
   * New DelaySI and CountPerOp core settings
