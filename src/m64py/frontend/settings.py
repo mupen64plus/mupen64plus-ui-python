@@ -246,12 +246,21 @@ class Settings(QDialog, Ui_Settings):
             self.core.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
             self.core.config.get_parameter_help("DisableExtraMem"))
-        self.checkDelaySI.setChecked(
-            self.core.config.get_parameter("DelaySI"))
+
+        delay_si = self.core.config.get_parameter("DelaySI")
+        if delay_si is not None:
+            self.checkDelaySI.setChecked(delay_si)
+        else:
+            self.checkDelaySI.setChecked(False)
+            self.checkDelaySI.setEnabled(False)
         self.checkDelaySI.setToolTip(
             self.core.config.get_parameter_help("DelaySI"))
-        self.comboCountPerOp.setCurrentIndex(
-            self.core.config.get_parameter("CountPerOp"))
+
+        count_per_op = self.core.config.get_parameter("CountPerOp")
+        if count_per_op is not None:
+            self.comboCountPerOp.setCurrentIndex(count_per_op)
+        else:
+            self.comboCountPerOp.setEnabled(False)
         self.comboCountPerOp.setToolTip(
             self.core.config.get_parameter_help("CountPerOp"))
 
