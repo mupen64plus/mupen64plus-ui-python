@@ -54,19 +54,19 @@ class Cheat(QDialog, Ui_CheatDialog):
         self.treeWidget.clear()
         self.treeWidget.setColumnCount(1)
 
-        for k1,v1 in cheats.items():
+        for k1,v1 in sorted(cheats.items()):
             top = QTreeWidgetItem()
             top.setText(0, k1)
             self.treeWidget.addTopLevelItem(top)
 
             if isinstance(v1, dict):
-                for k2,v2 in v1.items():
+                for k2,v2 in sorted(v1.items()):
                     child1 = QTreeWidgetItem(top)
                     child1.setText(0, k2)
                     self.treeWidget.addTopLevelItem(child1)
 
                     if isinstance(v2, dict):
-                        for k3,v3 in v2.items():
+                        for k3,v3 in sorted(v2.items()):
                             child2 = QTreeWidgetItem(child1)
                             child2.setText(0, k3)
                             child2.setCheckState(0, Qt.Unchecked)
@@ -279,7 +279,7 @@ class Choices(QDialog, Ui_ChoicesDialog):
     def build_list(self):
         """Builds listWidget"""
         self.listWidget.clear()
-        for choice in self.choices:
+        for choice in sorted(self.choices, key=lambda choice: choice[1]):
             value, name = choice
             item = QListWidgetItem(name.replace('"', ''))
             item.setData(Qt.UserRole, value)
