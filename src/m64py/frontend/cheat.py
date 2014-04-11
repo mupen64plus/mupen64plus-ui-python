@@ -154,22 +154,16 @@ class Cheat(QDialog, Ui_CheatDialog):
                 split = cn.split('\\')
                 if len(split) == 3:
                     c1, c2, cn = split
-                    if cheats[c1][c2].get(cn):
-                        cheats[c1][c2][cn].append((
-                            cd, address, value, choices))
-                    else:
+                    if not cheats[c1][c2].get(cn):
                         cheats[c1][c2][cn] = []
-                        cheats[c1][c2][cn].append((
-                            cd, address, value, choices))
+                    cheats[c1][c2][cn].append((
+                        cd, address, value, choices))
                 elif len(split) == 2:
                     c1, cn = split
-                    if cheats[c1].get(cn):
-                        cheats[c1][cn].append((
-                            cd, address, value, choices))
-                    else:
+                    if not cheats[c1].get(cn):
                         cheats[c1][cn] = []
-                        cheats[c1][cn].append((
-                            cd, address, value, choices))
+                    cheats[c1][cn].append((
+                        cd, address, value, choices))
             else:
                 if not cheats.get(cn):
                     cheats[cn] = []
