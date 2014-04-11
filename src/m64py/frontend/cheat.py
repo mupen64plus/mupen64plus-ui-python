@@ -54,19 +54,19 @@ class Cheat(QDialog, Ui_CheatDialog):
         self.treeWidget.clear()
         self.treeWidget.setColumnCount(1)
 
-        for k1,v1 in cheats.items():
+        for k1,v1 in sorted(cheats.items()):
             top = QTreeWidgetItem()
             top.setText(0, k1)
             self.treeWidget.addTopLevelItem(top)
 
             if isinstance(v1, dict):
-                for k2,v2 in v1.items():
+                for k2,v2 in sorted(v1.items()):
                     child1 = QTreeWidgetItem(top)
                     child1.setText(0, k2)
                     self.treeWidget.addTopLevelItem(child1)
 
                     if isinstance(v2, dict):
-                        for k3,v3 in v2.items():
+                        for k3,v3 in sorted(v2.items()):
                             child2 = QTreeWidgetItem(child1)
                             child2.setText(0, k3)
                             child2.setCheckState(0, Qt.Unchecked)
@@ -154,24 +154,19 @@ class Cheat(QDialog, Ui_CheatDialog):
                 split = cn.split('\\')
                 if len(split) == 3:
                     c1, c2, cn = split
-                    if cheats[c1][c2].get(cn):
-                        cheats[c1][c2][cn].append((
-                            cd, address, value, choices))
-                    else:
+                    if not cheats[c1][c2].get(cn):
                         cheats[c1][c2][cn] = []
-                        cheats[c1][c2][cn].append((
-                            cd, address, value, choices))
+                    cheats[c1][c2][cn].append((
+                        cd, address, value, choices))
                 elif len(split) == 2:
                     c1, cn = split
-                    if cheats[c1].get(cn):
-                        cheats[c1][cn].append((
-                            cd, address, value, choices))
-                    else:
+                    if not cheats[c1].get(cn):
                         cheats[c1][cn] = []
-                        cheats[c1][cn].append((
-                            cd, address, value, choices))
+                    cheats[c1][cn].append((
+                        cd, address, value, choices))
             else:
-                cheats[cn] = []
+                if not cheats.get(cn):
+                    cheats[cn] = []
                 cheats[cn].append((
                     cd, address, value, choices))
         return cheats
@@ -218,7 +213,7 @@ class Cheat(QDialog, Ui_CheatDialog):
                 # then return cheats and exit upon encountering a new ROM section
                 if rom_found and (cheat_codes or cheat_gamename is not None):
                     del lines
-                    return sorted(cheat_codes)
+                    return cheat_codes
                 # else see if this section matches
                 if line[4:] == rom_section:
                     rom_found = True
@@ -284,7 +279,7 @@ class Choices(QDialog, Ui_ChoicesDialog):
     def build_list(self):
         """Builds listWidget"""
         self.listWidget.clear()
-        for choice in self.choices:
+        for choice in sorted(self.choices, key=lambda choice: choice[1]):
             value, name = choice
             item = QListWidgetItem(name.replace('"', ''))
             item.setData(Qt.UserRole, value)
