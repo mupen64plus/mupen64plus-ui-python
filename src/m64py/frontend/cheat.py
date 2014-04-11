@@ -171,7 +171,8 @@ class Cheat(QDialog, Ui_CheatDialog):
                         cheats[c1][cn].append((
                             cd, address, value, choices))
             else:
-                cheats[cn] = []
+                if not cheats.get(cn):
+                    cheats[cn] = []
                 cheats[cn].append((
                     cd, address, value, choices))
         return cheats
