@@ -218,7 +218,7 @@ class Cheat(QDialog, Ui_CheatDialog):
                 # then return cheats and exit upon encountering a new ROM section
                 if rom_found and (cheat_codes or cheat_gamename is not None):
                     del lines
-                    return sorted(cheat_codes)
+                    return cheat_codes
                 # else see if this section matches
                 if line[4:] == rom_section:
                     rom_found = True
