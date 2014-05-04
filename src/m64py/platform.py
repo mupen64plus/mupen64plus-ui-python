@@ -24,6 +24,7 @@ if sys.platform.startswith("linux"):
     DEFAULT_DYNLIB = "libmupen64plus.so.2"
     SEARCH_DIRS = [
         "/usr/local/lib/mupen64plus",
+        "/usr/lib64/mupen64plus",
         "/usr/lib/mupen64plus",
         "/usr/games/lib64/mupen64plus",
         "/usr/games/lib/mupen64plus",
