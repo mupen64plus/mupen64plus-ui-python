@@ -2,10 +2,10 @@ Source: m64py
 Section: games
 Priority: optional
 Maintainer: Milan Nikolic <gen2brain@gmail.com>
-Standards-Version: 3.8.4
+Standards-Version: 3.9.5
 Homepage: http://m64py.sourceforge.net/
 Build-Depends:
- debhelper,
+ debhelper (>= 9),
  python,
  python-qt4,
  pyqt4-dev-tools,
