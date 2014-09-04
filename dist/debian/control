@@ -16,7 +16,7 @@ Package: m64py
 Architecture: all
 Depends:
  ${misc:Depends},
- ${python:Depends},
+ python,
  libsdl1.2-dev,
  python-qt4,
  python-qt4-gl,
