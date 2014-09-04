@@ -1,4 +1,4 @@
-?package(volti):needs="X11" section="Games"\
+?package(m64py):needs="X11" section="Games"\
   title="m64py" command="/usr/bin/m64py"\
   longtitle="A frontend for Mupen64Plus" \
   icon="m64py.png"
