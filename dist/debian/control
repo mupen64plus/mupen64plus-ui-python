@@ -22,5 +22,6 @@ Depends:
  python-qt4-gl,
 Recommends:
  python-lzma | p7zip,
+ python-opengl,
  unrar,
 Description: A frontend for Mupen64Plus
