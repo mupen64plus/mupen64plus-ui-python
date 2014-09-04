@@ -21,6 +21,11 @@ Depends:
  python-qt4,
  python-qt4-gl,
 Recommends:
+ libmupen64plus2,
+ mupen64plus-audio-all | mupen64plus-audio,
+ mupen64plus-input-all | mupen64plus-input,
+ mupen64plus-rsp-all | mupen64plus-rsp,
+ mupen64plus-video-all | mupen64plus-video,
  python-lzma | p7zip,
  python-opengl,
  unrar,
