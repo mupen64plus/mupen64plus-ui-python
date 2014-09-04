@@ -20,5 +20,7 @@ Depends:
  libsdl1.2-dev,
  python-qt4,
  python-qt4-gl,
-Suggests: p7zip, unrar
+Recommends:
+ p7zip,
+ unrar,
 Description: A frontend for Mupen64Plus
