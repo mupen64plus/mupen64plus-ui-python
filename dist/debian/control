@@ -2,9 +2,14 @@ Source: m64py
 Section: games
 Priority: optional
 Maintainer: Milan Nikolic <gen2brain@gmail.com>
-Build-Depends: debhelper
 Standards-Version: 3.8.4
 Homepage: http://m64py.sourceforge.net/
+Build-Depends:
+ debhelper,
+ python,
+ python-qt4,
+ pyqt4-dev-tools,
+X-Python-Version: >= 2.5
 
 Package: m64py
 Architecture: all
