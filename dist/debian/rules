@@ -17,5 +17,8 @@ override_dh_auto_install:
 	dh_auto_install
 	mv $(DESTDIR)/usr/share/m64py/m64py/m64py $(DESTDIR)/usr/share/m64py/m64py_run
 
+override_dh_installchangelogs:
+	dh_installchangelogs ChangeLog
+
 .PHONY: binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep \
-	override_dh_auto_install
+	override_dh_auto_install override_dh_installchangelogs
