@@ -26,5 +26,8 @@ override_dh_installchangelogs:
 override_dh_gencontrol:
 	dh_gencontrol -pm64py -u-v$(VERSION)-$(RELEASE)
 
+override_dh_builddeb:
+	dh_builddeb -- -Zgzip
+
 .PHONY: binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep \
-	override_dh_auto_install override_dh_installchangelogs override_dh_gencontrol
+	override_dh_auto_install override_dh_installchangelogs override_dh_gencontrol override_dh_builddeb
