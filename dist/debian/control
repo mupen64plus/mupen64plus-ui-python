@@ -6,6 +6,7 @@ Standards-Version: 3.9.5
 Homepage: http://m64py.sourceforge.net/
 Build-Depends:
  debhelper (>= 9),
+ dh-python,
  python,
  python-qt4,
  pyqt4-dev-tools,
@@ -13,6 +14,11 @@ X-Python-Version: >= 2.5
 
 Package: m64py
 Architecture: all
-Depends: python-qt4, python-qt4-gl, libsdl1.2-dev
+Depends:
+ ${misc:Depends},
+ ${python:Depends},
+ libsdl1.2-dev,
+ python-qt4,
+ python-qt4-gl,
 Suggests: p7zip, unrar
 Description: A frontend for Mupen64Plus
