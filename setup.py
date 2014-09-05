@@ -320,8 +320,5 @@ setup(
     data_files = [
         ("share/pixmaps", ["xdg/m64py.png"]),
         ("share/applications", ["xdg/m64py.desktop"]),
-        ("share/mime/packages", ["xdg/application-x-m64py.xml"]),
-        ("share/icons/hicolor/96x96/mimetypes/application-x-m64py.png",
-            ["xdg/application-x-m64py.xml"])
     ]
 )
