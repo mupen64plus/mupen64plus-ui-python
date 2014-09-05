@@ -51,7 +51,7 @@ try:
             None, SDL_FULLSCREEN|SDL_HWSURFACE)]
     if SDL_WasInit(SDL_INIT_VIDEO):
         SDL_QuitSubSystem(SDL_INIT_VIDEO)
-except Exception, err:
+except Exception as err:
     log.warn(str(err))
     MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
              (1280, 960), (1152, 864), (1024, 768),

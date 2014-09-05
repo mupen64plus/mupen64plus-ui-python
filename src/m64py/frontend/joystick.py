@@ -91,7 +91,7 @@ class Joystick(QObject):
 
         try:
             self.joystick = SDL_JoystickOpen(stick)
-        except Exception, err:
+        except Exception as err:
             log.warn(str(err))
 
         if self.joystick:
