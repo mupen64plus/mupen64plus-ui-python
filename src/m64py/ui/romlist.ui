@@ -309,7 +309,7 @@ QGroupBox::title {
   <customwidget>
    <class>ImageView</class>
    <extends>QGraphicsView</extends>
-   <header location="global">imageview.h</header>
+   <header location="global">m64py/ui/imageview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

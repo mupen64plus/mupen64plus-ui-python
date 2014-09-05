@@ -1459,7 +1459,7 @@ QGroupBox::title {
   <customwidget>
    <class>InputButton</class>
    <extends>QPushButton</extends>
-   <header>inputbutton.h</header>
+   <header location="global">m64py/ui/inputbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources>
