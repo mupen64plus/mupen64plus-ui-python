@@ -219,13 +219,17 @@ class Core:
 
     def plugin_load_try(self, plugin_path=None):
         """Loads plugins and maps them by plugin type."""
-        plugin_handle = C.cdll.LoadLibrary(plugin_path)
-        version = self.plugin_get_version(plugin_handle, plugin_path)
-        if version:
-            plugin_type, plugin_version, plugin_api, plugin_desc, plugin_cap = version
-            plugin_name = os.path.basename(plugin_path)
-            self.plugin_map[plugin_type][plugin_name] = (
-                plugin_handle, plugin_path, PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
+        try:
+            plugin_handle = C.cdll.LoadLibrary(plugin_path)
+            version = self.plugin_get_version(plugin_handle, plugin_path)
+            if version:
+                plugin_type, plugin_version, plugin_api, plugin_desc, plugin_cap = version
+                plugin_name = os.path.basename(plugin_path)
+                self.plugin_map[plugin_type][plugin_name] = (
+                    plugin_handle, plugin_path, PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
+        except OSError as e:
+            log.debug("plugin_load_try()")
+            log.error("failed to load plugin %s: %s" % (plugin_path, e))
 
     def plugin_startup(self, handle, name, desc):
         """This function initializes plugin for use by allocating memory,
