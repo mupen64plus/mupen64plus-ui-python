@@ -84,7 +84,8 @@ class Plugin(QDialog, Ui_PluginDialog):
                 row1 += 1
                 if not opts:
                     widget = QSpinBox()
-                    widget.setMaximum(65535)
+                    widget.setMaximum(32767)
+                    widget.setMinimum(-32767)
                     if param_help: widget.setToolTip(param_help)
                 else:
                     widget = QComboBox()
