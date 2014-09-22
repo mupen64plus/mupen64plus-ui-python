@@ -229,7 +229,7 @@ class ROMReader(QThread):
                         crc = "%X%X" % (sl(rom_header.CRC1), sl(rom_header.CRC2))
                         self.roms.append((crc, rom_settings.goodname, fullpath, fname))
                 archive.close()
-            except Exception, err:
+            except Exception as err:
                 log.warn(str(err))
                 continue
             percent = float(filenum) / float(num_files) * 100

@@ -60,7 +60,7 @@ class Config:
         try:
             self.section = section
             self.parameters[self.section] = {}
-        except ValueError, err:
+        except ValueError as err:
             log.exception(str(err))
             return
         config_ptr = C.c_void_p()

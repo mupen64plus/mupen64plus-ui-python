@@ -91,7 +91,7 @@ class Core:
                 self.check_version()
             else:
                 raise Exception("'%s' library not found." % self.core_name)
-        except Exception, err:
+        except Exception as err:
             self.m64p = None
             log.exception(str(err))
 
@@ -190,7 +190,7 @@ class Core:
             unload_library(handle)
             log.warn("library '%s' is invalid, no PluginGetVersion() function found." % (
                 os.path.basename(path)))
-        except OSError, err:
+        except OSError as err:
             log.debug("plugin_get_version()")
             log.warn(str(err))
         else:

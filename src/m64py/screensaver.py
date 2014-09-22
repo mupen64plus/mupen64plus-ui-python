@@ -30,7 +30,7 @@ class LinuxScreenSaver:
             import dbus
             self.screensaver = dbus.SessionBus().get_object(
                 "org.freedesktop.ScreenSaver", "/ScreenSaver")
-        except Exception, err:
+        except Exception as err:
             log.info("ScreenSaver not available: %s" % str(err))
 
     def disable(self):
@@ -39,7 +39,7 @@ class LinuxScreenSaver:
                 self.cookie = self.screensaver.Inhibit(
                     "M64Py", "Emulation started")
                 log.info("ScreenSaver disabled")
-            except Exception, err:
+            except Exception as err:
                 log.exception(str(err))
 
     def enable(self):
@@ -48,7 +48,7 @@ class LinuxScreenSaver:
                 self.screensaver.UnInhibit(self.cookie)
                 log.info("ScreenSaver enabled")
                 self.cookie = None
-            except Exception, err:
+            except Exception as err:
                 log.exception(str(err))
 
 
@@ -81,7 +81,7 @@ class WindowsScreenSaver:
     def __init__(self):
         try:
             self.sys_param_info = ctypes.windll.user32.SystemParametersInfoA
-        except Exception, err:
+        except Exception as err:
             log.info("ScreenSaver not available: %s" % str(err))
 
     def disable(self):

@@ -30,7 +30,7 @@ try:
     sip.setapi('QVariant', 2)
     from PyQt4.QtGui import QApplication
     from PyQt4.QtCore import Qt, QLocale, QTranslator
-except ImportError, err:
+except ImportError as err:
     sys.stderr.write("This application needs PyQt4 module%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
     sys.exit(1)
@@ -38,7 +38,7 @@ except ImportError, err:
 try:
     from m64py.loader import load_library
     from m64py.core.defs import FRONTEND_VERSION, LOGO
-except ImportError, err:
+except ImportError as err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
     sys.exit(1)
