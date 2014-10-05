@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 from m64py.frontend.keycodes import *
 

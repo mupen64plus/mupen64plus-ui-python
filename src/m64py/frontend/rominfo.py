@@ -16,7 +16,7 @@
 
 import os
 
-from PyQt4.QtGui import QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from m64py.utils import sl
 

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer
+from PyQt5.QtCore import QObject, pyqtSignal, QTime, QTimer
 
 from m64py.opts import SDL2
 from m64py.frontend.log import log

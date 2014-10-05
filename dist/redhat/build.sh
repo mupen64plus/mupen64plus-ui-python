@@ -1,5 +1,5 @@
 #!/bin/sh
-yum install rpm-build PyQt4-devel -y
+yum install rpm-build PyQt5-devel -y
 VERSION=`cat ../../src/m64py/core/defs.py | grep FRONTEND_VERSION | awk -F' = ' '{print $2}' | tr -d '"'`
 sed "s/{VERSION}/$VERSION/g" m64py.spec.in > m64py.spec
 cd ../../ && python setup.py sdist

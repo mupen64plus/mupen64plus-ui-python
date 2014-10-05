@@ -18,8 +18,9 @@ import os
 import ctypes
 import fnmatch
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 from m64py.utils import sl
 from m64py.core.defs import m64p_rom_header

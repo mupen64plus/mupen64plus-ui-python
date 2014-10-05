@@ -15,10 +15,10 @@ Prefix: %{_prefix}
 BuildArch: noarch
 Vendor: Milan Nikolic <gen2brain@gmail.com>
 Url: http://m64py.sourceforge.net
-Requires: PyQt4 SDL
+Requires: PyQt5 SDL
 
 %description
-M64Py is a Qt4 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.
+M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.
 
 %prep
 %setup -n %{name}-%{unmangled_version}

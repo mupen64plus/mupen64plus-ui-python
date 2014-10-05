@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import *
-from PyQt4.QtOpenGL import *
+from PyQt5.QtCore import *
+from PyQt5.QtOpenGL import *
 
 from m64py.core.defs import *
 from m64py.opts import SDL2

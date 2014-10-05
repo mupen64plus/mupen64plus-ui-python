@@ -30,7 +30,7 @@ class build_qt(Command):
         pass
 
     def compile_ui(self, ui_file):
-        from PyQt4 import uic
+        from PyQt5 import uic
         py_file = os.path.splitext(ui_file)[0] + "_ui.py"
         if not newer(ui_file, py_file):
             return
@@ -39,15 +39,15 @@ class build_qt(Command):
         fp.close()
 
     def compile_rc(self, qrc_file):
-        import PyQt4
+        import PyQt5
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
         if not newer(qrc_file, py_file):
             return
         origpath = os.getenv("PATH")
         path = origpath.split(os.pathsep)
-        path.append(dirname(PyQt4.__file__))
+        path.append(dirname(PyQt5.__file__))
         os.putenv("PATH", os.pathsep.join(path))
-        if subprocess.call(["pyrcc4", "-py3", qrc_file, "-o", py_file]) > 0:
+        if subprocess.call(["pyrcc5", qrc_file, "-o", py_file]) > 0:
             self.warn("Unable to compile resource file %s" % qrc_file)
             if not os.path.exists(py_file):
                 sys.exit(1)
@@ -65,7 +65,7 @@ class build_qt(Command):
 
 
 class build_exe(Command):
-    """Needs PyQt4, rarfile, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
+    """Needs PyQt5, rarfile, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
     user_options = []
     arch = "i686-w64-mingw32"
     url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
@@ -243,7 +243,7 @@ def set_rthook():
     import PyInstaller
     hook_file = ""
     module_dir = dirname(PyInstaller.__file__)
-    rthook = join(module_dir, "loader", "rthooks", "pyi_rth_qt4plugins.py")
+    rthook = join(module_dir, "loader", "rthooks", "pyi_rth_qt5plugins.py")
     with open(rthook, "r") as hook: data = hook.read()
     if "sip.setapi" not in data:
         lines = data.split("\n")
@@ -306,7 +306,7 @@ setup(
     name = "m64py",
     version = FRONTEND_VERSION,
     description = "M64Py - A frontend for Mupen64Plus",
-    long_description = "M64Py is a Qt4 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.",
+    long_description = "M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.",
     author = "Milan Nikolic",
     author_email = "gen2brain@gmail.com",
     license = "GNU GPLv3",
@@ -314,7 +314,7 @@ setup(
     packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL", "m64py.SDL2"],
     package_dir = {"": "src"},
     scripts = ["m64py"],
-    requires = ["PyQt4"],
+    requires = ["PyQt5"],
     platforms = ["Linux", "Windows", "Darwin"],
     cmdclass = cmdclass,
     data_files = [

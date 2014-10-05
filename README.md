@@ -11,7 +11,7 @@
 About
 -----
 
-M64Py is a Qt4 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
+M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
 plugin-based Nintendo 64 emulator. Front-end is written in Python and it
 provides a user-friendly interface over Mupen64Plus shared library.
 
@@ -27,7 +27,7 @@ Features
 Dependencies
 ------------
 
-* PyQt4
+* PyQt5
 * SDL-1.2 or SDL-2.0
 
 Install

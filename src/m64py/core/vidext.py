@@ -16,7 +16,7 @@
 
 import ctypes
 
-from PyQt4.QtOpenGL import QGLFormat
+from PyQt5.QtOpenGL import QGLFormat
 
 try:
     # nvidia hack

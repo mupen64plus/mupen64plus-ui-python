@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import QDialog, QMessageBox, QListWidgetItem
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QDialog, QMessageBox, QListWidgetItem
 
 from m64py.utils import version_split
 from m64py.core.defs import FRONTEND_VERSION

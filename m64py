@@ -28,10 +28,10 @@ try:
     import sip
     sip.setapi('QString', 2)
     sip.setapi('QVariant', 2)
-    from PyQt4.QtGui import QApplication
-    from PyQt4.QtCore import Qt, QLocale, QTranslator
+    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtCore import Qt, QLocale, QTranslator
 except ImportError as err:
-    sys.stderr.write("This application needs PyQt4 module%sError:%s%s" % (
+    sys.stderr.write("This application needs PyQt5 module%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
     sys.exit(1)
 

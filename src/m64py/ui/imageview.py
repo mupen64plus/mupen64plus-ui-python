@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import QGraphicsView, QGraphicsScene
-from PyQt4.QtCore import Qt, QRectF
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
+from PyQt5.QtCore import Qt, QRectF
 
 class ImageView(QGraphicsView):
 
