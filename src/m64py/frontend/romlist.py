@@ -91,8 +91,8 @@ class ROMList(QMainWindow, Ui_ROMList):
         for rom in self.rom_list:
             if len(rom) == 4:
                 crc, goodname, path, fname = rom
-                list_item = QListWidgetItem(goodname)
-                list_item.setData(Qt.UserRole, (crc, goodname, path, fname))
+                list_item = QListWidgetItem(goodname.decode())
+                list_item.setData(Qt.UserRole, (crc, goodname.decode(), path, fname))
                 self.listWidget.addItem(list_item)
         self.progressBar.setValue(0)
         self.progressBar.hide()

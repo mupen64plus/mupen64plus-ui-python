@@ -109,7 +109,7 @@ def WMEnable(name=None):
     if name is None:
         name = os.path.splitext(os.path.basename(sys.argv[0]))[0]
     if isinstance(name, unicode):
-        name = name.encode('utf-8')
+        name = name.encode()
     if not hasattr(objc, 'loadBundleFunctions'):
         return False
     bndl = NSBundle.bundleWithPath_(objc.pathForFramework('/System/Library/Frameworks/ApplicationServices.framework'))

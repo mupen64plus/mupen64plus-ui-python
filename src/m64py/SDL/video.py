@@ -1540,7 +1540,7 @@ def SDL_WM_SetCaption(title, icon):
      - `title`: string
      - `icon`: string
     '''
-    _SDL_WM_SetCaption(title.encode('utf-8'), icon.encode('utf-8'))
+    _SDL_WM_SetCaption(title.encode(), icon.encode())
 
 
 _SDL_WM_GetCaption = private_function('SDL_WM_GetCaption',
@@ -1557,12 +1557,12 @@ def SDL_WM_GetCaption():
     _SDL_WM_GetCaption(byref(title), byref(icon))
 
     if title.value:
-        title = title.value.decode('utf-8')
+        title = title.value.decode()
     else:
         title = None
 
     if icon.value:
-        icon = icon.value.decode('utf-8')
+        icon = icon.value.decode()
     else:
         icon = None
     return title, icon

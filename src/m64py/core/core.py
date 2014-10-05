@@ -33,13 +33,13 @@ from m64py.core.vidext import vidext
 
 def debug_callback(context, level, message):
     if level <= M64MSG_ERROR:
-        sys.stderr.write("%s: %s\n" % (context, message))
+        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
     elif level == M64MSG_WARNING:
-        sys.stderr.write("%s: %s\n" % (context, message))
+        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
     elif level == M64MSG_INFO or level == M64MSG_STATUS:
-        sys.stderr.write("%s: %s\n" % (context, message))
+        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
     elif level == M64MSG_VERBOSE and VERBOSE:
-        sys.stderr.write("%s: %s\n" % (context, message))
+        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
 
 
 def state_callback(context, param, value):
@@ -160,8 +160,8 @@ class Core:
         """Initializes libmupen64plus for use by allocating memory,
         creating data structures, and loading the configuration file."""
         rval = self.m64p.CoreStartup(
-            C.c_int(CORE_API_VERSION), None, C.c_char_p(os.path.dirname(path)),
-            "Core", DEBUG_CALLBACK, "State", STATE_CALLBACK)
+            C.c_int(CORE_API_VERSION), None, C.c_char_p(os.path.dirname(path).encode()),
+            C.c_char_p(b"Core"), DEBUG_CALLBACK, C.c_char_p(b"State"), STATE_CALLBACK)
         if rval == M64ERR_SUCCESS:
             if use_vidext:
                 self.override_vidext()
@@ -197,7 +197,7 @@ class Core:
         else:
             if rval == M64ERR_SUCCESS:
                 return (type_ptr.contents.value, ver_ptr.contents.value, api_ptr.contents.value,
-                        name_ptr.contents.value, cap_ptr.contents.value)
+                        name_ptr.contents.value.decode(), cap_ptr.contents.value)
             else:
                 log.debug("plugin_get_version()")
                 log.warn(self.error_message(rval))
@@ -272,7 +272,7 @@ class Core:
                     plugin_name))
             else:
                 log.info("using %s plugin: '%s' v%s" % (
-                    plugin_name, plugin_desc, version_split(plugin_version)))
+                    plugin_name.decode(), plugin_desc, version_split(plugin_version)))
 
     def detach_plugins(self):
         """Detaches plugins from the emulator core,
@@ -399,7 +399,7 @@ class Core:
 
     def state_load(self, state_path=None):
         """Loads a saved state file from the current slot."""
-        path = C.c_char_p(state_path) if state_path else None
+        path = C.c_char_p(state_path.encode()) if state_path else None
         rval = self.m64p.CoreDoCommand(
             M64CMD_STATE_LOAD, C.c_int(1), path)
         if rval != M64ERR_SUCCESS:
@@ -409,7 +409,7 @@ class Core:
 
     def state_save(self, state_path=None, state_type=1):
         """Saves a state file to the current slot."""
-        path = C.c_char_p(state_path) if state_path else None
+        path = C.c_char_p(state_path.encode()) if state_path else None
         rval = self.m64p.CoreDoCommand(
             M64CMD_STATE_SAVE, C.c_int(state_type), path)
         if rval != M64ERR_SUCCESS:
@@ -500,7 +500,7 @@ class Core:
         """Adds a Cheat Function to a list of currently active cheats
         which are applied to the open ROM, and set its state to Enabled"""
         rval = self.m64p.CoreAddCheat(
-            C.c_char_p(cheat_name), C.pointer(cheat_code),
+            C.c_char_p(cheat_name.encode()), C.pointer(cheat_code),
             C.c_int(C.sizeof(cheat_code)))
         if rval != M64ERR_SUCCESS:
             log.debug("add_cheat()")
@@ -513,7 +513,7 @@ class Core:
     def cheat_enabled(self, cheat_name, enabled=True):
         """Enables or disables a specified Cheat Function"""
         rval = self.m64p.CoreCheatEnabled(
-            C.c_char_p(cheat_name), C.c_int(enabled))
+            C.c_char_p(cheat_name.encode()), C.c_int(enabled))
         if rval != M64ERR_SUCCESS:
             log.debug("cheat_enabled()")
             log.info("CoreCheatEnabled() failed for cheat code '%s'" % cheat_name)

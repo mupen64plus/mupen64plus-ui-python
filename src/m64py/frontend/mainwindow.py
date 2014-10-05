@@ -306,7 +306,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.glwidget.setFocus(True)
         if not self.cheats:
             self.cheats = Cheat(self)
-        self.update_status(self.worker.core.rom_settings.goodname)
+        self.update_status(self.worker.core.rom_settings.goodname.decode())
         QTimer.singleShot(2000, self.worker.toggle_actions)
 
     def on_rom_closed(self):
