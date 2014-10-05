@@ -21,6 +21,7 @@ import zipfile
 import shutil
 import tempfile
 from subprocess import Popen, PIPE
+import binascii
 
 from m64py.utils import which
 
@@ -47,9 +48,9 @@ if HAS_RAR or RAR_CMD: EXT_FILTER += " *.rar"
 if HAS_7Z or LZMA_CMD: EXT_FILTER += " *.7z"
 
 ROM_TYPE = {
-    '80371240': 'z64 (native)',
-    '37804012': 'v64 (byteswapped)',
-    '40123780': 'n64 (wordswapped)'
+    b'80371240': 'z64 (native)',
+    b'37804012': 'v64 (byteswapped)',
+    b'40123780': 'n64 (wordswapped)'
 }
 
 
@@ -153,17 +154,17 @@ class Archive():
         fd = open(self.file, "rb")
         magic = fd.read(4)
         fd.close()
-        if magic == 'PK\03\04':
+        if magic == b'PK\03\04':
             return ZIP
-        elif magic.startswith('\037\213'):
+        elif magic.startswith(b'\037\213'):
             return GZIP
-        elif magic.startswith('BZh'):
+        elif magic.startswith(b'BZh'):
             return BZIP
-        elif magic == 'Rar!':
+        elif magic == b'Rar!':
             return RAR
-        elif magic == '7z\xbc\xaf':
+        elif magic == b'7z\xbc\xaf':
             return LZMA
-        elif magic.encode('hex') in ROM_TYPE.keys():
+        elif binascii.hexlify(magic) in ROM_TYPE.keys():
             return ROM
         return None
 

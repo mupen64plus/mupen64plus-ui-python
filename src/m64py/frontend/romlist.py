@@ -83,7 +83,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.progressBar.valueChanged.connect(self.on_progress_bar_changed)
         self.pushRefresh.clicked.connect(self.read_items)
         self.pushOpen.clicked.connect(self.on_item_open)
-        self.connect(self.reader, SIGNAL("finished()"), self.on_finished)
+        self.reader.finished.connect(self.on_finished)
 
     def add_items(self):
         """Adds available ROMs"""
@@ -104,9 +104,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         """Read available ROMs"""
         path_roms = str(self.qset.value("Paths/ROM"))
         if not path_roms or path_roms == "None":
-            self.parent.emit(SIGNAL(
-                "info_dialog(PyQt_PyObject)"),
-                self.tr("ROMs directory not found."))
+            self.parent.info_dialog.emit(self.tr("ROMs directory not found."))
             self.labelAvailable.setText("")
             self.progressBar.hide()
             self.pushOpen.setEnabled(False)
@@ -121,8 +119,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.close()
         if self.parent.isMinimized():
             self.parent.activateWindow()
-        self.parent.emit(SIGNAL(
-            "file_open(PyQt_PyObject, PyQt_PyObject)"), path, fname)
+        self.parent.file_open.emit(path, fname)
 
     def on_finished(self):
         self.rom_list = self.reader.get_roms()
@@ -233,7 +230,7 @@ class ROMReader(QThread):
                 log.warn(str(err))
                 continue
             percent = float(filenum) / float(num_files) * 100
-            self.parent.progressBar.emit(SIGNAL("valueChanged(int)"), percent)
+            self.parent.progressBar.valueChanged.emit(percent)
         self.exit()
 
     def stop(self):

@@ -58,13 +58,10 @@ class Worker(QThread):
 
             self.parent.settings.core = self.core
             if self.parent.args:
-                self.parent.emit(SIGNAL(
-                    "file_open(PyQt_PyObject, PyQt_PyObject)"), self.parent.args[0], None)
+                self.parent.file_open.emit(self.parent.args[0], None)
         else:
-            self.parent.emit(SIGNAL(
-                "state_changed(PyQt_PyObject)"), (False, False, False, False))
-            self.parent.emit(SIGNAL(
-                "info_dialog(PyQt_PyObject)"), self.tr("Mupen64Plus library not found."))
+            self.parent.state_changed.emit((False, False, False, False))
+            self.parent.info_dialog.emit(self.tr("Mupen64Plus library not found."))
 
     def quit(self):
         if self.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
@@ -81,8 +78,7 @@ class Worker(QThread):
         self.filename = filename
         self.archive = Archive(self.filepath)
         if len(self.archive.namelist) > 1 and not self.filename:
-            self.parent.emit(SIGNAL(
-                "archive_dialog(PyQt_PyObject)"), self.archive.namelist)
+            self.parent.archive_dialog.emit(self.archive.namelist)
 
     def core_load(self, path=None):
         """Loads core library."""
@@ -170,8 +166,7 @@ class Worker(QThread):
     def rom_open(self):
         """Opens ROM."""
         try:
-            self.parent.emit(SIGNAL(
-                "file_opening(PyQt_PyObject)"), self.filepath)
+            self.parent.file_opening.emit(self.filepath)
             romfile = self.archive.read(self.filename)
             self.archive.close()
         except Exception:
@@ -187,7 +182,7 @@ class Worker(QThread):
             if bool(int(self.settings.qset.value(
                     "disable_screensaver", 1))):
                 screensaver.disable()
-            self.parent.emit(SIGNAL("rom_opened()"))
+            self.parent.rom_opened.emit()
             self.parent.recent_files.add(self.filepath)
 
     def rom_close(self):
@@ -196,7 +191,7 @@ class Worker(QThread):
         if bool(int(self.settings.qset.value(
                 "disable_screensaver", 1))):
             screensaver.enable()
-        self.parent.emit(SIGNAL("rom_closed()"))
+        self.parent.rom_closed.emit()
 
     def core_state_query(self, state):
         """Query emulator state."""
@@ -252,12 +247,10 @@ class Worker(QThread):
         QTimer.singleShot(1500, self.save_snapshot_image)
 
     def save_title_image(self):
-        self.parent.emit(SIGNAL(
-            "save_image(PyQt_PyObject)"), True)
+        self.parent.save_image.emit(True)
 
     def save_snapshot_image(self):
-        self.parent.emit(SIGNAL(
-            "save_image(PyQt_PyObject)"), False)
+        self.parent.save_image.emit(False)
 
     def state_load(self, state_path=None):
         """Loads state."""
@@ -349,8 +342,7 @@ class Worker(QThread):
             (load, pause, action, cheats) = True, True, True, cheat
         elif self.state == M64EMU_RUNNING:
             (load, pause, action, cheats) = True, True, True, cheat
-        self.parent.emit(SIGNAL(
-            "state_changed(PyQt_PyObject)"), (load, pause, action, cheats))
+        self.parent.state_changed.emit((load, pause, action, cheats))
 
     def stop(self):
         """Stops thread."""

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer, SIGNAL
+from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer
 
 from m64py.opts import SDL2
 from m64py.frontend.log import log
@@ -81,7 +81,7 @@ class Joystick(QObject):
                         self.joystick_names.append(SDL_JoystickNameForIndex(i))
                     else:
                         self.joystick_names.append(SDL_JoystickName(i))
-                self.connect(self.joystick_timer, SIGNAL("timeout()"), self.process_events)
+                self.joystick_timer.timeout.connect(self.process_events)
             else:
                 log.info("couldn't initialize SDL joystick support")
 
@@ -139,36 +139,27 @@ class Joystick(QObject):
                 if moved != self.axes[i]:
                     delta_moved = abs(self.axes[i] - moved)
                     if delta_moved >= self.sensitivities[i]:
-                        self.emit(SIGNAL(
-                            "axis_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                            i, moved)
+                        self.axis_value_changed.emit(i, moved)
                     self.axes[i] = moved
                     self.axis_repeat_timers[i].restart()
                 elif self.auto_repeat and moved != 0:
                     if self.axis_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
-                        self.emit(SIGNAL(
-                            "axis_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                            i, moved)
+                        self.axis_value_changed.emit(i, moved)
                         self.axes[i] = moved
                 else:
                     self.axis_repeat_timers[i].restart()
             else:
-                self.emit(SIGNAL(
-                    "axis_value_changed(int, int)"), i, 0)
+                self.axis_value_changed.emit(i, 0)
 
         for i in range(self.num_buttons):
             changed = SDL_JoystickGetButton(self.joystick, i)
             if changed != self.buttons[i]:
-                self.emit(SIGNAL(
-                    "button_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                    i, changed)
+                self.button_value_changed.emit(i, changed)
                 self.buttons[i] = changed
                 self.button_repeat_timers[i].restart()
             elif self.auto_repeat and changed != 0:
                 if self.button_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
-                    self.emit(SIGNAL(
-                        "button_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                        i, changed)
+                    self.button_value_changed.emit(i, changed)
                     self.buttons[i] = changed
             else:
                 self.button_repeat_timers[i].restart()
@@ -176,16 +167,12 @@ class Joystick(QObject):
         for i in range(self.num_hats):
             changed = SDL_JoystickGetHat(self.joystick, i)
             if changed != self.hats[i]:
-                self.emit(SIGNAL(
-                    "hat_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                    i, changed)
+                self.hat_value_changed.emit(i, changed)
                 self.hats[i] = changed
                 self.hat_repeat_timers[i].restart()
             elif self.auto_repeat and changed != 0:
                 if self.hat_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
-                    self.emit(SIGNAL(
-                        "hat_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                        i, changed)
+                    self.hat_value_changed.emit(i, changed)
                     self.hats[i] = changed
             else:
                 self.hat_repeat_timers[i].restart()
@@ -193,6 +180,4 @@ class Joystick(QObject):
         for i in range(self.num_trackballs):
             dx, dy = self.joystick.get_ball(i)
             if dx != 0 or dy != 0:
-                self.emit(SIGNAL(
-                    "trackball_value_changed(int, int, int)"),
-                    i, dx, dy)
+                self.trackball_value_changed.emit(i, dx, dy)

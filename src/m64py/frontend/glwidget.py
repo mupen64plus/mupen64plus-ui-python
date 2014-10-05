@@ -34,7 +34,7 @@ class GLWidget(QGLWidget):
         self.setContentsMargins(QMargins())
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFocus(True)
-        self.connect(self, SIGNAL("toggle_fs()"), self.toggle_fullscreen)
+        self.toggle_fs.connect(self.toggle_fullscreen)
 
     def showEvent(self, event):
         self.setFocus(True)
@@ -47,7 +47,7 @@ class GLWidget(QGLWidget):
         pass
 
     def mouseDoubleClickEvent(self, event):
-        self.emit(SIGNAL("toggle_fs()"))
+        self.toggle_fs.emit()
 
     def keyPressEvent(self, event):
         if self.worker.state == M64EMU_RUNNING:
@@ -55,7 +55,7 @@ class GLWidget(QGLWidget):
             modifiers = event.modifiers()
             if modifiers & Qt.AltModifier and \
                     (key == Qt.Key_Enter or key == Qt.Key_Return):
-                self.emit(SIGNAL("toggle_fs()"))
+                self.toggle_fs.emit()
             elif key == Qt.Key_F3:
                 self.worker.save_title()
             elif key == Qt.Key_F4:

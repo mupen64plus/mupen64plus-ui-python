@@ -16,7 +16,6 @@
 
 import ctypes
 
-from PyQt4.QtCore import SIGNAL
 from PyQt4.QtOpenGL import QGLFormat
 
 try:
@@ -116,13 +115,13 @@ class Video():
         """Sets the caption text of the
         emulator rendering window. """
         title = "M64Py :: %s" % title
-        self.parent.emit(SIGNAL("set_caption(PyQt_PyObject)"), title)
+        self.parent.set_caption.emit(title)
         return M64ERR_SUCCESS
 
     def toggle_fs(self):
         """Toggles between fullscreen and
         windowed rendering modes. """
-        self.widget.emit(SIGNAL("toggle_fs()"))
+        self.widget.toggle_fs.emit()
         return M64ERR_SUCCESS
 
     def gl_get_proc(self, proc):

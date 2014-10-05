@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import QAction, QIcon, QPixmap
-from PyQt4.QtCore import QFileInfo, SIGNAL
+from PyQt4.QtCore import QFileInfo
 
 
 class RecentFiles():
@@ -38,8 +38,7 @@ class RecentFiles():
             action.setIcon(QIcon(QPixmap(":/icons/action_rom.png")))
             self.recent_actions.append(action)
             self.recent_actions[i].setVisible(False)
-            self.parent.connect(
-                self.recent_actions[i], SIGNAL("triggered()"), self.parent.file_open)
+            self.recent_actions[i].triggered.connect(self.parent.on_file_open)
             self.parent.menuRecent.addAction(self.recent_actions[i])
         self.parent.menuRecent.addSeparator()
         self.action_clear_history.setText("&Clear history")
@@ -47,8 +46,7 @@ class RecentFiles():
         self.action_clear_history.setVisible(True)
         self.action_clear_history.setIcon(
             QIcon(QPixmap(":/icons/action_clear.png")))
-        self.parent.connect(
-            self.action_clear_history, SIGNAL("triggered()"), self.clear)
+        self.action_clear_history.triggered.connect(self.clear)
         self.parent.menuRecent.addAction(self.action_clear_history)
 
     def update(self):

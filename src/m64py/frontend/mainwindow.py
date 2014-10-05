@@ -179,15 +179,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def connect_signals(self):
         """Connects signals."""
-        self.connect(self, SIGNAL("rom_opened()"), self.on_rom_opened)
-        self.connect(self, SIGNAL("rom_closed()"), self.on_rom_closed)
-        self.connect(self, SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), self.file_open)
-        self.connect(self, SIGNAL("file_opening(PyQt_PyObject)"), self.on_file_opening)
-        self.connect(self, SIGNAL("set_caption(PyQt_PyObject)"), self.on_set_caption)
-        self.connect(self, SIGNAL("state_changed(PyQt_PyObject)"), self.on_state_changed)
-        self.connect(self, SIGNAL("save_image(PyQt_PyObject)"), self.on_save_image)
-        self.connect(self, SIGNAL("info_dialog(PyQt_PyObject)"), self.on_info_dialog)
-        self.connect(self, SIGNAL("archive_dialog(PyQt_PyObject)"), self.on_archive_dialog)
+        self.rom_opened.connect(self.on_rom_opened)
+        self.rom_closed.connect(self.on_rom_closed)
+        self.file_open.connect(self.on_file_open)
+        self.file_opening.connect(self.on_file_opening)
+        self.set_caption.connect(self.on_set_caption)
+        self.state_changed.connect(self.on_state_changed)
+        self.save_image.connect(self.on_save_image)
+        self.info_dialog.connect(self.on_info_dialog)
+        self.archive_dialog.connect(self.on_archive_dialog)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -214,8 +214,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.menuStateSlot.addAction(self.slots[slot])
         self.slots[0].setChecked(True)
         for slot, action in self.slots.items():
-            self.connect(action, SIGNAL("triggered()"),
-                         lambda s=slot: self.worker.state_set_slot(s))
+            action.triggered.connect(lambda t, s=slot: self.worker.state_set_slot(s))
 
     def create_size_actions(self):
         """Creates window size actions."""
@@ -229,10 +228,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             w, h = width, height+self.widgets_height
             action.setText("%dX" % num)
             action.setToolTip("%sx%s" % (width, height))
-            self.connect(action, SIGNAL("triggered()"),
-                         lambda wi=w, he=h: self.resize(wi, he))
+            action.triggered.connect(lambda t, wi=w, he=h: self.resize(wi, he))
 
-    def file_open(self, filepath=None, filename=None):
+    def on_file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
         if not filepath:
             action = self.sender()
@@ -314,7 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_rom_closed(self):
         if self.vidext and self.isFullScreen():
-            self.glwidget.emit(SIGNAL("toggle_fs()"))
+            self.glwidget.toggle_fs.emit()
         self.stack.setCurrentWidget(self.view)
         self.actionMute.setChecked(False)
         self.actionPause.setChecked(False)
@@ -324,7 +322,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         del self.cheats
         self.cheats = None
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionManually_triggered(self):
         """Shows ROM file dialog."""
         dialog = QFileDialog()
@@ -334,31 +332,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self, self.tr("Load ROM Image"), last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
         if filepath:
-            self.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), filepath, None)
+            self.file_open.emit(filepath, None)
             last_dir = QFileInfo(filepath).path()
             self.settings.qset.setValue("last_dir", last_dir)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionFromList_triggered(self):
         """Shows ROM list."""
         ROMList(self)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionShowROMInfo_triggered(self):
         """Shows ROM information."""
         RomInfo(self)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionLoadState_triggered(self):
         """Loads state."""
         self.worker.state_load()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSaveState_triggered(self):
         """Saves state."""
         self.worker.state_save()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionLoadFrom_triggered(self):
         """Loads state from file."""
         dialog = QFileDialog()
@@ -370,7 +368,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if file_path:
             self.worker.state_load(file_path)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSaveAs_triggered(self):
         """Saves state to file."""
         dialog = QFileDialog()
@@ -388,93 +386,93 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.worker.state_save(file_path, save_type)
 
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSaveScreenshot_triggered(self):
         """Saves screenshot."""
         self.worker.save_screenshot()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionPause_triggered(self):
         """Toggles pause."""
         self.worker.toggle_pause()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionMute_triggered(self):
         """Toggles mute."""
         self.worker.toggle_mute()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionStop_triggered(self):
         """Stops emulator."""
         self.worker.stop()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionReset_triggered(self):
         """Resets emulator."""
         self.worker.reset()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSoftReset_triggered(self):
         """Resets emulator."""
         self.worker.reset(True)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionLimitFPS_triggered(self):
         """Toggles speed limit."""
         self.worker.toggle_speed_limit()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSlowDown_triggered(self):
         """Speeds down emulator."""
         self.worker.speed_down()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionSpeedUp_triggered(self):
         """Speeds up emulator."""
         self.worker.speed_up()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionCheats_triggered(self):
         """Shows cheat dialog."""
         if self.cheats:
             self.cheats.show()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionFullscreen_triggered(self):
         """Toggles fullscreen."""
         self.worker.toggle_fs()
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionPaths_triggered(self):
         """Shows paths settings."""
         self.settings.show_page(0)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionEmulator_triggered(self):
         """Shows emulator settings."""
         self.settings.show_page(1)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionGraphics_triggered(self):
         """Shows emulator settings."""
         self.settings.show_page(2)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionPlugins_triggered(self):
         """Shows plugins settings."""
         self.settings.show_page(3)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionAbout_triggered(self):
         """Shows about dialog."""
         AboutDialog(self)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionLicense_triggered(self):
         """Shows license dialog."""
         LicenseDialog(self)
 
-    @pyqtSignature("")
+    @pyqtSlot()
     def on_actionLog_triggered(self):
         """Shows log dialog."""
         logview.show()
