@@ -35,7 +35,7 @@ class build_qt(Command):
         if not newer(ui_file, py_file):
             return
         fp = open(py_file, "w")
-        uic.compileUi(ui_file, fp)
+        uic.compileUi(ui_file, fp, from_imports = True)
         fp.close()
 
     def compile_rc(self, qrc_file):
