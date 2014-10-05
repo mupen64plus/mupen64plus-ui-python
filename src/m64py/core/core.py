@@ -19,6 +19,7 @@ import sys
 import signal
 import ctypes as C
 import subprocess
+import binascii
 
 from m64py.core.defs import *
 from m64py.core.config import Config
@@ -295,7 +296,7 @@ class Core:
     def rom_open(self, romfile):
         """Reads in a binary ROM image"""
         self.rom_length = len(romfile)
-        self.rom_type = ROM_TYPE[romfile[:4].encode('hex')]
+        self.rom_type = ROM_TYPE[binascii.hexlify(romfile[:4])]
         romlength = C.c_int(self.rom_length)
         rombuffer = C.c_buffer(romfile)
         rval = self.m64p.CoreDoCommand(
