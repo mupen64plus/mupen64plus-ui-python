@@ -47,7 +47,7 @@ class build_qt(Command):
         path = origpath.split(os.pathsep)
         path.append(dirname(PyQt4.__file__))
         os.putenv("PATH", os.pathsep.join(path))
-        if subprocess.call(["pyrcc4", qrc_file, "-o", py_file]) > 0:
+        if subprocess.call(["pyrcc4", "-py3", qrc_file, "-o", py_file]) > 0:
             self.warn("Unable to compile resource file %s" % qrc_file)
             if not os.path.exists(py_file):
                 sys.exit(1)
