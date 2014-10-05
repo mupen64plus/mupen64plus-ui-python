@@ -179,15 +179,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def connect_signals(self):
         """Connects signals."""
-        self.connect(self, SIGNAL("rom_opened()"), self.on_rom_opened)
-        self.connect(self, SIGNAL("rom_closed()"), self.on_rom_closed)
-        self.connect(self, SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), self.file_open)
-        self.connect(self, SIGNAL("file_opening(PyQt_PyObject)"), self.on_file_opening)
-        self.connect(self, SIGNAL("set_caption(PyQt_PyObject)"), self.on_set_caption)
-        self.connect(self, SIGNAL("state_changed(PyQt_PyObject)"), self.on_state_changed)
-        self.connect(self, SIGNAL("save_image(PyQt_PyObject)"), self.on_save_image)
-        self.connect(self, SIGNAL("info_dialog(PyQt_PyObject)"), self.on_info_dialog)
-        self.connect(self, SIGNAL("archive_dialog(PyQt_PyObject)"), self.on_archive_dialog)
+        self.rom_opened.connect(self.on_rom_opened)
+        self.rom_closed.connect(self.on_rom_closed)
+        self.file_open.connect(self.on_file_open)
+        self.file_opening.connect(self.on_file_opening)
+        self.set_caption.connect(self.on_set_caption)
+        self.state_changed.connect(self.on_state_changed)
+        self.save_image.connect(self.on_save_image)
+        self.info_dialog.connect(self.on_info_dialog)
+        self.archive_dialog.connect(self.on_archive_dialog)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -214,8 +214,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.menuStateSlot.addAction(self.slots[slot])
         self.slots[0].setChecked(True)
         for slot, action in self.slots.items():
-            self.connect(action, SIGNAL("triggered()"),
-                         lambda s=slot: self.worker.state_set_slot(s))
+            action.triggered.connect(lambda t, s=slot: self.worker.state_set_slot(s))
 
     def create_size_actions(self):
         """Creates window size actions."""
@@ -229,10 +228,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             w, h = width, height+self.widgets_height
             action.setText("%dX" % num)
             action.setToolTip("%sx%s" % (width, height))
-            self.connect(action, SIGNAL("triggered()"),
-                         lambda wi=w, he=h: self.resize(wi, he))
+            action.triggered.connect(lambda t, wi=w, he=h: self.resize(wi, he))
 
-    def file_open(self, filepath=None, filename=None):
+    def on_file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
         if not filepath:
             action = self.sender()
@@ -314,7 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_rom_closed(self):
         if self.vidext and self.isFullScreen():
-            self.glwidget.emit(SIGNAL("toggle_fs()"))
+            self.glwidget.toggle_fs.emit()
         self.stack.setCurrentWidget(self.view)
         self.actionMute.setChecked(False)
         self.actionPause.setChecked(False)
@@ -334,7 +332,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self, self.tr("Load ROM Image"), last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
         if filepath:
-            self.emit(SIGNAL("file_open(PyQt_PyObject, PyQt_PyObject)"), filepath, None)
+            self.file_open.emit(filepath, None)
             last_dir = QFileInfo(filepath).path()
             self.settings.qset.setValue("last_dir", last_dir)
 

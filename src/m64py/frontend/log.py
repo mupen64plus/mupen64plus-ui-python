@@ -17,7 +17,7 @@
 import sys
 import logging
 
-from PyQt4.QtCore import pyqtSignal, SIGNAL
+from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QDialog, QTextCursor
 
 from m64py.ui.logview_ui import Ui_LogView
@@ -32,8 +32,7 @@ class Log:
         if self.out:
             self.out.write(msg)
         if self.logview:
-            self.logview.emit(SIGNAL(
-                "msg_written(PyQt_PyObject)"), msg)
+            self.logview.msg_written.emit(msg)
 
 
 class LogView(QDialog, Ui_LogView):
@@ -43,8 +42,7 @@ class LogView(QDialog, Ui_LogView):
         QDialog.__init__(self, parent)
         self.setupUi(self)
         self.textEdit.setReadOnly(True)
-        self.connect(self, SIGNAL(
-            "msg_written(PyQt_PyObject)"), self.on_msg_written)
+        self.msg_written.connect(self.on_msg_written)
 
     def on_msg_written(self, msg):
         self.textEdit.moveCursor(QTextCursor.End)

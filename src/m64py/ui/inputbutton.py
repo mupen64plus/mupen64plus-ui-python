@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt4.QtGui import QPushButton
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt4.QtCore import Qt
 
 from m64py.opts import SDL2
 from m64py.frontend.keymap import QT2SDL, QT2SDL2
@@ -47,15 +47,9 @@ class InputButton(QPushButton):
 
 
     def connect_signals(self):
-        self.connect(self.joystick,
-                     SIGNAL("axis_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                     self.on_axis_value_changed)
-        self.connect(self.joystick,
-                     SIGNAL("button_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                     self.on_button_value_changed)
-        self.connect(self.joystick,
-                     SIGNAL("hat_value_changed(PyQt_PyObject, PyQt_PyObject)"),
-                     self.on_hat_value_changed)
+        self.joystick.axis_value_changed.connect(self.on_axis_value_changed)
+        self.joystick.button_value_changed.connect(self.on_button_value_changed)
+        self.joystick.hat_value_changed.connect(self.on_hat_value_changed)
 
     def keyPressEvent(self, event):
         modifier = event.modifiers()

@@ -141,9 +141,7 @@ class Settings(QDialog, Ui_Settings):
                     self.set_video()
                     size = self.qset.value("size", SIZE_1X)
                     self.parent.window_size_triggered(size)
-                    self.parent.emit(SIGNAL(
-                        "state_changed(PyQt_PyObject)"),
-                        (True, False, False, False))
+                    self.parent.state_changed.emit((True, False, False, False))
         elif widget == self.pathPlugins:
             if self.parent.worker.core.get_handle():
                 self.parent.worker.plugins_unload()
