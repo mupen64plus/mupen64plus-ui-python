@@ -9,7 +9,7 @@ __version__ = '$Id: $'
 from ctypes import *
 
 # Arrange these in order of preference
-_array_names = ('numpy', 'numarray', 'Numeric')
+_array_names = ('numpy')
 
 def _import_arrays(array_names, locals):
     default_array = None
