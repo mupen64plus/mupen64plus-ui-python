@@ -49,9 +49,18 @@ class RecentFiles():
         self.action_clear_history.triggered.connect(self.clear)
         self.parent.menuRecent.addAction(self.action_clear_history)
 
+    def is_string(self, obj):
+        try:
+            return isinstance(obj, basestring)
+        except NameError:
+            return isinstance(obj, str)
+
     def update(self):
         """Updates list of recent files."""
         self.recent_files = self.parent.settings.qset.value("recent_files", [])
+        if not type(self.recent_files) == list:
+            self.recent_files = []
+        self.recent_files = list(filter(lambda x: self.is_string(x), self.recent_files))
         num_files = min(len(self.recent_files), self.max_recent)
         for i in range(num_files):
             text = QFileInfo(self.recent_files[i]).fileName()
