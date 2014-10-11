@@ -179,8 +179,8 @@ class Worker(QThread):
             del romfile
             self.core.rom_get_header()
             self.core.rom_get_settings()
-            if bool(int(self.settings.qset.value(
-                    "disable_screensaver", 1))):
+            if bool(self.settings.get_int_safe(
+                    "disable_screensaver", 1)):
                 screensaver.disable()
             self.parent.rom_opened.emit()
             self.parent.recent_files.add(self.filepath)
@@ -188,8 +188,8 @@ class Worker(QThread):
     def rom_close(self):
         """Closes ROM."""
         self.core.rom_close()
-        if bool(int(self.settings.qset.value(
-                "disable_screensaver", 1))):
+        if bool(self.settings.get_int_safe(
+                "disable_screensaver", 1)):
             screensaver.enable()
         self.parent.rom_closed.emit()
 
@@ -306,13 +306,11 @@ class Worker(QThread):
         """Toggles pause."""
         if self.state == M64EMU_RUNNING:
             self.core.pause()
-            if bool(int(self.settings.qset.value(
-                    "disable_screensaver", 1))):
+            if bool(self.settings.get_int_safe("disable_screensaver", 1)):
                 screensaver.enable()
         elif self.state == M64EMU_PAUSED:
             self.core.resume()
-            if bool(int(self.settings.qset.value(
-                    "disable_screensaver", 1))):
+            if bool(self.settings.get_int_safe("disable_screensaver", 1)):
                 screensaver.disable()
         self.toggle_actions()
 

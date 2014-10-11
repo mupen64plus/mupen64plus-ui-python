@@ -195,6 +195,12 @@ class Settings(QDialog, Ui_Settings):
         self.pathPlugins.setText(path_plugins)
         self.pathData.setText(path_data)
 
+    def get_int_safe(self, key, default):
+        try:
+            return int(self.qset.value(key, default))
+        except ValueError:
+            return default
+
     def set_video(self):
         self.comboResolution.clear()
         for mode in MODES:
@@ -212,7 +218,7 @@ class Settings(QDialog, Ui_Settings):
         self.comboResolution.setCurrentIndex(index)
 
         self.checkEnableVidExt.setChecked(
-            bool(int(self.qset.value("enable_vidext", 1))))
+            bool(self.get_int_safe("enable_vidext", 1)))
 
         self.checkFullscreen.setChecked(
             bool(self.core.config.get_parameter("Fullscreen")))
@@ -222,10 +228,10 @@ class Settings(QDialog, Ui_Settings):
             self.checkKeepAspect.setChecked(False)
             self.checkKeepAspect.setEnabled(False)
         else:
-            keep_aspect = bool(int(self.qset.value("keep_aspect", 1)))
+            keep_aspect = bool(self.get_int_safe("keep_aspect", 1))
             self.checkKeepAspect.setChecked(keep_aspect)
 
-        disable_screensaver = bool(int(self.qset.value("disable_screensaver", 1)))
+        disable_screensaver = bool(self.get_int_safe("disable_screensaver", 1))
         self.checkDisableScreenSaver.setChecked(disable_screensaver)
 
     def set_core(self):
