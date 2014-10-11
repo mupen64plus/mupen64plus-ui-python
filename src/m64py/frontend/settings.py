@@ -139,7 +139,7 @@ class Settings(QDialog, Ui_Settings):
                     self.core = self.parent.worker.core
                     self.set_core()
                     self.set_video()
-                    size = self.qset.value("size", SIZE_1X)
+                    size = self.get_size_safe()
                     self.parent.window_size_triggered(size)
                     self.parent.state_changed.emit((True, False, False, False))
         elif widget == self.pathPlugins:
@@ -200,6 +200,18 @@ class Settings(QDialog, Ui_Settings):
             return int(self.qset.value(key, default))
         except ValueError:
             return default
+
+    def get_size_safe(self):
+        size = self.qset.value("size", SIZE_1X)
+        if not type(size) == tuple:
+            size = SIZE_1X
+        if len(size) != 2:
+            size = SIZE_1X
+        if type(size[0]) != int or type(size[1]) != int:
+            size = SIZE_1X
+        if size[0] <= 0 or size[1] <= 0:
+            size = SIZE_1X
+        return size
 
     def set_video(self):
         self.comboResolution.clear()

@@ -110,7 +110,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def showEvent(self, event):
         if not self.widgets_height:
-            width, height = self.settings.qset.value("size", SIZE_1X)
+            width, height = self.settings.get_size_safe()
             menubar_height = self.menubar.size().height()
             statusbar_height = self.statusbar.size().height()
             self.widgets_height = menubar_height + statusbar_height
