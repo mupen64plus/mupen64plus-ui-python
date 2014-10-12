@@ -21,12 +21,15 @@ from PyQt4.QtCore import QObject, pyqtSignal, QTime, QTimer
 
 from m64py.opts import SDL2
 from m64py.frontend.log import log
+import ctypes
 
 if SDL2:
     from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
     from m64py.SDL2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
     from m64py.SDL2 import SDL_JoystickNumAxes, SDL_JoystickNumButtons, SDL_JoystickNumHats, SDL_JoystickNumBalls
-    from m64py.SDL2 import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate
+    from m64py.SDL2 import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate, SDL_JoystickInstanceID
+    from m64py.SDL2 import SDL_Event, SDL_PollEvent
+    from m64py.SDL2 import SDL_JOYAXISMOTION, SDL_JOYHATMOTION, SDL_JOYBALLMOTION, SDL_JOYBUTTONDOWN, SDL_JOYBUTTONUP
 else:
     from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
     from m64py.SDL import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickName
@@ -81,9 +84,19 @@ class Joystick(QObject):
                         self.joystick_names.append(SDL_JoystickNameForIndex(i))
                     else:
                         self.joystick_names.append(SDL_JoystickName(i))
-                self.joystick_timer.timeout.connect(self.process_events)
+
+                if SDL2:
+                    self.joystick_timer.timeout.connect(self.process_events_sdl2)
+                else:
+                    self.joystick_timer.timeout.connect(self.process_events)
             else:
                 log.info("couldn't initialize SDL joystick support")
+
+    def clear_events(self):
+	if SDL2:
+            event = SDL_Event()
+            while SDL_PollEvent(ctypes.byref(event)) != 0:
+                pass
 
     def open(self, stick=0):
         if self.joystick:
@@ -114,6 +127,7 @@ class Joystick(QObject):
                 self.hats[i] = SDL_JoystickGetHat(self.joystick, i)
                 self.hat_repeat_timers[i] = QTime()
 
+            self.clear_events()
             self.joystick_timer.start(self.event_timeout)
             return True
         else:
@@ -181,3 +195,72 @@ class Joystick(QObject):
             dx, dy = self.joystick.get_ball(i)
             if dx != 0 or dy != 0:
                 self.trackball_value_changed.emit(i, dx, dy)
+
+    def process_events_sdl2(self):
+        if not self.joystick:
+            return
+
+        stickid = SDL_JoystickInstanceID(self.joystick)
+        event = SDL_Event()
+        while SDL_PollEvent(ctypes.byref(event)) != 0:
+            if event.type == SDL_JOYAXISMOTION:
+                if stickid != event.jaxis.which:
+                    continue
+                moved = event.jaxis.value
+                i = event.jaxis.axis
+                if abs(moved) >= self.deadzones[i]:
+                    if moved != self.axes[i]:
+                        delta_moved = abs(self.axes[i] - moved)
+                        if delta_moved >= self.sensitivities[i]:
+                            self.axis_value_changed.emit(i, moved)
+                        self.axes[i] = moved
+                        self.axis_repeat_timers[i].restart()
+                    elif self.auto_repeat and moved != 0:
+                        if self.axis_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
+                            self.axis_value_changed.emit(i, moved)
+                            self.axes[i] = moved
+                    else:
+                        self.axis_repeat_timers[i].restart()
+                else:
+                    self.axis_value_changed.emit(i, 0)
+
+            elif event.type == SDL_JOYHATMOTION:
+                if stickid != event.jhat.which:
+                    continue
+                changed = event.jhat.value
+                i = event.jhat.hat
+                if changed != self.hats[i]:
+                    self.hat_value_changed.emit(i, changed)
+                    self.hats[i] = changed
+                    self.hat_repeat_timers[i].restart()
+                elif self.auto_repeat and changed != 0:
+                    if self.hat_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
+                        self.hat_value_changed.emit(i, changed)
+                        self.hats[i] = changed
+                else:
+                    self.hat_repeat_timers[i].restart()
+
+            elif event.type == SDL_JOYBALLMOTION:
+                if stickid != event.jball.which:
+                    continue
+                dx = event.jball.xrel
+                dy = event.jball.yrel
+                i = event.jball.ball
+                if dx != 0 or dy != 0:
+                    self.trackball_value_changed.emit(i, dx, dy)
+
+            elif event.type == SDL_JOYBUTTONDOWN or event.type == SDL_JOYBUTTONUP:
+                if stickid != event.jbutton.which:
+                    continue
+                changed = event.jbutton.state
+                i = event.jbutton.button
+                if changed != self.buttons[i]:
+                    self.button_value_changed.emit(i, changed)
+                    self.buttons[i] = changed
+                    self.button_repeat_timers[i].restart()
+                elif self.auto_repeat and changed != 0:
+                    if self.button_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
+                        self.button_value_changed.emit(i, changed)
+                        self.button[si] = changed
+                else:
+                    self.button_repeat_timers[i].restart()
