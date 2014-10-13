@@ -32,14 +32,12 @@ def _import_arrays(array_names, locals):
             locals['_have_%s' % array_name] = False
     locals['_have_array'] = default_array is not None
 
-# This sets up local names for the arrays.  If numpy, Numeric, and numarray
-# are all available, the following local variables are defined:
+# This sets up local names for the arrays.  If numpy is
+# available, the following local variables are defined:
 #    numpy,  _numpy_typemap
-#    numarray,  _numarray_typemap
-#    Numeric, _Numeric_typemap
 #
 # The following local variables will be set to True or False:
-#    _have_numpy, _have_numarray, _have_Numeric 
+#    _have_numpy
 #
 # If any of the array modules were imported, the following is True:
 #    _have_array
@@ -147,7 +145,7 @@ class SDL_array:
         ar = ar.reshape(shape)
         return ar
 
-    # Generic array methods (numpy, Numeric, numarray)
+    # Generic array methods (numpy)
 
     def have_array(cls):
         '''Determine if an array module is available.
@@ -161,7 +159,7 @@ class SDL_array:
         '''Determine the default array module.
 
         :rtype: module
-        :return: one of numpy, Numeric, numarray, or None
+        :return: one of numpy or None
         '''
         if _have_array:
             return _default_array
@@ -170,16 +168,16 @@ class SDL_array:
     array_module = classmethod(array_module)
 
     def to_array(self, shape=None):
-        '''Convert the array to a numpy, Numeric or numarray array.
+        '''Convert the array to a numpy array.
 
         The returned array will be a copy of the data.  You can retrieve
-        the module used (numpy, Numeric or numarray) using the `array_module`
+        the module used (numpy) using the `array_module`
         method.
 
-        If none of numpy, Numeric or numarray could be imported, an
+        If none of numpy could be imported, an
         ImportError will be raised.
 
-        :rtype: numpy.ndarray, Numeric.array or numarray.numarraycore.NumArray
+        :rtype: numpy.ndarray.array
         '''
         if not _have_array:
             raise ImportError, 'no array module could be imported'
@@ -195,19 +193,15 @@ class SDL_array:
         # Each module has its own shaping interface
         if _have_numpy and _default_array is numpy:
             return _default_array.fromstring(s, t).reshape(shape)
-        elif _have_numarray and _default_array is numarray:
-            return  _default_array.fromstring(s, t, shape)
-        elif _have_Numeric and _default_array is Numeric:
-            return _default_array.fromstring(s, t).resize(shape)
 
     def from_array(self, array):
-        '''Copy data from the given numpy, Numeric or numarray array into
+        '''Copy data from the given numpy array into
         this array.
 
         The array sizes must match exactly.  No type checking is performed.
 
         :Parameters:
-            `array` : numpy, Numeric or numarray array object
+            `array` : numpy array object
                 Array to copy.
         '''
         s = array.tostring()
