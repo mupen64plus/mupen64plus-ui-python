@@ -78,8 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = Settings(self)
         self.worker = Worker(self)
 
-        self.vidext = bool(
-            int(self.settings.qset.value("enable_vidext", 1)))
+        self.vidext = bool(self.settings.get_int_safe("enable_vidext", 1))
 
         self.create_state_slots()
         self.create_widgets()
@@ -111,7 +110,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def showEvent(self, event):
         if not self.widgets_height:
-            width, height = self.settings.qset.value("size", SIZE_1X)
+            width, height = self.settings.get_size_safe()
             menubar_height = self.menubar.size().height()
             statusbar_height = self.statusbar.size().height()
             self.widgets_height = menubar_height + statusbar_height
@@ -126,7 +125,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # event.ignore() doesn't work on windows
             if not sys.platform == "win32":
                 if not fullscreen and \
-                        bool(int(self.settings.qset.value("keep_aspect", 1))):
+                        bool(self.settings.get_int_safe("keep_aspect", 1)):
                     width, height = self.keep_aspect(size)
 
             self.worker.core.config.open_section("Video-General")
