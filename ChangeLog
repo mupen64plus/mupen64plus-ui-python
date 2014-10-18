@@ -1,3 +1,9 @@
+v0.2.2  Oct 18, 2014:
+    * Initial Python3 support
+    * Add special SDL2 joystick event system for input config
+    * Add support for non-native rom files in romlist
+    * Many bug fixes, full log http://git.io/yRePKw
+
 v0.2.1  Mar 09, 2014:
     * Greatly speed up reading ROM list
     * Check if core supports DelaySI/CountPerOp options
