@@ -115,7 +115,7 @@ class SDL_Palette(Structure):
     def __getattr__(self, name):
         if name == 'colors':
             return SDL_array(self._colors, self.ncolors, SDL_Color)
-        raise AttributeError, name
+        raise AttributeError(name)
         
 
 class SDL_PixelFormat(Structure):
@@ -247,7 +247,7 @@ class SDL_Surface(Structure):
         elif name == 'pixels':
             # Return SDL_array type for pixels
             if not self._pixels:
-                raise SDL_Exception, 'Surface needs locking'
+                raise SDL_Exception('Surface needs locking')
             bpp = self.format.BitsPerPixel
             count = self.pitch / self.format.BytesPerPixel * self.h
             if bpp == 1:
@@ -265,9 +265,9 @@ class SDL_Surface(Structure):
             elif bpp == 32:
                 sz = c_uint
             else:
-                raise SDL_Exception, 'Unsupported bytes-per-pixel'
+                raise SDL_Exception('Unsupported bytes-per-pixel')
             return SDL_array(self._pixels, count, sz)
-        raise AttributeError, name
+        raise AttributeError(name)
 
 def SDL_MUSTLOCK(surface):
     '''Evaluates to true if the surface needs to be locked before access.
@@ -356,7 +356,7 @@ class SDL_VideoInfo(Structure):
         if name in ('current_w', 'current_h'):
             assert_version_compatible(name, (1,2,10))
             return getattr(self, '_%s' % name)
-        raise AttributeError, name
+        raise AttributeError(name)
 
 
 class SDL_Overlay(Structure):
@@ -398,7 +398,7 @@ class SDL_Overlay(Structure):
         
         elif name == 'pixels':
             if not self._pixels:
-                raise SDL_Exception, 'Overlay needs locking'
+                raise SDL_Exception('Overlay needs locking')
             p = []
             for i in range(self.planes):
                 sz = self.pitches[i] * self.h
@@ -707,7 +707,7 @@ def SDL_SetGammaRamp(red, green, blue):
         bref, bar = to_ctypes(blue, 256, c_ushort)
     result = _SDL_SetGammaRamp(rar, gar, bar)
     if result != 0:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
 
 _SDL_GetGammaRamp = private_function('SDL_GetGammaRamp',
     arg_types=[POINTER(c_ushort), POINTER(c_ushort), POINTER(c_ushort)],
@@ -790,7 +790,7 @@ def SDL_SetPalette(surface, flags, colors, firstcolor):
     ref, ar = to_ctypes(colors, len(colors), SDL_Color)
     result = _SDL_SetPalette(surface, flags, ar, firstcolor, len(colors))
     if result != 1:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
 
 SDL_MapRGB = function('SDL_MapRGB',
     '''Map an RGB triple to an opaque pixel value for a given pixel
@@ -990,7 +990,7 @@ def SDL_CreateRGBSurfaceFrom(pixels, width, height, depth, pitch,
             # byte array
             ref, ar = to_ctypes(pixels, len(pixels), c_ubyte)
         else:
-            raise TypeError, 'Length of pixels does not match given dimensions.'
+            raise TypeError('Length of pixels does not match given dimensions.')
 
     surface = _SDL_CreateRGBSurfaceFrom(cast(ar, POINTER(c_ubyte)),
         width, height, depth, pitch, Rmask, Gmask, Bmask, Amask)

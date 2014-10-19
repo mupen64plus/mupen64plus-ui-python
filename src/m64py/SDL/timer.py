@@ -93,7 +93,7 @@ def SDL_SetTimer(interval, callback):
     # XXX if this fails the global ref is incorrect and old one will
     # possibly be collected early.
     if _SDL_SetTimer(interval, _timercallback_ref) == -1:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
 
 
 # For the new timer functions, the void *param passed to the callback
@@ -137,7 +137,7 @@ def SDL_AddTimer(interval, callback, param):
     func = _SDL_NewTimerCallback(_callback)
     result = _SDL_AddTimer(interval, func, None)
     if not result:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
     _timer_refs[result] = func
     return result
 

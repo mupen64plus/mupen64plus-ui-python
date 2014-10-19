@@ -267,8 +267,8 @@ if hasattr(_dll._dll, 'IMG_isXV'):
 else:
     # Broken build of SDL_image 1.2.5 on OS X does define xv.c symbols
     def IMG_isXV(src):
-        raise SDL_NotImplementedError, 'Linked version of ' + \
-            'SDL_image does not define IMG_isXV'
+        raise SDL_NotImplementedError('Linked version of ' + \
+            'SDL_image does not define IMG_isXV')
 
 IMG_LoadBMP_RW = _dll.function('IMG_LoadBMP_RW',
     '''Load a BMP image from an SDL data source.
@@ -455,7 +455,7 @@ if hasattr(_dll._dll, 'IMG_LoadXV_RW'):
 else:
     # Broken build of SDL_image 1.2.5 on OS X does define xv.c symbols
     def IMG_LoadXV_RW(src):
-        raise SDL_NotImplementedError, 'Linked version of ' + \
-            'SDL_image does not define IMG_LoadXV_RW'
+        raise SDL_NotImplementedError('Linked version of ' + \
+            'SDL_image does not define IMG_LoadXV_RW')
 
 # IMG_ReadXPMFromArray cannot be implemented.

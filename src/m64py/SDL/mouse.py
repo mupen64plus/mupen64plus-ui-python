@@ -39,7 +39,7 @@ class SDL_Cursor(Structure):
             return SDL_array(self._data, w * h / 8, c_ubyte)
         elif name == 'mask':
             return SDL_array(self._mask, w * h / 8, c_ubyte)
-        raise AttributeError, name
+        raise AttributeError(name)
 
 _SDL_GetMouseState = private_function('SDL_GetMouseState',
     arg_types=[POINTER(c_int), POINTER(c_int)],

@@ -364,11 +364,11 @@ def SDL_PeepEvents(numevents, action, mask):
     :see: `SDL_PushEvent`, `SDL_HaveEvents`
     '''
     if action == SDL_ADDEVENT:
-        raise NotImplementedError, 'Use SDL_PushEvent to add events'
+        raise NotImplementedError('Use SDL_PushEvent to add events')
     ar = (SDL_Event * numevents)()
     num = _SDL_PeepEvents(ar, numevents, action, mask)
     if num == -1:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
     return list([e.specialize() for e in ar[:num]])
 
 def SDL_HaveEvents(mask):
@@ -429,7 +429,7 @@ def SDL_WaitEvent():
     :see: `SDL_WaitEventAndReturn`
     '''
     if _SDL_WaitEvent(None) == 0:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
     
 def SDL_WaitEventAndReturn():
     '''Wait indefinitely for the next event and return it.
@@ -442,7 +442,7 @@ def SDL_WaitEventAndReturn():
     if result == 1:
         return ev.specialize()
     else:
-        raise SDL_Exception, SDL_GetError()
+        raise SDL_Exception(SDL_GetError())
 
 SDL_PushEvent = function('SDL_PushEvent',
     '''Add an event to the event queue.

@@ -122,7 +122,7 @@ def _ctype_audio_format(fmt):
     elif fmt in (AUDIO_S16LSB, AUDIO_S16MSB):
         return c_short
     else:
-        raise TypeError, 'Unsupported format %r' % fmt
+        raise TypeError('Unsupported format %r' % fmt)
 
 _SDL_OpenAudio = private_function('SDL_OpenAudio',
     arg_types=[POINTER(SDL_AudioSpec), POINTER(SDL_AudioSpec)],
@@ -195,7 +195,7 @@ def SDL_OpenAudio(desired, obtained):
 
     '''
     if not hasattr(desired, 'callback'):
-        raise TypeError, 'Attribute "callback" not set on "desired"'
+        raise TypeError('Attribute "callback" not set on "desired"')
     userdata = getattr(desired, 'userdata', None)
     callback = desired.callback
     ctype = [_ctype_audio_format(desired.format)]  # List, so mutable
@@ -380,9 +380,9 @@ def SDL_MixAudio(dst, src, length, volume):
     dstref, dst = to_ctypes(dst, len(dst), c_ubyte)
     srcref, src = to_ctypes(src, len(src), c_ubyte)
     if len(dst) < length:
-        raise TypeError, 'Destination buffer too small'
+        raise TypeError('Destination buffer too small')
     elif len(src) < length:
-        raise TypeError, 'Source buffer too small'
+        raise TypeError('Source buffer too small')
     _SDL_MixAudio(dst, src, length, volume)
 
 SDL_LockAudio = function('SDL_LockAudio',

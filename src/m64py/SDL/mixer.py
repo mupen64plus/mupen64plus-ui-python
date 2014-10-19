@@ -62,7 +62,7 @@ class Mix_Chunk(Structure):
     def __getattr__(self, attr):
         if attr == 'abuf':
             return SDL_array(self._abuf, self.alen, c_ubyte)
-        raise AttributeException, attr
+        raise AttributeException(attr)
 
 # opaque type
 _Mix_Music = c_void_p

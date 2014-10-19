@@ -143,7 +143,7 @@ def WMEnable(name=None):
 
 def init():
     if not (MacOS.WMAvailable() or WMEnable()):
-        raise ImportError, "Can not access the window manager.  Use py2app or execute with the pythonw script."
+        raise ImportError("Can not access the window manager.  Use py2app or execute with the pythonw script.")
     if not NSApp():
         # running outside of a bundle
         install()
