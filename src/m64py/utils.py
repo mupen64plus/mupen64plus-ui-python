@@ -18,21 +18,6 @@ import re
 from hashlib import md5
 
 
-def md5sum(filename=None, filedata=None, buf_size=8192):
-    m = md5()
-    if filename:
-        with open(filename, 'rb') as f:
-            data = f.read(buf_size)
-            while data:
-                m.update(data)
-                data = f.read(buf_size)
-    elif filedata:
-        for i in range(0, len(filedata), buf_size):
-            data = filedata[i:i+buf_size]
-            m.update(data)
-    return m.hexdigest()
-
-
 def which(prog):
     def is_exe(fpath):
         return os.path.exists(fpath) and os.access(fpath, os.X_OK)
