@@ -93,7 +93,7 @@ class Joystick(QObject):
                 log.info("couldn't initialize SDL joystick support")
 
     def clear_events(self):
-	if SDL2:
+        if SDL2:
             event = SDL_Event()
             while SDL_PollEvent(ctypes.byref(event)) != 0:
                 pass
