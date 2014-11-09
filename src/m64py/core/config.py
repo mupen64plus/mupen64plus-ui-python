@@ -66,7 +66,7 @@ class Config:
         config_ptr = C.c_void_p()
         self.m64p.ConfigOpenSection.argtypes = [C.c_char_p, C.c_void_p]
         rval = self.m64p.ConfigOpenSection(
-            C.c_char_p(section), C.byref(config_ptr))
+            C.c_char_p(section.encode()), C.byref(config_ptr))
         if rval != M64ERR_SUCCESS:
             log.debug("open_section()")
             log.warn(self.core.error_message(rval))
@@ -87,7 +87,7 @@ class Config:
         return rval
 
     def has_unsaved_changes(self, section):
-        rval = self.m64p.ConfigHasUnsavedChanges(C.c_char_p(section))
+        rval = self.m64p.ConfigHasUnsavedChanges(C.c_char_p(section.encode()))
         if rval == 0:
             return False
         else:
@@ -95,7 +95,7 @@ class Config:
 
     def delete_section(self, section):
         """Deletes a section from the config."""
-        rval = self.m64p.ConfigDeleteSection(C.c_char_p(section))
+        rval = self.m64p.ConfigDeleteSection(C.c_char_p(section.encode()))
         if rval != M64ERR_SUCCESS:
             log.debug("delete_section()")
             log.warn(self.core.error_message(rval))
@@ -112,7 +112,7 @@ class Config:
     def save_section(self, section):
         """Saves one section of the current configuration to disk,
         while leaving the other sections unmodified."""
-        rval = self.m64p.ConfigSaveSection(C.c_char_p(section))
+        rval = self.m64p.ConfigSaveSection(C.c_char_p(section.encode()))
         if rval != M64ERR_SUCCESS:
             log.debug("save_section()")
             log.warn(self.core.error_message(rval))
@@ -122,7 +122,7 @@ class Config:
         """Reverts changes previously made to one section of the current
         configuration file, so that it will match with the configuration
         at the last time that it was loaded from or saved to disk. """
-        rval = self.m64p.ConfigRevertChanges(C.c_char_p(section))
+        rval = self.m64p.ConfigRevertChanges(C.c_char_p(section.encode()))
         if rval != M64ERR_SUCCESS:
             log.debug("revert_changes()")
             log.warn(self.core.error_message(rval))
@@ -146,7 +146,7 @@ class Config:
         self.m64p.ConfigSetParameter.argtypes = [
             C.c_void_p, C.c_char_p, C.c_int, param_arg_type]
         rval = self.m64p.ConfigSetParameter(
-            self.config_handle, C.c_char_p(param_name),
+            self.config_handle, C.c_char_p(param_name.encode()),
             C.c_int(param_type), param_value)
         if rval != M64ERR_SUCCESS:
             log.debug("set_parameter()")
@@ -170,7 +170,7 @@ class Config:
         self.m64p.ConfigGetParameter.argtypes = [
             C.c_void_p, C.c_char_p, C.c_int, C.c_void_p, C.c_int]
         rval = self.m64p.ConfigGetParameter(
-            self.config_handle, C.c_char_p(param_name),
+            self.config_handle, C.c_char_p(param_name.encode()),
             C.c_int(param_type), param_value, C.c_int(maxsize))
         if rval != M64ERR_SUCCESS:
             log.debug("get_parameter()")
@@ -188,7 +188,7 @@ class Config:
         self.m64p.ConfigGetParameterHelp.argtypes = [
             C.c_void_p, C.c_char_p, C.POINTER(C.c_int)]
         rval = self.m64p.ConfigGetParameterType(
-            self.config_handle, C.c_char_p(param_name), param_type)
+            self.config_handle, C.c_char_p(param_name.encode()), param_type)
         if rval != M64ERR_SUCCESS:
             log.debug("get_parameter_type()")
             log.warn(self.core.error_message(rval))
@@ -200,7 +200,7 @@ class Config:
         self.m64p.ConfigGetParameterHelp.restype = C.c_char_p
         self.m64p.ConfigGetParameterHelp.argtypes = [C.c_void_p, C.c_char_p]
         rval = self.m64p.ConfigGetParameterHelp(
-            self.config_handle, C.c_char_p(param_name))
+            self.config_handle, C.c_char_p(param_name.encode()))
         return rval
 
     def set_default(self, param_type, param_name, param_value, param_help):
@@ -209,20 +209,20 @@ class Config:
         param_ctype = M64_CTYPE[param_type]
         if param_type == M64TYPE_INT:
             rval = self.m64p.ConfigSetDefaultInt(
-                self.config_handle, C.c_char_p(param_name),
-                param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name.encode()),
+                param_ctype(param_value), C.c_char_p(param_help.encode()))
         elif param_type == M64TYPE_FLOAT:
             rval = self.m64p.ConfigSetDefaultFloat(
-                self.config_handle, C.c_char_p(param_name),
-                param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name.encode()),
+                param_ctype(param_value), C.c_char_p(param_help.encode()))
         elif param_type == M64TYPE_BOOL:
             rval = self.m64p.ConfigSetDefaultBool(
-                self.config_handle, C.c_char_p(param_name),
-                param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name.encode()),
+                param_ctype(param_value), C.c_char_p(param_help.encode()))
         elif param_type == M64TYPE_STRING:
             rval = self.m64p.ConfigSetDefaultString(
-                self.config_handle, C.c_char_p(param_name),
-                param_ctype(param_value), C.c_char_p(param_help))
+                self.config_handle, C.c_char_p(param_name.encode()),
+                param_ctype(param_value), C.c_char_p(param_help.encode()))
         return rval
 
     def get_path(self, path="UserConfig"):
@@ -230,7 +230,7 @@ class Config:
         if path == "SharedData":
             self.m64p.ConfigGetSharedDataFilepath.restype = C.c_char_p
             rval = self.m64p.ConfigGetSharedDataFilepath(
-                C.c_char_p("mupen64plus.ini"))
+                C.c_char_p("mupen64plus.ini".encode()))
         elif path == "UserConfig":
             self.m64p.ConfigGetUserConfigPath.restype = C.c_char_p
             rval = self.m64p.ConfigGetUserConfigPath()
@@ -241,6 +241,6 @@ class Config:
             self.m64p.ConfigGetUserCachePath.restype = C.c_char_p
             rval = self.m64p.ConfigGetUserCachePath()
         if rval:
-            return os.path.dirname(rval)
+            return os.path.dirname(rval.decode())
         else:
             return rval

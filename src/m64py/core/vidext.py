@@ -114,7 +114,7 @@ class Video():
     def set_caption(self, title):
         """Sets the caption text of the
         emulator rendering window. """
-        title = "M64Py :: %s" % title
+        title = "M64Py :: %s" % title.decode()
         self.parent.set_caption.emit(title)
         return M64ERR_SUCCESS
 
@@ -127,11 +127,11 @@ class Video():
     def gl_get_proc(self, proc):
         """Used to get a pointer to
         an OpenGL extension function."""
-        addr = self.glcontext.getProcAddress(proc)
+        addr = self.glcontext.getProcAddress(proc.decode())
         if addr is not None:
             return addr.__int__()
         else:
-            log.warn("VidExtFuncGLGetProc: '%s'" % proc)
+            log.warn("VidExtFuncGLGetProc: '%s'" % proc.decode())
 
     def gl_set_attr(self, attr, value):
         """Sets OpenGL attributes."""
