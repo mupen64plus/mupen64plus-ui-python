@@ -132,6 +132,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.rom_list = self.reader.get_roms()
         self.qset.setValue("rom_list", self.rom_list)
         self.add_items()
+        self.listWidget.setCurrentRow(0)
 
     def on_progress_bar_changed(self, value):
         self.progressBar.setValue(value)
