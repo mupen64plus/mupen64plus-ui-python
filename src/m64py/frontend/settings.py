@@ -202,7 +202,10 @@ class Settings(QDialog, Ui_Settings):
             return default
 
     def get_size_safe(self):
-        size = self.qset.value("size", SIZE_1X)
+        try:
+            size = self.qset.value("size", SIZE_1X)
+        except TypeError:
+            size = SIZE_1X
         if not type(size) == tuple:
             size = SIZE_1X
         if len(size) != 2:
@@ -253,15 +256,15 @@ class Settings(QDialog, Ui_Settings):
         self.checkOSD.setChecked(
             self.core.config.get_parameter("OnScreenDisplay"))
         self.checkOSD.setToolTip(
-            self.core.config.get_parameter_help("OnScreenDisplay"))
+            self.core.config.get_parameter_help("OnScreenDisplay").decode())
         self.checkNoCompiledJump.setChecked(
             self.core.config.get_parameter("NoCompiledJump"))
         self.checkNoCompiledJump.setToolTip(
-            self.core.config.get_parameter_help("NoCompiledJump"))
+            self.core.config.get_parameter_help("NoCompiledJump").decode())
         self.checkDisableExtraMem.setChecked(
             self.core.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
-            self.core.config.get_parameter_help("DisableExtraMem"))
+            self.core.config.get_parameter_help("DisableExtraMem").decode())
 
         delay_si = self.core.config.get_parameter("DelaySI")
         if delay_si is not None:
@@ -270,7 +273,7 @@ class Settings(QDialog, Ui_Settings):
             self.checkDelaySI.setChecked(False)
             self.checkDelaySI.setEnabled(False)
         self.checkDelaySI.setToolTip(
-            self.core.config.get_parameter_help("DelaySI"))
+            self.core.config.get_parameter_help("DelaySI").decode())
 
         count_per_op = self.core.config.get_parameter("CountPerOp")
         if count_per_op is not None:
@@ -278,7 +281,7 @@ class Settings(QDialog, Ui_Settings):
         else:
             self.comboCountPerOp.setEnabled(False)
         self.comboCountPerOp.setToolTip(
-            self.core.config.get_parameter_help("CountPerOp"))
+            self.core.config.get_parameter_help("CountPerOp").decode())
 
     def set_plugins(self):
         plugin_map = self.core.plugin_map
@@ -327,7 +330,7 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("DisableExtraMem", self.checkDisableExtraMem.isChecked())
         self.core.config.set_parameter("DelaySI", self.checkDelaySI.isChecked())
         self.core.config.set_parameter("CountPerOp", self.comboCountPerOp.currentIndex())
-        self.core.config.set_parameter("SharedDataPath", self.pathData.text())
+        self.core.config.set_parameter("SharedDataPath", self.pathData.text().encode())
 
     def save_plugins(self):
         for plugin_type in self.combomap:

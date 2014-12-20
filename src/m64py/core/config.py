@@ -131,7 +131,7 @@ class Config:
     def set_parameter(self, param_name, param_value):
         """Sets the value of one of the emulator's parameters."""
         try:
-            param_type = self.parameters[self.section][param_name]
+            param_type = self.parameters[self.section][param_name.encode()]
             param_ctype = M64_CTYPE[param_type]
         except KeyError:
             return
@@ -156,7 +156,7 @@ class Config:
     def get_parameter(self, param_name):
         """Retrieves the value of one of the emulator's parameters."""
         try:
-            param_type = self.parameters[self.section][param_name]
+            param_type = self.parameters[self.section][param_name.encode()]
             param_ctype = M64_CTYPE[param_type]
         except KeyError:
             return

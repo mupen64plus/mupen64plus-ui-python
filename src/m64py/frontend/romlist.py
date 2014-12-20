@@ -57,7 +57,12 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.splitter.setStretchFactor(1, 2)
 
         self.reader = ROMReader(self)
-        self.rom_list = self.qset.value("rom_list", [])
+
+        try:
+            self.rom_list = self.qset.value("rom_list", [])
+        except TypeError:
+            self.rom_list = []
+
         self.user_data_path = self.core.config.get_path("UserData")
 
         if self.rom_list:
@@ -91,8 +96,10 @@ class ROMList(QMainWindow, Ui_ROMList):
         for rom in self.rom_list:
             if len(rom) == 4:
                 crc, goodname, path, fname = rom
-                list_item = QListWidgetItem(goodname.decode())
-                list_item.setData(Qt.UserRole, (crc, goodname.decode(), path, fname))
+                if isinstance(goodname, bytes):
+                    goodname = goodname.decode()
+                list_item = QListWidgetItem(goodname)
+                list_item.setData(Qt.UserRole, (crc, goodname, path, fname))
                 self.listWidget.addItem(list_item)
         self.progressBar.setValue(0)
         self.progressBar.hide()

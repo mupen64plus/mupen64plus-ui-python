@@ -71,6 +71,7 @@ class InputButton(QPushButton):
             else:
                 from m64py.SDL.keyboard import SDL_GetKeyName
                 text = SDL_GetKeyName(QT2SDL[key]).title()
+            text = text.decode()
 
         text = text.replace("Left ", "")
         self.setText(text.title())

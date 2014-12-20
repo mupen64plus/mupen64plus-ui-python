@@ -28,9 +28,9 @@ class RomInfo():
         self.parent = parent
         self.core = self.parent.worker.core
         rom_info = [
-            ('GoodName', self.core.rom_settings.goodname),
-            ('Name', self.core.rom_header.Name),
-            ('MD5', self.core.rom_settings.MD5),
+            ('GoodName', self.core.rom_settings.goodname.decode()),
+            ('Name', self.core.rom_header.Name.decode()),
+            ('MD5', self.core.rom_settings.MD5.decode()),
             ('CRC1', '%x' % sl(self.core.rom_header.CRC1)),
             ('CRC2', '%x' % sl(self.core.rom_header.CRC2)),
             ('Type', self.core.rom_type),

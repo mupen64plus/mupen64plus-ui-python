@@ -153,7 +153,7 @@ class Core:
     def error_message(self, return_code):
         """Returns description of the error"""
         self.m64p.CoreErrorMessage.restype = C.c_char_p
-        rval = self.m64p.CoreErrorMessage(return_code)
+        rval = self.m64p.CoreErrorMessage(return_code).decode()
         return rval
 
     def core_startup(self, path, use_vidext):

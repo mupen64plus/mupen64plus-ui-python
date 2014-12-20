@@ -69,7 +69,8 @@ class Plugin(QDialog, Ui_PluginDialog):
         row1, row2 = 0, 0
         for count, item in enumerate(self.items):
             param_name, param_type = item
-            param_help = self.config.get_parameter_help(param_name)
+            param_name = param_name.decode()
+            param_help = self.config.get_parameter_help(param_name).decode()
             opts = format_options(param_help)
 
             if param_type == M64TYPE_STRING:
@@ -115,7 +116,7 @@ class Plugin(QDialog, Ui_PluginDialog):
         for param_name, item in self.widgets.items():
             widget, widget_class, opts = item
             if widget_class == QLineEdit:
-                widget.setText(str(self.config.get_parameter(param_name)))
+                widget.setText(self.config.get_parameter(param_name).decode())
             elif widget_class == QSpinBox:
                 param = self.config.get_parameter(param_name)
                 if param is not None:
@@ -134,7 +135,7 @@ class Plugin(QDialog, Ui_PluginDialog):
         for param_name, item in self.widgets.items():
             widget, widget_class, opts = item
             if widget_class == QLineEdit:
-                param_value = str(widget.text())
+                param_value = widget.text().encode()
             elif widget_class == QSpinBox:
                 param_value = int(widget.value())
             elif widget_class == QComboBox:

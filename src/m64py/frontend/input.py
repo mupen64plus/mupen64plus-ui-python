@@ -212,6 +212,7 @@ class Input(QDialog, Ui_InputDialog):
     def set_opts(self):
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
+            tooltip = tooltip.decode()
             if ptype == M64TYPE_BOOL:
                 if param:
                     widget.setChecked(param)
@@ -220,6 +221,7 @@ class Input(QDialog, Ui_InputDialog):
             elif ptype == M64TYPE_INT:
                 widget.setCurrentIndex(widget.findData(param))
             elif ptype == M64TYPE_STRING:
+                param = param.decode()
                 if key in ["AnalogDeadzone", "AnalogPeak"]:
                     if param:
                         paramX, paramY = param.split(",")
@@ -245,11 +247,11 @@ class Input(QDialog, Ui_InputDialog):
             elif ptype == M64TYPE_STRING:
                 if key in ["AnalogDeadzone", "AnalogPeak"]:
                     spin1, spin2 = widget
-                    self.config.set_parameter(key,"%s,%s" % (
-                        spin1.value(), spin2.value()))
+                    value = "%s,%s" % (spin1.value(), spin2.value())
+                    self.config.set_parameter(key, value.encode())
                 else:
                     self.config.set_parameter(
-                        key, str(widget.text()))
+                        key, widget.text().encode())
 
     def get_keys(self):
         self.keys = {
@@ -316,12 +318,13 @@ class Input(QDialog, Ui_InputDialog):
             else:
                 value = self.get_sdl_key(widget.text())
                 if value:
-                    self.config.set_parameter(key, "key(%s)" % value)
+                    v = "key(%s)" % value
+                    self.config.set_parameter(key, v.encode())
                 else:
                     continue
 
     def get_axis(self, axis):
-        param = self.config.get_parameter(axis)
+        param = self.config.get_parameter(axis).decode()
         if param:
             return AXIS_RE.findall(param)
 
@@ -356,26 +359,30 @@ class Input(QDialog, Ui_InputDialog):
         xr = KEY_RE.findall(str(self.pushX_Axis_R.text()))
         if xl and xr:
             xl, xr = xl[0], xr[0]
-            self.config.set_parameter("X Axis", "%s(%s,%s)" % (xl[0], xl[1], xr[1]))
+            axis = "%s(%s,%s)" % (xl[0], xl[1], xr[1])
+            self.config.set_parameter("X Axis", axis.encode())
         else:
             xl = self.get_sdl_key(self.pushX_Axis_L.text())
             xr = self.get_sdl_key(self.pushX_Axis_R.text())
             if xl and xr:
-                self.config.set_parameter("X Axis", "key(%s,%s)" % (xl, xr))
+                axis = "key(%s,%s)" % (xl, xr)
+                self.config.set_parameter("X Axis", axis.encode())
 
         yu = KEY_RE.findall(str(self.pushY_Axis_U.text()))
         yd = KEY_RE.findall(str(self.pushY_Axis_D.text()))
         if yu and yd:
             yu, yd = yu[0], yd[0]
-            self.config.set_parameter("Y Axis", "%s(%s,%s)" % (yu[0], yu[1], yd[1]))
+            axis = "%s(%s,%s)" % (yu[0], yu[1], yd[1])
+            self.config.set_parameter("Y Axis", axis.encode())
         else:
             yu = self.get_sdl_key(self.pushY_Axis_U.text())
             yd = self.get_sdl_key(self.pushY_Axis_D.text())
             if yu and yd:
-                self.config.set_parameter("Y Axis", "key(%s,%s)" % (yu, yd))
+                axis = "key(%s,%s)" % (yu, yd)
+                self.config.set_parameter("Y Axis", axis.encode())
 
     def get_key(self, key):
-        param = self.config.get_parameter(key)
+        param = self.config.get_parameter(key).decode()
         if not param:
             return [0, 0]
 
@@ -400,6 +407,7 @@ class Input(QDialog, Ui_InputDialog):
             from m64py.SDL2.keyboard import SDL_GetScancodeFromName
             if "Shift" in text or "Ctrl" in text or "Alt" in text:
                 text = "Left %s" % text
+            text = text.encode()
             return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
         else:
             try:
@@ -420,6 +428,7 @@ class Input(QDialog, Ui_InputDialog):
         else:
             from m64py.SDL.keyboard import SDL_GetKeyName
             text = SDL_GetKeyName(int(sdl_key)).title()
+        text = text.decode()
         if not text:
             return self.tr("Select...")
         if "Shift" in text or "Ctrl" in text or "Alt" in text:
