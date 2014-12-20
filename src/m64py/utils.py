@@ -15,7 +15,6 @@
 
 import os
 import re
-from hashlib import md5
 
 
 def which(prog):
