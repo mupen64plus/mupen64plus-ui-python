@@ -25,9 +25,6 @@ if os.path.isdir(os.path.join(".", "src")) and os.path.isfile(
     sys.path.insert(0, os.path.realpath("src"))
 
 try:
-    import sip
-    sip.setapi('QString', 2)
-    sip.setapi('QVariant', 2)
     from PyQt5.QtWidgets import QApplication
     from PyQt5.QtCore import Qt, QLocale, QTranslator
 except ImportError as err:
