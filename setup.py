@@ -257,7 +257,7 @@ def set_rthook():
 
 
 class clean_local(Command):
-    pats = ['*.py[co]', '*_ui.py', '*_rc.py']
+    pats = ['*.py[co]', '*_ui.py', '*_rc.py', '__pycache__']
     excludedirs = ['.git', 'build', 'dist']
     user_options = []
 
@@ -269,13 +269,20 @@ class clean_local(Command):
 
     def run(self):
         for e in self._walkpaths('.'):
-            os.remove(e)
+            if os.path.isdir(e):
+                shutil.rmtree(e)
+            else:
+                os.remove(e)
 
     def _walkpaths(self, path):
-        for root, _dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(path):
             if any(root == join(path, e) or root.startswith(
                     join(path, e, '')) for e in self.excludedirs):
                 continue
+            for d in dirs:
+                fpath = join(root, d)
+                if any(fnmatch(d, p) for p in self.pats):
+                    yield fpath
             for e in files:
                 fpath = join(root, e)
                 if any(fnmatch(fpath, p) for p in self.pats):
