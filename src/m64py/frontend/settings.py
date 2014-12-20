@@ -127,7 +127,7 @@ class Settings(QDialog, Ui_Settings):
                 self, groupbox.title(), widget.text(), QFileDialog.ShowDirsOnly)
         else:
             dialog.setFileMode(QFileDialog.ExistingFile)
-            path = dialog.getOpenFileName(
+            path, _ = dialog.getOpenFileName(
                 self, groupbox.title(), widget.text(),
                 "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
 

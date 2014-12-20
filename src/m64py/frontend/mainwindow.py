@@ -328,10 +328,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
         last_dir = self.settings.qset.value("last_dir")
-        filepath = dialog.getOpenFileName(
+        file_path, _ = dialog.getOpenFileName(
                 self, self.tr("Load ROM Image"), last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
-        if filepath:
+        if file_path:
             self.file_open.emit(filepath, None)
             last_dir = QFileInfo(filepath).path()
             self.settings.qset.setValue("last_dir", last_dir)
@@ -361,7 +361,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Loads state from file."""
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
-        file_path = dialog.getOpenFileName(
+        file_path, _ = dialog.getOpenFileName(
             self, self.tr("Load State From File"),
             os.path.join(self.worker.core.config.get_path("UserData"), "save"),
             "M64P/PJ64 Saves (*.st* *.m64p *.zip *.pj);;All files (*)")
@@ -372,7 +372,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionSaveAs_triggered(self):
         """Saves state to file."""
         dialog = QFileDialog()
-        file_path, file_filter = dialog.getSaveFileNameAndFilter(
+        file_path, file_filter = dialog.getSaveFileName(
             self, self.tr("Save State To File"),
             os.path.join(self.worker.core.config.get_path("UserData"), "save"),
             ";;".join([save_filter for save_filter, save_ext in M64P_SAVES.values()]),
