@@ -33,7 +33,6 @@ except ImportError as err:
     sys.exit(1)
 
 try:
-    from m64py.loader import load_library
     from m64py.core.defs import FRONTEND_VERSION, LOGO
 except ImportError as err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
@@ -41,14 +40,7 @@ except ImportError as err:
     sys.exit(1)
 
 def main():
-    try:
-        QApplication.setAttribute(Qt.AA_X11InitThreads)
-    except AttributeError:
-        try:
-            xlib = load_library('X11')
-            xlib.XInitThreads()
-        except Exception:
-            pass
+    QApplication.setAttribute(Qt.AA_X11InitThreads)
 
     app = QApplication(sys.argv)
     from m64py.opts import opts, args
