@@ -17,9 +17,10 @@
 import os
 import sys
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QKeySequence, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy
+from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *

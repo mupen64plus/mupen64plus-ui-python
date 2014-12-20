@@ -18,9 +18,8 @@ import os
 import re
 from collections import defaultdict
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QDialog, QTreeWidgetItem, QListWidgetItem
+from PyQt5.QtCore import Qt
 
 from m64py.core.defs import *
 from m64py.utils import sl

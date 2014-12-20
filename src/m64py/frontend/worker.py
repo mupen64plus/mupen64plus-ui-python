@@ -17,9 +17,7 @@
 import os
 import shutil
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QThread, QTimer
 
 from m64py.utils import sl
 from m64py.core.defs import *

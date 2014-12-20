@@ -17,9 +17,8 @@
 import os
 import sys
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtWidgets import QDialog, QFileDialog, QRadioButton, QVBoxLayout
 
 from m64py.core.defs import *
 from m64py.loader import find_library
