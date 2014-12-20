@@ -84,14 +84,14 @@ class Settings(QDialog, Ui_Settings):
     def save_config(self):
         self.save_paths()
         self.save_plugins()
-        if self.core.get_handle():
+        if self.core and self.core.get_handle():
             self.save_video()
             self.save_core()
             self.core.config.save_file()
         self.qset.sync()
 
     def set_config(self):
-        if self.core.get_handle():
+        if self.core and self.core.get_handle():
             self.set_paths()
             self.set_plugins()
             self.set_video()
@@ -130,23 +130,26 @@ class Settings(QDialog, Ui_Settings):
                 self, groupbox.title(), widget.text(),
                 "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
 
-        if not path: return
+        if not path:
+            return
+
         widget.setText(path)
         if widget == self.pathLibrary:
+            self.parent.worker.quit()
             if not self.parent.worker.core.get_handle():
                 self.parent.worker.init(path)
                 if self.parent.worker.core.get_handle():
                     self.core = self.parent.worker.core
                     self.set_core()
                     self.set_video()
-                    size = self.get_size_safe()
-                    self.parent.window_size_triggered(size)
+                    self.parent.window_size_triggered(self.get_size_safe())
                     self.parent.state_changed.emit((True, False, False, False))
         elif widget == self.pathPlugins:
-            if self.parent.worker.core.get_handle():
-                self.parent.worker.plugins_unload()
-                self.parent.worker.plugins_load(path)
-                self.set_plugins()
+            self.parent.worker.plugins_shutdown()
+            self.parent.worker.plugins_unload()
+            self.parent.worker.plugins_load(path)
+            self.parent.worker.plugins_startup()
+            self.set_plugins()
 
     def get_section(self, combo):
         plugin = combo.currentText()

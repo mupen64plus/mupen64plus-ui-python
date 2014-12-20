@@ -257,7 +257,7 @@ class Core:
         for plugin_type in PLUGIN_ORDER:
             plugin = self.plugins[plugin_type]
             if not plugin:
-                plugin_map = self.plugin_map[plugin_type].values()[0]
+                plugin_map = list(self.plugin_map[plugin_type].values())[0]
             else:
                 plugin_map = self.plugin_map[plugin_type][plugin]
             (plugin_handle, plugin_path, plugin_name,
@@ -280,7 +280,7 @@ class Core:
         for plugin_type in PLUGIN_ORDER:
             plugin = self.plugins[plugin_type]
             if not plugin:
-                plugin_map = self.plugin_map[plugin_type].values()[0]
+                plugin_map = list(self.plugin_map[plugin_type].values())[0]
             else:
                 plugin_map = self.plugin_map[plugin_type][plugin]
             (plugin_handle, plugin_path, plugin_name,
