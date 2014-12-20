@@ -39,7 +39,8 @@ except ImportError as err:
         os.linesep, str(err), os.linesep))
     sys.exit(1)
 
-def main():
+
+if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_X11InitThreads)
 
     app = QApplication(sys.argv)
@@ -67,6 +68,3 @@ def main():
         sys.exit(app.exec_())
     except KeyboardInterrupt:
         pass
-
-if __name__ == "__main__":
-    main()
