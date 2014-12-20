@@ -59,6 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.statusbar_label = QLabel()
         self.statusbar_label.setIndent(2)
+        self.statusbar_label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
         self.statusbar.addPermanentWidget(self.statusbar_label, 1)
         self.update_status(self.tr(
             "Welcome to M64Py version %s." % FRONTEND_VERSION))
