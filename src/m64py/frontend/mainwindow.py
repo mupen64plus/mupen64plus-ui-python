@@ -334,8 +334,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self, self.tr("Load ROM Image"), last_dir,
                 "Nintendo64 ROM (%s);;All files (*)" % EXT_FILTER)
         if file_path:
-            self.file_open.emit(filepath, None)
-            last_dir = QFileInfo(filepath).path()
+            self.file_open.emit(file_path, None)
+            last_dir = QFileInfo(file_path).path()
             self.settings.qset.setValue("last_dir", last_dir)
 
     @pyqtSlot()
