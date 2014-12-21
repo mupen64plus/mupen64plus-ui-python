@@ -80,7 +80,7 @@ class build_exe(Command):
     def copy_emulator(self):
         tempdir = tempfile.mkdtemp()
         zippath = join(tempdir, basename(self.url))
-        urllib.urlretrieve(self.url, zippath)
+        urllib.request.urlretrieve(self.url, zippath)
         zf = zipfile.ZipFile(zippath)
         for name in zf.namelist():
             if self.arch in name:
@@ -101,17 +101,25 @@ class build_exe(Command):
         shutil.rmtree(tempdir)
 
     def copy_files(self):
-        tempdir = tempfile.mkdtemp()
         dest_path = join(self.dist_dir, "m64py")
         rar_dir = join(os.environ["ProgramFiles(x86)"], "Unrar")
         if not os.path.isfile(join(rar_dir, "UnRAR.exe")):
-            urllib.urlretrieve("http://www.rarlab.com/rar/unrarw32.exe", join(tempdir, "unrar.exe"))
+            tempdir = tempfile.mkdtemp()
+            urllib.request.urlretrieve("http://www.rarlab.com/rar/unrarw32.exe", join(tempdir, "unrar.exe"))
             subprocess.call([join(tempdir, "unrar.exe"), "-s"])
+            shutil.rmtree(tempdir)
         shutil.copy(join(rar_dir, "UnRAR.exe"), dest_path)
         shutil.copy(join(rar_dir, "license.txt"), join(dest_path, "doc", "unrar-license.txt"))
         for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
             shutil.copy(join(BASE_DIR, file_name), dest_path)
-        shutil.rmtree(tempdir)
+        
+        import PyQt5
+        qt5_dir = dirname(PyQt5.__file__)
+        qwindows = join(qt5_dir, "plugins", "platforms", "qwindows.dll")
+        qwindows_dest = join(dest_path, "qt5_plugins", "platforms")
+        if not os.path.exists(qwindows_dest):
+            os.makedirs(qwindows_dest)
+        shutil.copy(qwindows, qwindows_dest)
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "m64py")
@@ -251,8 +259,6 @@ def set_rthook():
             hook_file += line + "\n"
             if "MEIPASS" in line:
                 hook_file += "\nimport sip\n"
-                hook_file += "sip.setapi('QString', 2)\n"
-                hook_file += "sip.setapi('QVariant', 2)\n"
         with open(rthook, "w") as hook: hook.write(hook_file)
 
 
