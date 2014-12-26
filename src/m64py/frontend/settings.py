@@ -40,7 +40,10 @@ class Settings(QDialog, Ui_Settings):
         self.plugins = []
         self.emumode = []
         self.combomap = {}
+
         self.qset = QSettings("m64py", "m64py")
+        self.qset.setDefaultFormat(QSettings.IniFormat)
+
         self.input = Input(self.parent)
         self.add_items()
         self.connect_signals()
