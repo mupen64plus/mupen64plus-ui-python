@@ -44,6 +44,7 @@ class Input(QDialog, Ui_InputDialog):
         self.controller = 1
         self.mode = 0
         self.device = -1
+        self.device_map = {}
         self.opts = {}
         self.keys = {}
         self.section = None
@@ -122,8 +123,10 @@ class Input(QDialog, Ui_InputDialog):
             self.comboMode.addItem(mode, mtype)
 
         devices = [(self.tr("Keyboard/Mouse"), -1)]
+        self.device_map[-1] = "Keyboard"
         for num, joy in enumerate(self.joystick.joystick_names):
             devices.append((self.tr("Joystick %s (%s)" % (num, joy)), num))
+            self.device_map[num] = joy
 
         for device, dtype in devices:
             self.comboDevice.addItem(device, dtype)
@@ -235,6 +238,10 @@ class Input(QDialog, Ui_InputDialog):
                 widget.setToolTip(tooltip)
 
     def save_opts(self):
+        devicename = self.device_map.get(self.device)
+        if devicename:
+            self.config.set_parameter("name", devicename)
+
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
             if ptype == M64TYPE_BOOL:
