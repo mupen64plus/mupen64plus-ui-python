@@ -307,15 +307,19 @@ class Settings(QDialog, Ui_Settings):
             self.set_section(combo, button, settings)
 
     def set_resolution(self):
-        self.comboResolution.clear()
-        for mode in MODES:
-            width, height = mode
-            self.comboResolution.addItem(
-                "%sx%s" % (width, height), (width, height))
-
         width = self.core.config.get_parameter("ScreenWidth")
         height = self.core.config.get_parameter("ScreenHeight")
-        index = self.comboResolution.findText("%sx%s" % (width, height))
+        if (width, height) not in MODES:
+            MODES.append((width, height))
+
+        self.comboResolution.clear()
+        for mode in MODES:
+            w, h = mode
+            self.comboResolution.addItem(
+                "%sx%s" % (w, h), (w, h))
+
+        index = self.comboResolution.findText(
+            "%sx%s" % (width, height), Qt.MatchExactly)
         if index == -1: index = 0
         self.comboResolution.setCurrentIndex(index)
         self.comboResolution.setEnabled(not self.parent.vidext)

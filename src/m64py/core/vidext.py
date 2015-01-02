@@ -39,22 +39,21 @@ else:
 try:
     if not SDL_WasInit(SDL_INIT_VIDEO):
         SDL_InitSubSystem(SDL_INIT_VIDEO)
+    MODES = []
     if SDL2:
-        MODES = []
         display = SDL_DisplayMode()
         for mode in range(SDL_GetNumDisplayModes(0)):
             ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
-            MODES.append((display.w, display.h))
+            if (display.w, display.h) not in MODES:
+                MODES.append((display.w, display.h))
     else:
-        MODES = [(mode.w, mode.h) for mode in SDL_ListModes(
-            None, SDL_FULLSCREEN|SDL_HWSURFACE)]
+        for mode in SDL_ListModes(None, SDL_FULLSCREEN|SDL_HWSURFACE):
+            if (mode.w, mode.h) not in MODES:
+                MODES.append((mode.w, mode.h))
     if SDL_WasInit(SDL_INIT_VIDEO):
         SDL_QuitSubSystem(SDL_INIT_VIDEO)
 except Exception as err:
     log.warn(str(err))
-    MODES = [(1920, 1440), (1600, 1200), (1400, 1050),
-             (1280, 960), (1152, 864), (1024, 768),
-             (800, 600), (640, 480), (320, 240)]
 
 
 class Video():
