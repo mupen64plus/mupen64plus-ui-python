@@ -197,10 +197,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setCentralWidget(self.stack)
         self.view = View(self)
         self.stack.addWidget(self.view)
-        if self.vidext:
-            self.glwidget = GLWidget(self)
-            self.worker.video.set_widget(self)
-            self.stack.addWidget(self.glwidget)
+        self.glwidget = GLWidget(self)
+        self.worker.video.set_widget(self)
+        self.stack.addWidget(self.glwidget)
         self.stack.setCurrentWidget(self.view)
 
     def create_state_slots(self):
