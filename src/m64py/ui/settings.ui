@@ -457,7 +457,7 @@ QGroupBox::title {
           <item row="2" column="0">
            <widget class="QCheckBox" name="checkEnableVidExt">
             <property name="toolTip">
-             <string>Enable embedding of OpenGL window. This option needs restart.</string>
+             <string>Enable embedding of OpenGL window.</string>
             </property>
             <property name="text">
              <string>Enable Video Extension</string>

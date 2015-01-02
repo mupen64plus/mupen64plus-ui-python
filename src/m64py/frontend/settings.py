@@ -44,7 +44,6 @@ class Settings(QDialog, Ui_Settings):
         self.qset = QSettings("m64py", "m64py")
         self.qset.setDefaultFormat(QSettings.IniFormat)
 
-        self.input = Input(self.parent)
         self.add_items()
         self.connect_signals()
 
@@ -67,7 +66,7 @@ class Settings(QDialog, Ui_Settings):
                 Plugin(self.parent)),
             M64PLUGIN_INPUT: (
                 self.comboInput, self.pushButtonInput,
-                self.input)
+                Input(self.parent))
         }
 
         self.emumode = [
@@ -100,6 +99,13 @@ class Settings(QDialog, Ui_Settings):
             self.set_video()
             self.set_core()
 
+    def on_vidext_changed(self, state):
+        self.parent.vidext = state
+        self.comboResolution.setEnabled(not self.parent.vidext)
+        self.checkFullscreen.setEnabled(not self.parent.vidext)
+        self.parent.worker.quit()
+        self.parent.worker.init()
+
     def connect_signals(self):
         self.browseLibrary.clicked.connect(lambda: self.browse_dialog(
             (self.pathLibrary, self.groupLibrary, False)))
@@ -109,6 +115,7 @@ class Settings(QDialog, Ui_Settings):
             (self.pathData, self.groupData, True)))
         self.browseROM.clicked.connect(lambda: self.browse_dialog(
             (self.pathROM, self.groupROM, True)))
+        self.checkEnableVidExt.clicked.connect(self.on_vidext_changed)
         for plugin_type in self.combomap:
             self.connect_combo_signals(self.combomap[plugin_type])
 
@@ -153,6 +160,27 @@ class Settings(QDialog, Ui_Settings):
             self.parent.worker.plugins_load(path)
             self.parent.worker.plugins_startup()
             self.set_plugins()
+
+    def get_int_safe(self, key, default):
+        try:
+            return int(self.qset.value(key, default))
+        except ValueError:
+            return default
+
+    def get_size_safe(self):
+        try:
+            size = self.qset.value("size", SIZE_1X)
+        except TypeError:
+            size = SIZE_1X
+        if not type(size) == tuple:
+            size = SIZE_1X
+        if len(size) != 2:
+            size = SIZE_1X
+        if type(size[0]) != int or type(size[1]) != int:
+            size = SIZE_1X
+        if size[0] <= 0 or size[1] <= 0:
+            size = SIZE_1X
+        return size
 
     def get_section(self, combo):
         plugin = combo.currentText()
@@ -201,42 +229,10 @@ class Settings(QDialog, Ui_Settings):
         self.pathPlugins.setText(path_plugins)
         self.pathData.setText(path_data)
 
-    def get_int_safe(self, key, default):
-        try:
-            return int(self.qset.value(key, default))
-        except ValueError:
-            return default
-
-    def get_size_safe(self):
-        try:
-            size = self.qset.value("size", SIZE_1X)
-        except TypeError:
-            size = SIZE_1X
-        if not type(size) == tuple:
-            size = SIZE_1X
-        if len(size) != 2:
-            size = SIZE_1X
-        if type(size[0]) != int or type(size[1]) != int:
-            size = SIZE_1X
-        if size[0] <= 0 or size[1] <= 0:
-            size = SIZE_1X
-        return size
-
     def set_video(self):
-        self.comboResolution.clear()
-        for mode in MODES:
-            width, height = mode
-            self.comboResolution.addItem(
-                "%sx%s" % (width, height), (width, height))
-        self.comboResolution.setCurrentIndex(0)
-        self.comboResolution.setEnabled(not self.parent.vidext)
         self.core.config.open_section("Video-General")
-        width = self.core.config.get_parameter("ScreenWidth")
-        height = self.core.config.get_parameter("ScreenHeight")
-        index = self.comboResolution.findText(
-            "%sx%s" % (width, height))
-        if index == -1: index = 0
-        self.comboResolution.setCurrentIndex(index)
+
+        self.set_resolution()
 
         self.checkEnableVidExt.setChecked(
             bool(self.get_int_safe("enable_vidext", 1)))
@@ -310,6 +306,20 @@ class Settings(QDialog, Ui_Settings):
             combo.setCurrentIndex(index)
             self.set_section(combo, button, settings)
 
+    def set_resolution(self):
+        self.comboResolution.clear()
+        for mode in MODES:
+            width, height = mode
+            self.comboResolution.addItem(
+                "%sx%s" % (width, height), (width, height))
+
+        width = self.core.config.get_parameter("ScreenWidth")
+        height = self.core.config.get_parameter("ScreenHeight")
+        index = self.comboResolution.findText("%sx%s" % (width, height))
+        if index == -1: index = 0
+        self.comboResolution.setCurrentIndex(index)
+        self.comboResolution.setEnabled(not self.parent.vidext)
+
     def save_paths(self):
         self.qset.setValue("Paths/Library", self.pathLibrary.text())
         self.qset.setValue("Paths/Plugins", self.pathPlugins.text())
@@ -317,12 +327,14 @@ class Settings(QDialog, Ui_Settings):
         self.qset.setValue("Paths/ROM", self.pathROM.text())
 
     def save_video(self):
-        if not self.parent.vidext:
-            self.core.config.open_section("Video-General")
+        self.core.config.open_section("Video-General")
+        if self.parent.vidext:
+            width, height = self.get_size_safe()
+        else:
             width, height = self.comboResolution.currentText().split("x")
-            self.core.config.set_parameter("ScreenWidth", int(width))
-            self.core.config.set_parameter("ScreenHeight", int(height))
-            self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
+        self.core.config.set_parameter("ScreenWidth", int(width))
+        self.core.config.set_parameter("ScreenHeight", int(height))
+        self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
         self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))

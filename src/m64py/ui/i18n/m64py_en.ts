@@ -765,7 +765,7 @@
     </message>
     <message>
         <location filename="settings.ui" line="431"/>
-        <source>Enable embedding of OpenGL window. This option needs restart.</source>
+        <source>Enable embedding of OpenGL window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
