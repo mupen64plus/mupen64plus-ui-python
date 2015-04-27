@@ -241,6 +241,11 @@ class Settings(QDialog, Ui_Settings):
             bool(self.core.config.get_parameter("Fullscreen")))
         self.checkFullscreen.setEnabled(not self.parent.vidext)
 
+        self.checkVsync.setChecked(
+            bool(self.core.config.get_parameter("VerticalSync")))
+        self.checkVsync.setToolTip(
+            self.core.config.get_parameter_help("VerticalSync").decode())
+
         if sys.platform == "win32":
             self.checkKeepAspect.setChecked(False)
             self.checkKeepAspect.setEnabled(False)
@@ -339,6 +344,7 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("ScreenWidth", int(width))
         self.core.config.set_parameter("ScreenHeight", int(height))
         self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
+        self.core.config.set_parameter("VerticalSync", self.checkVsync.isChecked())
         self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
         self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
