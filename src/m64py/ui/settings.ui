@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -281,7 +281,6 @@ QGroupBox::title {
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <zorder>groupEmuMode_2</zorder>
         </widget>
        </item>
        <item row="1" column="0">

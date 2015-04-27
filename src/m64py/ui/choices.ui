@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>ChoicesDialog</class>
  <widget class="QDialog" name="ChoicesDialog">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -55,7 +58,7 @@ QGroupBox::title {
        <number>9</number>
       </property>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="labelDesc">
         <property name="text">
          <string>Choose a value to be used for:</string>
         </property>
@@ -84,8 +87,8 @@ QGroupBox::title {
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>232</width>
-           <height>120</height>
+           <width>241</width>
+           <height>129</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -95,7 +98,16 @@ QGroupBox::title {
           </sizepolicy>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -151,7 +163,6 @@ QGroupBox::title {
    </item>
   </layout>
   <zorder>groupChoices</zorder>
-  <zorder></zorder>
  </widget>
  <resources/>
  <connections>
