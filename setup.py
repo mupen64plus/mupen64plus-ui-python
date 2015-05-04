@@ -264,7 +264,7 @@ class build_dmg(Command):
         spec_file = join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
-        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None}
+        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None, "debug": False}
         PyInstaller.build.main(None, spec_file, True, **opts)
 
     def run(self):

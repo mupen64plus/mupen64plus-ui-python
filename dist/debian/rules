@@ -3,7 +3,7 @@
 
 export PYBUILD_DESTDIR=debian/m64py
 export PYBUILD_CONFIGURE_ARGS=config
-export PYBUILD_BUILD_ARGS_python2=build_ext
+export PYBUILD_BUILD_ARGS_python3=build_ext
 export PYBUILD_INSTALL_ARGS=--install-layout=deb \
 	--install-scripts=/usr/share/m64py \
 	--install-lib=/usr/share/m64py
@@ -14,7 +14,7 @@ VERSION = $(shell cat src/m64py/core/defs.py | grep FRONTEND_VERSION | awk -F' =
 RELEASE = 0
 
 binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep:
-	dh $@ --with=python2 --parallel --list-missing --buildsystem=pybuild
+	dh $@ --with=python3 --parallel --list-missing --buildsystem=pybuild
 
 override_dh_auto_install:
 	dh_auto_install

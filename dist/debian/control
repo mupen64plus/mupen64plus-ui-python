@@ -7,26 +7,22 @@ Homepage: http://m64py.sourceforge.net/
 Build-Depends:
  debhelper (>= 9),
  dh-python,
- python,
- python-pyqt5,
+ python3,
+ python3-pyqt5,
  pyqt5-dev-tools,
-X-Python-Version: >= 2.5
+X-Python3-Version: >= 3.4
 
 Package: m64py
 Architecture: all
 Depends:
  ${misc:Depends},
- python,
- libsdl1.2-dev,
- python-pyqt5,
- python-pyqt5.qtopengl,
- python-pyqt5.qtsvg,
+ python3,
+ libsdl2-dev,
+ python3-pyqt5,
+ python3-pyqt5.qtopengl,
+ python3-pyqt5.qtsvg,
 Recommends:
- libmupen64plus2,
- mupen64plus-audio-all | mupen64plus-audio,
- mupen64plus-input-all | mupen64plus-input,
- mupen64plus-rsp-all | mupen64plus-rsp,
- mupen64plus-video-all | mupen64plus-video,
+ mupen64plus,
  python-lzma | p7zip,
  python-opengl,
  unrar,

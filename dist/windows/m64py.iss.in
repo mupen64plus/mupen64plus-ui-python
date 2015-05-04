@@ -36,6 +36,7 @@ Source: "m64py\README.md"; DestDir: "{app}";
 Source: "m64py\ChangeLog"; DestDir: "{app}";
 Source: "m64py\*.v64"; DestDir: "{app}";
 Source: "m64py\qt5_plugins\platforms\qwindows.dll"; DestDir: "{app}\qt5_plugins\platforms";
+Source: "m64py\qt5_plugins\imageformats\qjpeg.dll"; DestDir: "{app}\qt5_plugins\imageformats";
 Source: "m64py\qt5_plugins\imageformats\qsvg.dll"; DestDir: "{app}\qt5_plugins\imageformats";
 Source: "m64py\doc\*"; DestDir: "{app}\doc";
 
