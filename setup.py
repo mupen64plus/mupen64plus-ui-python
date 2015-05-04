@@ -2,6 +2,7 @@
 
 import os
 import sys
+import glob
 import urllib
 import shutil
 import zipfile
@@ -112,7 +113,7 @@ class build_exe(Command):
         shutil.copy(join(rar_dir, "license.txt"), join(dest_path, "doc", "unrar-license.txt"))
         for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
             shutil.copy(join(BASE_DIR, file_name), dest_path)
-        
+
         import PyQt5
         qt5_dir = dirname(PyQt5.__file__)
         qwindows = join(qt5_dir, "plugins", "platforms", "qwindows.dll")
@@ -123,8 +124,10 @@ class build_exe(Command):
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "m64py")
-        for dir_name in ["api", "include", "man6"]:
+        for dir_name in ["api", "include", "man6", "applications", "apps"]:
             shutil.rmtree(join(dest_path, dir_name))
+        for file_name in glob.glob(join(dest_path, "icu*.dll")):
+            os.remove(file_name)
 
     def run_build_installer(self):
         iss_file = ""
@@ -146,7 +149,7 @@ class build_exe(Command):
         spec_file = join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
-        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None}
+        opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None, "debug": False}
         PyInstaller.build.main(None, spec_file, True, **opts)
 
     def run(self):
@@ -158,6 +161,47 @@ class build_exe(Command):
         self.copy_files()
         self.remove_files()
         self.run_build_installer()
+
+
+class build_zip(build_exe):
+
+    def run_build_zip(self):
+        os.rename(join(self.dist_dir, "m64py"), join(self.dist_dir, "m64py-%s" % FRONTEND_VERSION))
+        shutil.make_archive(join(self.dist_dir, "m64py-%s-portable" % FRONTEND_VERSION),
+                            "zip", self.dist_dir, "m64py-%s" % FRONTEND_VERSION, True)
+
+    def set_config_path(self):
+        core_file = ""
+        core_path = join(BASE_DIR, "src", "m64py", "core", "core.py")
+        with open(core_path, "r") as core: data = core.read()
+        lines = data.split("\n")
+        for line in lines:
+            if "C.c_int(CORE_API_VERSION)" in line:
+                line = line.replace("None", "C.c_char_p(os.getcwd().encode())")
+            core_file += line + "\n"
+        with open(core_path, "w") as core: core.write(core_file)
+
+        settings_file = ""
+        settings_path = join(BASE_DIR, "src", "m64py", "frontend", "settings.py")
+        with open(settings_path, "r") as core: data = core.read()
+        lines = data.split("\n")
+        for line in lines:
+            if "QSettings(" in line:
+                line = line.replace('QSettings("m64py", "m64py")',
+                                    'QSettings(os.path.join(os.getcwd(), "m64py.ini"), QSettings.IniFormat)')
+            settings_file += line + "\n"
+        with open(settings_path, "w") as core: core.write(settings_file)
+
+    def run(self):
+        self.run_command("build_qt")
+        set_sdl2()
+        set_rthook()
+        self.set_config_path()
+        self.run_build()
+        self.copy_emulator()
+        self.copy_files()
+        self.remove_files()
+        self.run_build_zip()
 
 
 class build_dmg(Command):
@@ -253,7 +297,7 @@ def set_rthook():
     module_dir = dirname(PyInstaller.__file__)
     rthook = join(module_dir, "loader", "rthooks", "pyi_rth_qt5plugins.py")
     with open(rthook, "r") as hook: data = hook.read()
-    if "sip.setapi" not in data:
+    if "import sip" not in data:
         lines = data.split("\n")
         for line in lines:
             hook_file += line + "\n"
@@ -310,6 +354,7 @@ cmdclass = {
     'build': mybuild,
     'build_qt': build_qt,
     'build_exe': build_exe,
+    'build_zip': build_zip,
     'build_dmg': build_dmg,
     'clean': myclean,
     'clean_local': clean_local
