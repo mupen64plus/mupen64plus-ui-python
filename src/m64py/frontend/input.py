@@ -17,6 +17,7 @@
 import re
 
 from PyQt5.QtWidgets import QDialog
+from PyQt5.QtGui import QKeySequence
 
 from m64py.opts import SDL2
 from m64py.core.defs import *
@@ -417,7 +418,7 @@ class Input(QDialog, Ui_InputDialog):
             return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
         else:
             try:
-                key = QKeySequence(text).__int__()
+                key = QKeySequence(text)[0]
                 return QT2SDL[key]
             except KeyError:
                 return None
