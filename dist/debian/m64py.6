@@ -1,0 +1,47 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH "M64PY" "6" "Dec 21, 2013" "" "General Commands Manual"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.\" --------------------------------------------------------------------------
+.\" Process this file with
+.\" groff -man m64py.6 -Tutf8
+.\" Retrieve format warnings with
+.\" man --warnings m64py.6 > /dev/null
+.\" --------------------------------------------------------------------------
+.ad l
+.SH NAME
+m64py \- Mupen64plus 2.0 frontend
+.SH SYNOPSIS
+.B m64py [\fIoptions\fP]
+.br
+.SH DESCRIPTION
+m64py is a graphical Qt5 frontend for the Nintendo64 emulator mupen64plus 2.0
+.PP
+.PP
+.SH OPTIONS
+.TP
+\fB\-v\fP, \fB\-\-verbose\fP
+Show verbose output.
+.TP
+\fB\-\-sdl2\fP
+Use SDL2 instead of auto-detecting the libmupen64plus2 build type.
+.
+.SH SEE ALSO
+.BR mupen64plus (6),
+.SH AUTHOR
+m64py was written by Milan Nikolic <gen2brain@gmail.com>.
+.PP
+This manual page was written by Sven Eckelmann <sven@narfation.org>.
