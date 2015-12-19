@@ -1,5 +1,5 @@
 #!/bin/sh
-apt-get -y install build-essential debhelper pyqt5-dev-tools dh-python python python3-pyqt5 python3-pyqt5.qtopengl
+apt-get -y install build-essential debhelper dh-python python3 python3-pyqt5 pyqt5-dev-tools
 rm -rf ../../debian/
 cp -fr ../debian/ ../../
 cd ../../

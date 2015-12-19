@@ -1,0 +1,5 @@
+version=3
+
+opts="pgpsigurlmangle=s/$/.asc/" \
+ https://github.com/mupen64plus/mupen64plus-ui-python/releases \
+	/mupen64plus/mupen64plus-ui-python/releases/download/[^/]+/m64py-(.*\d).tar.gz

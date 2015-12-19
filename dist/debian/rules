@@ -16,6 +16,9 @@ RELEASE = 0
 binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep:
 	dh $@ --with=python3 --parallel --list-missing --buildsystem=pybuild
 
+get-orig-source:
+	uscan --verbose --force-download
+
 override_dh_auto_install:
 	dh_auto_install
 	mv $(DESTDIR)/usr/share/m64py/m64py/m64py $(DESTDIR)/usr/share/m64py/m64py_run
@@ -30,4 +33,5 @@ override_dh_builddeb:
 	dh_builddeb -- -Zgzip
 
 .PHONY: binary binary-arch binary-indep build build-arch build-indep clean install install-arch install-indep \
-	override_dh_auto_install override_dh_installchangelogs override_dh_gencontrol override_dh_builddeb
+	override_dh_gencontrol override_dh_builddeb \
+	get-orig-source override_dh_auto_install override_dh_installchangelogs
