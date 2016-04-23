@@ -328,7 +328,7 @@ class Input(QDialog, Ui_InputDialog):
                     v = "key(%s)" % value
                     self.config.set_parameter(key, v.encode())
                 else:
-		    self.config.set_parameter(key, widget.text().encode())
+                    self.config.set_parameter(key, widget.text().encode())
                     continue
 
     def get_axis(self, axis):
