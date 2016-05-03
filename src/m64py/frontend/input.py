@@ -241,7 +241,7 @@ class Input(QDialog, Ui_InputDialog):
     def save_opts(self):
         devicename = self.device_map.get(self.device)
         if devicename:
-            self.config.set_parameter("name", devicename.encode())
+            self.config.set_parameter("name", str(devicename).encode())
 
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
