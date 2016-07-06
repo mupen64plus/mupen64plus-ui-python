@@ -215,7 +215,10 @@ class Input(QDialog, Ui_InputDialog):
     def set_opts(self):
         for key, val in self.opts.items():
             param, tooltip, widget, ptype = val
-            tooltip = tooltip.decode()
+            if tooltip:
+                tooltip = tooltip.decode()
+            else:
+                tooltip = ""
             if ptype == M64TYPE_BOOL:
                 if param:
                     widget.setChecked(param)
