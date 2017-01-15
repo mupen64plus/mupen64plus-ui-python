@@ -19,8 +19,8 @@ import re
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QKeySequence
 
-from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-from m64py.SDL2.keyboard import SDL_GetScancodeFromName
+from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+from sdl2.keyboard import SDL_GetScancodeFromName
 
 from m64py.core.defs import *
 from m64py.utils import format_tooltip

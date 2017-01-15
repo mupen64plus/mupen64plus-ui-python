@@ -33,6 +33,7 @@ Depends:
  python3-pyqt5,
  python3-pyqt5.qtopengl,
  python3-pyqt5.qtsvg,
+ python3-sdl2,
 Provides:
  mupen64plus-ui,
 Recommends:
@@ -40,7 +41,7 @@ Recommends:
  python3-lzma | p7zip,
  unrar,
 Description: Python based graphical frontend for mupen64plus
- M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform
+ M64Py is a Qt5 front-end (GUI) for Mupen64Plus, a cross-platform
  plugin-based Nintendo 64 emulator. M64Py is written in Python and it
  provides a user-friendly interface over Mupen64Plus shared library.
  .

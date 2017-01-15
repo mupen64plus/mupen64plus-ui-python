@@ -17,7 +17,7 @@
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import Qt
 
-from m64py.SDL2.keyboard import SDL_GetScancodeName
+from sdl2.keyboard import SDL_GetScancodeName
 
 from m64py.frontend.keymap import QT2SDL2
 

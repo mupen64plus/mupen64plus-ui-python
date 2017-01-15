@@ -19,15 +19,15 @@
 
 from PyQt5.QtCore import QObject, pyqtSignal, QTime, QTimer
 
+from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
+from sdl2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
+from sdl2 import SDL_JoystickNumAxes, SDL_JoystickNumButtons, SDL_JoystickNumHats, SDL_JoystickNumBalls
+from sdl2 import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate, SDL_JoystickInstanceID
+from sdl2 import SDL_Event, SDL_PollEvent
+from sdl2 import SDL_JOYAXISMOTION, SDL_JOYHATMOTION, SDL_JOYBALLMOTION, SDL_JOYBUTTONDOWN, SDL_JOYBUTTONUP
+
 from m64py.frontend.log import log
 import ctypes
-
-from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
-from m64py.SDL2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
-from m64py.SDL2 import SDL_JoystickNumAxes, SDL_JoystickNumButtons, SDL_JoystickNumHats, SDL_JoystickNumBalls
-from m64py.SDL2 import SDL_JoystickGetAxis, SDL_JoystickGetButton, SDL_JoystickGetHat, SDL_JoystickUpdate, SDL_JoystickInstanceID
-from m64py.SDL2 import SDL_Event, SDL_PollEvent
-from m64py.SDL2 import SDL_JOYAXISMOTION, SDL_JOYHATMOTION, SDL_JOYBALLMOTION, SDL_JOYBUTTONDOWN, SDL_JOYBUTTONUP
 
 JOYSTICK_DEADZONE = 0
 JOYSTICK_SENSITIVITY = 0

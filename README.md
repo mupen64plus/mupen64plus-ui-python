@@ -28,7 +28,7 @@ Dependencies
 ------------
 
 * PyQt5
-* SDL-2.0
+* PySDL2
 
 Install
 -------

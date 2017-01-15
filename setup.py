@@ -354,7 +354,7 @@ setup(
     author_email = "gen2brain@gmail.com",
     license = "GNU GPLv3",
     url = "http://m64py.sourceforge.net",
-    packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL2"],
+    packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
     package_dir = {"": "src"},
     scripts = ["m64py"],
     requires = ["PyQt5"],
