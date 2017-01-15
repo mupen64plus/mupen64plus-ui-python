@@ -16,17 +16,17 @@
 
 import ctypes
 
-from PyQt5.QtOpenGL import QGLFormat
-
-from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
-
 try:
     # nvidia hack
     from OpenGL import GL
     glimport = True
 except ImportError:
     glimport = False
+
+from PyQt5.QtOpenGL import QGLFormat
+
+from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
 
 from m64py.core.defs import *
 from m64py.frontend.log import log
