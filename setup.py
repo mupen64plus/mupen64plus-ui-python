@@ -154,7 +154,6 @@ class build_exe(Command):
 
     def run(self):
         self.run_command("build_qt")
-        set_sdl2()
         set_rthook()
         self.run_build()
         self.copy_emulator()
@@ -194,7 +193,6 @@ class build_zip(build_exe):
 
     def run(self):
         self.run_command("build_qt")
-        set_sdl2()
         set_rthook()
         self.set_config_path()
         self.run_build()
@@ -269,7 +267,6 @@ class build_dmg(Command):
 
     def run(self):
         self.run_command("build_qt")
-        set_sdl2()
         set_rthook()
         self.run_build()
         self.copy_files()
@@ -277,18 +274,6 @@ class build_dmg(Command):
         self.remove_files()
         self.set_plist()
         self.run_build_dmg()
-
-
-def set_sdl2():
-    opts_file = ""
-    opts_path = join(BASE_DIR, "src", "m64py", "opts.py")
-    with open(opts_path, "r") as opts: data = opts.read()
-    lines = data.split("\n")
-    for line in lines:
-        if "sdl2" in line:
-            line = line.replace("default=False", "default=True")
-        opts_file += line + "\n"
-    with open(opts_path, "w") as opts: opts.write(opts_file)
 
 
 def set_rthook():
@@ -364,12 +349,12 @@ setup(
     name = "m64py",
     version = FRONTEND_VERSION,
     description = "M64Py - A frontend for Mupen64Plus",
-    long_description = "M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.",
+    long_description = "M64Py is a Qt5 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
     author = "Milan Nikolic",
     author_email = "gen2brain@gmail.com",
     license = "GNU GPLv3",
     url = "http://m64py.sourceforge.net",
-    packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL", "m64py.SDL2"],
+    packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui", "m64py.SDL2"],
     package_dir = {"": "src"},
     scripts = ["m64py"],
     requires = ["PyQt5"],

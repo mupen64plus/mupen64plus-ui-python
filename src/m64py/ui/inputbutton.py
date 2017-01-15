@@ -17,8 +17,9 @@
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import Qt
 
-from m64py.opts import SDL2
-from m64py.frontend.keymap import QT2SDL, QT2SDL2
+from m64py.SDL2.keyboard import SDL_GetScancodeName
+
+from m64py.frontend.keymap import QT2SDL2
 
 SDL_HAT_UP = 0x01
 SDL_HAT_RIGHT = 0x02
@@ -65,12 +66,7 @@ class InputButton(QPushButton):
             text = self.tr("Select...")
             self.setCheckable(False)
         else:
-            if SDL2 or self.input.parent.worker.core.core_sdl2:
-                from m64py.SDL2.keyboard import SDL_GetScancodeName
-                text = SDL_GetScancodeName(QT2SDL2[key])
-            else:
-                from m64py.SDL.keyboard import SDL_GetKeyName
-                text = SDL_GetKeyName(QT2SDL[key]).title()
+            text = SDL_GetScancodeName(QT2SDL2[key])
             text = text.decode()
 
         text = text.replace("Left ", "")

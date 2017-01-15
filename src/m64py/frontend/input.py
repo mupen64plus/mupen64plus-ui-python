@@ -19,17 +19,14 @@ import re
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QKeySequence
 
-from m64py.opts import SDL2
+from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+from m64py.SDL2.keyboard import SDL_GetScancodeFromName
+
 from m64py.core.defs import *
 from m64py.utils import format_tooltip
 from m64py.frontend.joystick import Joystick
-from m64py.frontend.keymap import QT2SDL, SCANCODE2KEYCODE, KEYCODE2SCANCODE
+from m64py.frontend.keymap import SCANCODE2KEYCODE, KEYCODE2SCANCODE
 from m64py.ui.input_ui import Ui_InputDialog
-
-if SDL2:
-    from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-else:
-    from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 
 KEY_RE = re.compile("([a-z]+)\((.*)\)")
 AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
@@ -414,34 +411,24 @@ class Input(QDialog, Ui_InputDialog):
         return [0, 0]
 
     def get_sdl_key(self, text):
-        if SDL2 or self.parent.worker.core.core_sdl2:
-            from m64py.SDL2.keyboard import SDL_GetScancodeFromName
-            if "Shift" in text or "Ctrl" in text or "Alt" in text:
-                text = "Left %s" % text
-            text = text.encode()
-            return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
-        else:
-            try:
-                key = QKeySequence(text)[0]
-                return QT2SDL[key]
-            except KeyError:
-                return None
+        if "Shift" in text or "Ctrl" in text or "Alt" in text:
+            text = "Left %s" % text
+        text = text.encode()
+        return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
 
     def get_key_name(self, sdl_key):
         if not sdl_key:
             return self.tr("Select...")
-        if SDL2 or self.parent.worker.core.core_sdl2:
-            from m64py.SDL2.keyboard import SDL_GetScancodeName
-            try:
-                text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])
-            except Exception:
-                return self.tr("Select...")
-        else:
-            from m64py.SDL.keyboard import SDL_GetKeyName
-            text = SDL_GetKeyName(int(sdl_key)).title()
+
+        try:
+            text = SDL_GetScancodeName(KEYCODE2SCANCODE[int(sdl_key)])
+        except Exception:
+            return self.tr("Select...")
+
         text = text.decode()
         if not text:
             return self.tr("Select...")
         if "Shift" in text or "Ctrl" in text or "Alt" in text:
             text = text.replace("Left ", "")
+
         return text.title()

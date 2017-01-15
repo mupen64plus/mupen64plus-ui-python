@@ -18,7 +18,7 @@ Url: http://m64py.sourceforge.net
 Requires: PyQt5 SDL
 
 %description
-M64Py is a Qt5 front-end (GUI) for Mupen64Plus 2.0, a cross-platform plugin-based Nintendo 64 emulator.
+M64Py is a Qt5 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.
 
 %prep
 %setup -n %{name}-%{unmangled_version}

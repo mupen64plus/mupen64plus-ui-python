@@ -26,30 +26,20 @@ except ImportError:
     glimport = False
 
 from m64py.core.defs import *
-from m64py.opts import SDL2
 from m64py.frontend.log import log
 
-if SDL2:
-    from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-    from m64py.SDL2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
-else:
-    from m64py.SDL import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-    from m64py.SDL import SDL_ListModes, SDL_FULLSCREEN, SDL_HWSURFACE
+from m64py.SDL2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
+from m64py.SDL2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
 
 try:
     if not SDL_WasInit(SDL_INIT_VIDEO):
         SDL_InitSubSystem(SDL_INIT_VIDEO)
     MODES = []
-    if SDL2:
-        display = SDL_DisplayMode()
-        for mode in range(SDL_GetNumDisplayModes(0)):
-            ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
-            if (display.w, display.h) not in MODES:
-                MODES.append((display.w, display.h))
-    else:
-        for mode in SDL_ListModes(None, SDL_FULLSCREEN|SDL_HWSURFACE):
-            if (mode.w, mode.h) not in MODES:
-                MODES.append((mode.w, mode.h))
+    display = SDL_DisplayMode()
+    for mode in range(SDL_GetNumDisplayModes(0)):
+        ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
+        if (display.w, display.h) not in MODES:
+            MODES.append((display.w, display.h))
     if SDL_WasInit(SDL_INIT_VIDEO):
         SDL_QuitSubSystem(SDL_INIT_VIDEO)
 except Exception as err:

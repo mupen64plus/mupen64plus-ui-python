@@ -18,8 +18,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QMargins
 from PyQt5.QtOpenGL import QGLWidget
 
 from m64py.core.defs import *
-from m64py.opts import SDL2
-from m64py.frontend.keymap import QT2SDL, QT2SDL2
+from m64py.frontend.keymap import QT2SDL2
 
 
 class GLWidget(QGLWidget):
@@ -62,10 +61,7 @@ class GLWidget(QGLWidget):
                 self.worker.save_snapshot()
             else:
                 try:
-                    if SDL2 or self.worker.core.core_sdl2:
-                        sdl_key = QT2SDL2[key]
-                    else:
-                        sdl_key = QT2SDL[key]
+                    sdl_key = QT2SDL2[key]
                     self.worker.send_sdl_keydown(sdl_key)
                 except KeyError:
                     pass
@@ -74,10 +70,7 @@ class GLWidget(QGLWidget):
         if self.worker.state == M64EMU_RUNNING:
             key = event.key()
             try:
-                if SDL2 or self.worker.core.core_sdl2:
-                    sdl_key = QT2SDL2[key]
-                else:
-                    sdl_key = QT2SDL[key]
+                sdl_key = QT2SDL2[key]
                 self.worker.send_sdl_keyup(sdl_key)
             except KeyError:
                 pass

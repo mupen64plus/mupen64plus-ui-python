@@ -18,7 +18,6 @@ import os
 import sys
 
 if sys.platform.startswith("linux"):
-    LDD_CMD = "ldd %s | grep -q SDL2"
     DLL_EXT = ".so"
     DLL_FILTER = ".so.2"
     DEFAULT_DYNLIB = "libmupen64plus.so.2"
@@ -33,7 +32,6 @@ if sys.platform.startswith("linux"):
         "."
     ]
 elif sys.platform.startswith("openbsd"):
-    LDD_CMD = "ldd %s | grep -q SDL2"
     DLL_EXT = ".so"
     DLL_FILTER = ""
     DEFAULT_DYNLIB = "libmupen64plus.so"
@@ -42,7 +40,6 @@ elif sys.platform.startswith("openbsd"):
         "."
     ]
 elif sys.platform == "darwin":
-    LDD_CMD = "otool -L %s | grep -q SDL2"
     DLL_EXT = ".dylib"
     DLL_FILTER = ".dylib"
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
@@ -52,7 +49,6 @@ elif sys.platform == "darwin":
         "."
     ]
 elif sys.platform == "win32":
-    LDD_CMD = ""
     DLL_EXT = ".dll"
     DLL_FILTER = ".dll"
     DEFAULT_DYNLIB = "mupen64plus.dll"

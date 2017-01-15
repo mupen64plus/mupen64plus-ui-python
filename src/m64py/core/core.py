@@ -28,7 +28,6 @@ from m64py.frontend.log import log
 from m64py.utils import version_split
 from m64py.opts import VERBOSE
 from m64py.archive import ROM_TYPE
-from m64py.platform import LDD_CMD
 from m64py.core.vidext import vidext
 
 def debug_callback(context, level, message):
@@ -77,7 +76,6 @@ class Core:
         self.core_path = ""
         self.core_name = "Mupen64Plus Core"
         self.core_version = "Unknown"
-        self.core_sdl2 = False
 
     def get_handle(self):
         """Retrieves core library handle."""
@@ -132,14 +130,6 @@ class Core:
 
                 self.core_name = plugin_name
                 self.core_version = plugin_version
-
-                if LDD_CMD:
-                    proc = subprocess.Popen(
-                        LDD_CMD % self.core_path, shell=True,
-                        preexec_fn=lambda: signal.signal(signal.SIGPIPE, signal.SIG_DFL))
-                    proc.communicate()
-                    if proc.returncode == 0:
-                        self.core_sdl2 = True
 
                 log.info("attached to library '%s' version %s" %
                         (self.core_name, version_split(self.core_version)))
