@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QKeySequence
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
-from sdl2.keyboard import SDL_GetScancodeFromName
+from sdl2.keyboard import SDL_GetScancodeName, SDL_GetScancodeFromName
 
 from m64py.core.defs import *
 from m64py.utils import format_tooltip
@@ -123,8 +123,8 @@ class Input(QDialog, Ui_InputDialog):
         devices = [(self.tr("Keyboard/Mouse"), -1)]
         self.device_map[-1] = "Keyboard"
         for num, joy in enumerate(self.joystick.joystick_names):
-            devices.append((self.tr("Joystick %s (%s)" % (num, joy)), num))
-            self.device_map[num] = joy
+            devices.append((self.tr("Joystick %s (%s)" % (num, joy.decode())), num))
+            self.device_map[num] = joy.decode()
 
         for device, dtype in devices:
             self.comboDevice.addItem(device, dtype)
@@ -224,9 +224,9 @@ class Input(QDialog, Ui_InputDialog):
             elif ptype == M64TYPE_INT:
                 widget.setCurrentIndex(widget.findData(param))
             elif ptype == M64TYPE_STRING:
-                param = param.decode()
                 if key in ["AnalogDeadzone", "AnalogPeak"]:
                     if param:
+                        param = param.decode()
                         paramX, paramY = param.split(",")
                         spin1, spin2 = widget
                         spin1.setValue(int(paramX))
@@ -332,9 +332,9 @@ class Input(QDialog, Ui_InputDialog):
                     continue
 
     def get_axis(self, axis):
-        param = self.config.get_parameter(axis).decode()
+        param = self.config.get_parameter(axis)
         if param:
-            return AXIS_RE.findall(param)
+            return AXIS_RE.findall(param.decode())
 
     def set_axis(self, key, ckey, widget):
         if key.startswith("X Axis"):
@@ -390,15 +390,18 @@ class Input(QDialog, Ui_InputDialog):
                 self.config.set_parameter("Y Axis", axis.encode())
 
     def get_key(self, key):
-        param = self.config.get_parameter(key).decode()
-        if not param:
+        param = self.config.get_parameter(key)
+        if param:
+            param = param.decode()
+        else:
             return [0, 0]
 
         if not self.is_joystick:
             value = KEY_RE.findall(param)
-            items = [item.strip() for item in value[0][1].split(",")]
-            if items:
-                return items
+            if value:
+                items = [item.strip() for item in value[0][1].split(",")]
+                if items:
+                    return items
         else:
             if key.startswith("X Axis"):
                 axis = self.get_axis("X Axis")
@@ -408,13 +411,13 @@ class Input(QDialog, Ui_InputDialog):
                 return [axis[0][1], axis[0][2]]
             else:
                 return [param, 0]
+
         return [0, 0]
 
     def get_sdl_key(self, text):
         if "Shift" in text or "Ctrl" in text or "Alt" in text:
             text = "Left %s" % text
-        text = text.encode()
-        return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text)]
+        return SCANCODE2KEYCODE[SDL_GetScancodeFromName(text.encode())]
 
     def get_key_name(self, sdl_key):
         if not sdl_key:
@@ -425,9 +428,11 @@ class Input(QDialog, Ui_InputDialog):
         except Exception:
             return self.tr("Select...")
 
-        text = text.decode()
-        if not text:
+        if text:
+            text = text.decode()
+        else:
             return self.tr("Select...")
+
         if "Shift" in text or "Ctrl" in text or "Alt" in text:
             text = text.replace("Left ", "")
 
