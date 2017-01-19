@@ -68,7 +68,7 @@ class build_qt(Command):
 class build_exe(Command):
     """Needs PyQt5, rarfile, PyLZMA, PyWin32, PyInstaller, Inno Setup 5"""
     user_options = []
-    arch = "i686-w64-mingw32"
+    arch = "i686-w64-mingw32.static"
     url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
     dist_dir = join(BASE_DIR, "dist", "windows")
 
@@ -101,6 +101,24 @@ class build_exe(Command):
         zf.close()
         shutil.rmtree(tempdir)
 
+    def move_files(self):
+        dest_path = join(self.dist_dir, "m64py", "lib")
+        plugins_path = join(self.dist_dir, "m64py", "qt5_plugins")
+        shutil.copytree(plugins_path, join(dest_path, "qt5_plugins"))
+        shutil.rmtree(plugins_path)
+
+        for file_name in glob.glob(join(self.dist_dir, "m64py", "*.pyd")):
+            if "PyQt5" not in file_name:
+                shutil.move(file_name, dest_path)
+
+        for file_name in glob.glob(join(self.dist_dir, "m64py", "api*.dll")):
+                shutil.move(file_name, dest_path)
+
+        for file_name in glob.glob(join(self.dist_dir, "m64py", "*.dll")):
+            print(file_name)
+            if "python3" not in file_name and "mupen64plus" not in basename(file_name):
+                shutil.move(file_name, dest_path)
+
     def copy_files(self):
         dest_path = join(self.dist_dir, "m64py")
         rar_dir = join(os.environ["ProgramFiles(x86)"], "Unrar")
@@ -116,17 +134,17 @@ class build_exe(Command):
 
         import PyQt5
         qt5_dir = dirname(PyQt5.__file__)
-        qwindows = join(qt5_dir, "plugins", "platforms", "qwindows.dll")
-        qwindows_dest = join(dest_path, "qt5_plugins", "platforms")
+        qwindows = join(qt5_dir, "Qt", "plugins", "platforms", "qwindows.dll")
+        qwindows_dest = join(dest_path, "lib", "qt5_plugins", "platforms")
         if not os.path.exists(qwindows_dest):
             os.makedirs(qwindows_dest)
         shutil.copy(qwindows, qwindows_dest)
 
     def remove_files(self):
         dest_path = join(self.dist_dir, "m64py")
-        for dir_name in ["api", "include", "man6", "applications", "apps"]:
-            shutil.rmtree(join(dest_path, dir_name))
-        for file_name in glob.glob(join(dest_path, "icu*.dll")):
+        for dir_name in ["api", "man6", "applications", "apps"]:
+            shutil.rmtree(join(dest_path, dir_name), True)
+        for file_name in glob.glob(join(dest_path, "glide*.exe")):
             os.remove(file_name)
 
     def run_build_installer(self):
@@ -144,19 +162,20 @@ class build_exe(Command):
         subprocess.call([iscc, iss_out])
 
     def run_build(self):
-        import PyInstaller.build
+        import PyInstaller.building.build_main 
         work_path = join(self.dist_dir, "build")
         spec_file = join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
         opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None, "debug": False}
-        PyInstaller.build.main(None, spec_file, True, **opts)
+        PyInstaller.building.build_main.main(None, spec_file, True, **opts)
 
     def run(self):
         self.run_command("build_qt")
         set_rthook()
         self.run_build()
         self.copy_emulator()
+        self.move_files()
         self.copy_files()
         self.remove_files()
         self.run_build_installer()
@@ -197,6 +216,7 @@ class build_zip(build_exe):
         self.set_config_path()
         self.run_build()
         self.copy_emulator()
+        self.move_files()
         self.copy_files()
         self.remove_files()
         self.run_build_zip()
@@ -248,7 +268,7 @@ class build_dmg(Command):
     def remove_files(self):
         dest_path = join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS")
         for dir_name in ["include", "lib"]:
-            shutil.rmtree(join(dest_path, dir_name))
+            shutil.rmtree(join(dest_path, dir_name), True)
         os.remove(join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources", "icon-windowed.icns"))
 
     def run_build_dmg(self):
@@ -257,17 +277,16 @@ class build_dmg(Command):
         subprocess.call(["hdiutil", "create", dst_path, "-srcfolder", src_path])
 
     def run_build(self):
-        import PyInstaller.build
+        import PyInstaller.building.build_main 
         work_path = join(self.dist_dir, "build")
         spec_file = join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
         opts = {"distpath": self.dist_dir, "workpath": work_path, "clean_build": True, "upx_dir": None, "debug": False}
-        PyInstaller.build.main(None, spec_file, True, **opts)
+        PyInstaller.building.build_main.main(None, spec_file, True, **opts)
 
     def run(self):
         self.run_command("build_qt")
-        set_rthook()
         self.run_build()
         self.copy_files()
         self.copy_emulator()
@@ -282,12 +301,13 @@ def set_rthook():
     module_dir = dirname(PyInstaller.__file__)
     rthook = join(module_dir, "loader", "rthooks", "pyi_rth_qt5plugins.py")
     with open(rthook, "r") as hook: data = hook.read()
-    if "import sip" not in data:
+    if 'sys._MEIPASS, "lib"' not in data:
         lines = data.split("\n")
         for line in lines:
-            hook_file += line + "\n"
             if "MEIPASS" in line:
-                hook_file += "\nimport sip\n"
+                hook_file += "d = os.path.join(sys._MEIPASS, \"lib\", d)\n"
+            else:
+                hook_file += line + "\n"
         with open(rthook, "w") as hook: hook.write(hook_file)
 
 
@@ -357,7 +377,7 @@ setup(
     packages = ["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
     package_dir = {"": "src"},
     scripts = ["m64py"],
-    requires = ["PyQt5"],
+    requires = ["PyQt5", "PySDL2"],
     platforms = ["Linux", "Windows", "Darwin"],
     cmdclass = cmdclass,
     data_files = [

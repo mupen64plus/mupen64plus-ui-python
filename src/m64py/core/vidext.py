@@ -20,7 +20,7 @@ try:
     # nvidia hack
     from OpenGL import GL
     glimport = True
-except ImportError:
+except:
     glimport = False
 
 from PyQt5.QtOpenGL import QGLFormat

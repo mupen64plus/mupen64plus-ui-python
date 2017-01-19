@@ -18,6 +18,9 @@ provides a user-friendly interface over Mupen64Plus shared library.
 Features
 --------
 
+* Changeable emulation plugins for audio, core, input, rsp, video
+* Selection of emulation core
+* Configuration dialogs for core, plugin and input settings
 * ROMs list with preview images
 * Input bindings configuration
 * Cheats support
@@ -27,8 +30,8 @@ Features
 Dependencies
 ------------
 
-* PyQt5
-* PySDL2
+* [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) (QtCore, QtGui, QtWidgets, QtOpenGL)
+* [PySDL2](https://pysdl2.readthedocs.io)
 
 Install
 -------

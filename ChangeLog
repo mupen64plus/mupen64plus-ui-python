@@ -1,3 +1,9 @@
+v0.2.4  Jan 19, 2017:
+
+    * Dropped support for SDL1
+    * PySDL2 is unbundled, not distributed with source anymore
+    * Input bug fixes
+
 v0.2.3  May 04, 2015:
 
     * Migrated to Qt5

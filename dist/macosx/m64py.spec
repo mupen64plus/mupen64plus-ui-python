@@ -9,9 +9,6 @@ a = Analysis([join(BASE_DIR, 'm64py')], pathex=[join(BASE_DIR, 'src')],
     hookspath=None,
     runtime_hooks=None)
 
-a.binaries + [('libQtCLucene.4.dylib',
-    '/usr/local/lib/libQtCLucene.4.dylib', 'BINARY')]
-
 pyz = PYZ(a.pure)
 
 exe = EXE(pyz,

@@ -47,55 +47,6 @@ License: BSD-3-clause
  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  SUCH DAMAGE.
 
-Files: src/m64p/SDL/*
-Copyright: 2006, Alex Holkner
-License: LGPL-2.1+
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- .
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
- .
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- .
- On Debian systems the full text of the GNU Library General Public License,
- version 2 or later, can be found in the `/usr/share/common-licenses/LGPL-2.1'
- file.
-
-Files: src/m64p/SDL2/*
-Copyright: 2012-2014, Marcus von Appen <marcus@sysfault.org>
-           2012-2014, Steven Johnson
-           2012-2014, Marcel Rodrigues
-           2012-2014, Dan Gillett
-Comment:
- This software is distributed under the Public Domain (CC0 Public Domain
- Dedication).
- .
- In cases, where the law prohibits the recognition of Public Domain
- software, this software can be licensed under the zlib license
-License: CC0 or Zlib
-
-Files: examples/resources/tuffy.ttf sdl2/test/resources/tuffy*.ttf
-Copyright: 2004-2011, Thatcher Ulrich, Karoly Barta and Michael Everson
-License: public-domain
- We, the copyright holders of this work, hereby release it into the
- public domain. This applies worldwide.
- .
- In case this is not legally possible,
- .
- We grant any entity the right to use this work for any purpose, without
- any conditions, unless such conditions are required by law.
- .
- Thatcher Ulrich <tu@tulrich.com> http://tulrich.com
- Karoly Barta
- Michael Evans http://www.evertype.com
-
 Files: src/m64py/ui/icons/*
 Copyright: 2005-2009, Ulisse Perusin <uli.peru@gmail.com>
            2005-2009, Steven Garrity <sgarrity@silverorange.com>
