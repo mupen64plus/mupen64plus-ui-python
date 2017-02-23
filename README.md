@@ -8,15 +8,13 @@
         http://m64py.sourceforge.net
         A frontend for Mupen64Plus
 
-About
------
+### About
 
 M64Py is a Qt5 front-end (GUI) for Mupen64Plus, a cross-platform
 plugin-based Nintendo 64 emulator. Front-end is written in Python and it
 provides a user-friendly interface over Mupen64Plus shared library.
 
-Features
---------
+### Features
 
 * Changeable emulation plugins for audio, core, input, rsp, video
 * Selection of emulation core
@@ -27,21 +25,21 @@ Features
 * Support gzip, bzip2, zip, rar and 7z archives
 * Video extension (embedded OpenGL window)
 
-Dependencies
-------------
+### Dependencies
 
 * [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) (QtCore, QtGui, QtWidgets, QtOpenGL)
 * [PySDL2](https://pysdl2.readthedocs.io)
 
-Install
--------
+##### Ubuntu
+```sudo apt-get install python-pyqt5 pyqt5-dev-tools python-pyqt5.qtopengl libsdl2-dev```
+
+### Install
 
 Run *python setup.py install* to install
 
 Run *python setup.py build_qt* before you can start ./m64py from source dir
 
-License
--------
+### License
 
 M64Py is free/libre software released under the terms of the GNU GPL license,
 see the `COPYING' file for details.
