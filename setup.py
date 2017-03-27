@@ -15,9 +15,10 @@ import distutils.command.build as distutils_build
 import distutils.command.clean as distutils_clean
 import setuptools
 
-from m64py.core.defs import FRONTEND_VERSION
-
+# Add the src folder to the path
 sys.path.insert(0, os.path.realpath("src"))
+
+from m64py.core.defs import FRONTEND_VERSION
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -413,9 +414,9 @@ setuptools.setup(
     author_email="gen2brain@gmail.com",
     license="GNU GPLv3",
     url="http://m64py.sourceforge.net",
-    packages=["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
     package_dir={'': "src"},
-    scripts=["m64py"],
+    packages=["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
+    scripts=["bin/m64py"],
     requires=["PyQt5", "PySDL2"],
     platforms=["Linux", "Windows", "Darwin"],
     cmdclass={
