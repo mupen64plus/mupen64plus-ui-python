@@ -18,12 +18,12 @@ import os
 import shutil
 
 from PyQt5.QtCore import QThread, QTimer
+from sdl2 import SDL_EnableScreenSaver, SDL_DisableScreenSaver
 
 from m64py.utils import sl
 from m64py.core.defs import *
 from m64py.frontend.log import log
 from m64py.loader import find_library, unload_library
-from m64py.screensaver import screensaver
 from m64py.core.core import Core
 from m64py.core.vidext import video
 from m64py.archive import Archive
@@ -180,7 +180,7 @@ class Worker(QThread):
             self.core.rom_get_settings()
             if bool(self.settings.get_int_safe(
                     "disable_screensaver", 1)):
-                screensaver.disable()
+                SDL_DisableScreenSaver()
             self.parent.rom_opened.emit()
             self.parent.recent_files.add(self.filepath)
 
@@ -189,7 +189,7 @@ class Worker(QThread):
         self.core.rom_close()
         if bool(self.settings.get_int_safe(
                 "disable_screensaver", 1)):
-            screensaver.enable()
+            SDL_EnableScreenSaver()
         self.parent.rom_closed.emit()
 
     def core_state_query(self, state):
@@ -306,11 +306,11 @@ class Worker(QThread):
         if self.state == M64EMU_RUNNING:
             self.core.pause()
             if bool(self.settings.get_int_safe("disable_screensaver", 1)):
-                screensaver.enable()
+                SDL_EnableScreenSaver()
         elif self.state == M64EMU_PAUSED:
             self.core.resume()
             if bool(self.settings.get_int_safe("disable_screensaver", 1)):
-                screensaver.disable()
+                SDL_DisableScreenSaver()
         self.toggle_actions()
 
     def toggle_mute(self):
