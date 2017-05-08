@@ -111,7 +111,7 @@ class BuildDmg(setuptools.Command):
         if not os.path.exists(dest_path):
             os.mkdir(dest_path)
         shutil.move(os.path.join(self.dist_dir, "M64Py.app"), dest_path)
-        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
+        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.rst"]:
             shutil.copy(os.path.join(BASE_DIR, file_name), dest_path)
         shutil.copy(os.path.join(BASE_DIR, "test", "mupen64plus.v64"), dest_path)
 
@@ -228,7 +228,7 @@ class BuildExe(setuptools.Command):
         shutil.copy(os.path.join(rar_dir, "UnRAR.exe"), dest_path)
         shutil.copy(os.path.join(rar_dir, "license.txt"),
                     os.path.join(dest_path, "doc", "unrar-license.txt"))
-        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.md"]:
+        for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.rst"]:
             shutil.copy(os.path.join(BASE_DIR, file_name), dest_path)
 
         import PyQt5
