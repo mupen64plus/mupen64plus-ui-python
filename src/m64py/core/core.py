@@ -248,10 +248,15 @@ class Core:
         self.plugins = plugins
         for plugin_type in PLUGIN_ORDER:
             plugin = self.plugins[plugin_type]
+
             if not plugin:
                 plugin_map = list(self.plugin_map[plugin_type].values())[0]
             else:
-                plugin_map = self.plugin_map[plugin_type][plugin]
+                try:
+                    plugin_map = self.plugin_map[plugin_type][plugin]
+                except KeyError:
+                    continue
+
             (plugin_handle, plugin_path, plugin_name,
              plugin_desc, plugin_version) = plugin_map
 
@@ -271,10 +276,15 @@ class Core:
         and re-attaches the 'dummy' plugin functions."""
         for plugin_type in PLUGIN_ORDER:
             plugin = self.plugins[plugin_type]
+
             if not plugin:
                 plugin_map = list(self.plugin_map[plugin_type].values())[0]
             else:
-                plugin_map = self.plugin_map[plugin_type][plugin]
+                try:
+                    plugin_map = self.plugin_map[plugin_type][plugin]
+                except KeyError:
+                    continue
+
             (plugin_handle, plugin_path, plugin_name,
              plugin_desc, plugin_version) = plugin_map
 
