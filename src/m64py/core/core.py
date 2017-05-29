@@ -220,8 +220,7 @@ class Core:
                     plugin_handle, plugin_path, PLUGIN_NAME[plugin_type], plugin_desc, plugin_version)
         except OSError as e:
             log.debug("plugin_load_try()")
-            plugin_path = plugin_path.decode('ascii', 'ignore')
-            plugin_path = plugin_path.encode('ascii')
+            plugin_path = plugin_path.encode('ascii').decode('ascii', 'ignore')
             log.error("failed to load plugin %s: %s" % (plugin_path, e))
 
     def plugin_startup(self, handle, name, desc):
