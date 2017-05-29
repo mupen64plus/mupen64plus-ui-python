@@ -103,8 +103,7 @@ class Settings(QDialog, Ui_Settings):
         self.parent.vidext = state
         self.comboResolution.setEnabled(not self.parent.vidext)
         self.checkFullscreen.setEnabled(not self.parent.vidext)
-        self.parent.worker.quit()
-        self.parent.worker.init()
+        self.parent.worker.quit(and_then=self.parent.worker.init)
 
     def connect_signals(self):
         self.browseLibrary.clicked.connect(lambda: self.browse_dialog(

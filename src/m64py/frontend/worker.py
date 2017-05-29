@@ -17,7 +17,7 @@
 import os
 import shutil
 
-from PyQt5.QtCore import QThread, QTimer
+from PyQt5.QtCore import QObject, QTimer
 from sdl2 import SDL_EnableScreenSaver, SDL_DisableScreenSaver
 
 from m64py.utils import sl
@@ -30,12 +30,12 @@ from m64py.archive import Archive
 from m64py.platform import DLL_EXT, DEFAULT_DYNLIB, SEARCH_DIRS
 
 
-class Worker(QThread):
-    """Mupen64Plus thread worker"""
+class Worker(QObject):
+    """Mupen64Plus worker"""
 
     def __init__(self, parent=None):
         """Constructor."""
-        QThread.__init__(self, parent)
+        QObject.__init__(self, parent)
         self.parent = parent
         self.video = video
         self.plugin_files = []
@@ -46,6 +46,7 @@ class Worker(QThread):
         self.state = M64EMU_STOPPED
         self.settings = self.parent.settings
         self.core = Core()
+        self.is_stopping = False
 
     def init(self, path=None):
         """Initialize."""
@@ -62,14 +63,19 @@ class Worker(QThread):
             self.parent.state_changed.emit((False, False, False, False))
             self.parent.info_dialog.emit(self.tr("Mupen64Plus library not found."))
 
-    def quit(self):
+    def quit(self, and_then=None):
+        def after():
+            if self.core.get_handle():
+                self.plugins_shutdown()
+                self.plugins_unload()
+                self.core_shutdown()
+                self.core_unload()
+            if and_then is not None:
+                and_then()
         if self.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
             self.stop()
-        if self.core.get_handle():
-            self.plugins_shutdown()
-            self.plugins_unload()
-            self.core_shutdown()
-            self.core_unload()
+        else:
+            after()
 
     def set_filepath(self, filepath, filename=None):
         """Sets rom file path."""
@@ -341,13 +347,16 @@ class Worker(QThread):
             (load, pause, action, cheats) = True, True, True, cheat
         self.parent.state_changed.emit((load, pause, action, cheats))
 
-    def stop(self):
+    def stop(self, and_then=None):
         """Stops thread."""
         self.core.stop()
-        self.wait()
+        self.is_stopping = True
+        self.after_stop = and_then
+
+    def start(self):
+        QTimer.singleShot(0, self.run)
 
     def run(self):
-        """Starts thread."""
         self.rom_open()
         self.core.attach_plugins(
             self.get_plugins())
@@ -355,3 +364,9 @@ class Worker(QThread):
         self.core.detach_plugins()
         self.rom_close()
         self.toggle_actions()
+        if self.is_stopping:
+            after_stop = self.after_stop
+            del self.after_stop
+            if after_stop is not None:
+                after_stop()
+            self.is_stopping = False
