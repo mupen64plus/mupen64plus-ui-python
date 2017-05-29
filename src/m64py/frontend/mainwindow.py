@@ -131,14 +131,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         bool(self.settings.get_int_safe("keep_aspect", 1)):
                     width, height = self.keep_aspect(size)
 
+            ratio = self.devicePixelRatio()
+            real_width = int(width * ratio)
+            real_height = int(width * ratio)
+
             self.worker.core.config.open_section("Video-General")
-            self.worker.core.config.set_parameter("ScreenWidth", width)
-            self.worker.core.config.set_parameter("ScreenHeight", height)
+            self.worker.core.config.set_parameter("ScreenWidth", real_width)
+            self.worker.core.config.set_parameter("ScreenHeight", real_height)
 
             if not fullscreen:
-                video_size = (width << 16) + height
+                video_size = (real_width << 16) + real_height
             else:
-                video_size = (width << 16) + (height + self.widgets_height)
+                video_size = (real_width << 16) + (real_height + self.widgets_height)
             if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
                 self.worker.core_state_set(M64CORE_VIDEO_SIZE, video_size)
 

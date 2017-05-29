@@ -312,8 +312,9 @@ class Settings(QDialog, Ui_Settings):
             self.set_section(combo, button, settings)
 
     def set_resolution(self):
-        width = self.core.config.get_parameter("ScreenWidth")
-        height = self.core.config.get_parameter("ScreenHeight")
+        ratio = self.parent.devicePixelRatio()
+        width = int(self.core.config.get_parameter("ScreenWidth") / ratio)
+        height = int(self.core.config.get_parameter("ScreenHeight") / ratio)
         if (width, height) not in MODES:
             MODES.append((width, height))
 
@@ -341,8 +342,9 @@ class Settings(QDialog, Ui_Settings):
             width, height = self.get_size_safe()
         else:
             width, height = self.comboResolution.currentText().split("x")
-        self.core.config.set_parameter("ScreenWidth", int(width))
-        self.core.config.set_parameter("ScreenHeight", int(height))
+        ratio = self.parent.devicePixelRatio()
+        self.core.config.set_parameter("ScreenWidth", int(int(width) * ratio))
+        self.core.config.set_parameter("ScreenHeight", int(int(height) * ratio))
         self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.core.config.set_parameter("VerticalSync", self.checkVsync.isChecked())
         self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
