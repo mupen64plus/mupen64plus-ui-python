@@ -133,7 +133,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             ratio = self.devicePixelRatio()
             real_width = int(width * ratio)
-            real_height = int(width * ratio)
+            real_height = int(height * ratio)
 
             self.worker.core.config.open_section("Video-General")
             self.worker.core.config.set_parameter("ScreenWidth", real_width)
