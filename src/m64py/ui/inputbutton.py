@@ -100,8 +100,9 @@ class InputButton(QPushButton):
             self.clearFocus()
 
     def on_axis_value_changed(self, axis, value):
-        val = "-" if value < 0 else "+"
-        self.on_joystick_event("axis", axis, val)
+        if abs(value) >= 16384:
+            val = "-" if value < 0 else "+"
+            self.on_joystick_event("axis", axis, val)
 
     def on_button_value_changed(self, button, value):
         if value:
