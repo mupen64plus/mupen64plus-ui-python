@@ -100,6 +100,7 @@ class InputButton(QPushButton):
             self.clearFocus()
 
     def on_axis_value_changed(self, axis, value):
+        # SDL axes range from -32768 to 32767. Only map axes which are half-pressed or more.
         if abs(value) >= 16384:
             val = "-" if value < 0 else "+"
             self.on_joystick_event("axis", axis, val)
