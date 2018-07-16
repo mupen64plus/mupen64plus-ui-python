@@ -190,7 +190,10 @@ class m64p_rom_settings(C.Structure):
         ('savetype', C.c_ubyte),
         ('status', C.c_ubyte),
         ('players', C.c_ubyte),
-        ('rumble', C.c_ubyte)
+        ('rumble', C.c_ubyte),
+        ('transferpak', C.c_ubyte),
+        ('mempak', C.c_ubyte),
+        ('biopak', C.c_ubyte)
     ]
 
 
