@@ -71,10 +71,10 @@ def format_options(param_help):
     if not param_help:
         return None
     items = re.findall(
-        "(\d+|[\d,-]+)\s?=\s?([\w %-]+)", param_help)
+        "(\d+|[\d,-]+)\s?=\s?([\w/ %-]+)", param_help)
     for item in items:
         key, value = item
-        if '-' in key or ',' in key:
+        if '-' in key[1:] or ',' in key:
             return None
         else:
             opts[int(key)] = value
