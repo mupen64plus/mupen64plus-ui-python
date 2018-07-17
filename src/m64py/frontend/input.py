@@ -67,12 +67,21 @@ class Input(QDialog, Ui_InputDialog):
         self.comboMode.currentIndexChanged.connect(
             self.on_mode_changed)
 
+    def add_selected_device_if_not_in_list(self):
+        self.get_opts()
+        num = self.opts["device"][0]
+        if num >= 0 and num not in self.device_map:
+            device = self.tr("Joystick %s (%s)" % (num, "Unplugged"))
+            self.device_map[num] = ""
+            self.comboDevice.addItem(device, num)
+
     def show_dialog(self):
         self.config = self.parent.worker.core.config
         self.config.open_section(self.section)
         self.mode = self.config.get_parameter("mode")
         self.device = self.config.get_parameter("device")
         self.is_joystick = bool(self.device >= 0)
+        self.add_selected_device_if_not_in_list()
         self.set_items()
         self.set_enabled()
         self.show()
