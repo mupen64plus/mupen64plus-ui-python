@@ -58,11 +58,11 @@ def format_tooltip(tooltip):
 
 
 def format_label(label):
-    words = label.split("_")
-    if len(words) > 1:
-        label = "".join([word.capitalize() for word in words])
-    if label.isupper() or label.islower():
+    label = label.replace("_", " ")
+    if label.isupper():
         label = label.capitalize()
+    else:
+        label = label[0].upper() + label[1:]
     return label
 
 
