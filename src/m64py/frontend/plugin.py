@@ -16,6 +16,7 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QLabel, QSpinBox, QComboBox, QLineEdit, QCheckBox
+import re
 
 from m64py.core.defs import *
 from m64py.utils import format_label, format_options
@@ -71,6 +72,10 @@ class Plugin(QDialog, Ui_PluginDialog):
             param_name, param_type = item
             param_name = param_name.decode()
             param_help = self.config.get_parameter_help(param_name).decode()
+            param_desc = re.split(':|\(|--', param_help)[0].strip()
+            if len(param_desc) > 35 or len(param_name) > len(param_desc):
+                param_desc = param_name
+            param_help = '[' + param_name + '] ' + param_help
             opts = format_options(param_help)
 
             if param_type == M64TYPE_STRING:
@@ -78,7 +83,7 @@ class Plugin(QDialog, Ui_PluginDialog):
                 widget = QLineEdit()
                 widget.setToolTip(param_help)
                 self.gridLayout.addWidget(
-                    QLabel(format_label(param_name)), row1, 1, Qt.AlignRight)
+                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignRight)
                 self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_INT:
@@ -100,13 +105,13 @@ class Plugin(QDialog, Ui_PluginDialog):
                         widget.addItem(value)
                         widget.setItemData(idx, data)
                 self.gridLayout.addWidget(
-                    QLabel(format_label(param_name)), row1, 1, Qt.AlignRight)
+                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignRight)
                 self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_BOOL:
                 row2 += 1
                 widget = QCheckBox()
-                widget.setText(format_label(param_name))
+                widget.setText(format_label(param_desc))
                 if param_help:
                     widget.setToolTip(param_help)
                 self.gridLayout.addWidget(widget, row2, 3)
