@@ -351,6 +351,10 @@ class Worker(QThread):
         self.rom_open()
         self.core.attach_plugins(
             self.get_plugins())
+        # Save the configuration file again, just in case a plugin has altered it.
+        # This is the last opportunity to save changes before the relatively
+        # long-running game.
+        self.core.config.save_file()
         self.core.execute()
         self.core.detach_plugins()
         self.rom_close()

@@ -273,15 +273,6 @@ class Settings(QDialog, Ui_Settings):
         self.checkDisableExtraMem.setToolTip(
             self.core.config.get_parameter_help("DisableExtraMem").decode())
 
-        delay_si = self.core.config.get_parameter("DelaySI")
-        if delay_si is not None:
-            self.checkDelaySI.setChecked(delay_si)
-        else:
-            self.checkDelaySI.setChecked(False)
-            self.checkDelaySI.setEnabled(False)
-        self.checkDelaySI.setToolTip(
-            self.core.config.get_parameter_help("DelaySI").decode())
-
         count_per_op = self.core.config.get_parameter("CountPerOp")
         if count_per_op is not None:
             self.comboCountPerOp.setCurrentIndex(count_per_op)
@@ -356,7 +347,6 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("OnScreenDisplay", self.checkOSD.isChecked())
         self.core.config.set_parameter("NoCompiledJump", self.checkNoCompiledJump.isChecked())
         self.core.config.set_parameter("DisableExtraMem", self.checkDisableExtraMem.isChecked())
-        self.core.config.set_parameter("DelaySI", self.checkDelaySI.isChecked())
         self.core.config.set_parameter("CountPerOp", self.comboCountPerOp.currentIndex())
         self.core.config.set_parameter("SharedDataPath", self.pathData.text().encode())
 

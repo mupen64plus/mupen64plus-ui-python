@@ -332,13 +332,6 @@ QGroupBox::title {
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="checkDelaySI">
-            <property name="text">
-             <string>Delay SI</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
            <widget class="QComboBox" name="comboCountPerOp">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
