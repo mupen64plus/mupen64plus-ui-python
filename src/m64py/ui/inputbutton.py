@@ -19,6 +19,7 @@ from PyQt5.QtCore import Qt
 
 from sdl2.keyboard import SDL_GetScancodeName
 
+from m64py.frontend.log import log
 from m64py.frontend.keymap import QT2SDL2
 
 SDL_HAT_UP = 0x01
@@ -66,8 +67,12 @@ class InputButton(QPushButton):
             text = self.tr("Select...")
             self.setCheckable(False)
         else:
-            text = SDL_GetScancodeName(QT2SDL2[key])
-            text = text.decode()
+            if key in QT2SDL2:
+                text = SDL_GetScancodeName(QT2SDL2[key])
+                text = text.decode()
+            else:
+                log.warn("key %d not in keymap", key)
+                text = ""
 
         text = text.replace("Left ", "")
         self.setText(text.title())
