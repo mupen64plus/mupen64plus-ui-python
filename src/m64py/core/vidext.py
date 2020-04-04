@@ -55,6 +55,8 @@ class Video():
         self.widget = None
         self.glformat = None
         self.glcontext = None
+        self.major = None
+        self.minor = None
 
     def set_widget(self, parent):
         """Sets GL widget."""
@@ -134,10 +136,16 @@ class Video():
             M64P_GL_ALPHA_SIZE: self.glformat.setAlphaBufferSize,
             M64P_GL_SWAP_CONTROL: self.glformat.setSwapInterval,
             M64P_GL_MULTISAMPLEBUFFERS: self.glformat.setSampleBuffers,
-            M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples
+            M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples,
+            M64P_GL_CONTEXT_MAJOR_VERSION: self.set_major,
+            M64P_GL_CONTEXT_MINOR_VERSION: self.set_minor,
+            M64P_GL_CONTEXT_PROFILE_MASK: self.glformat.setProfile
         }
         set_attr = attr_map[attr]
         set_attr(value)
+        if attr == M64P_GL_CONTEXT_MAJOR_VERSION or attr == M64P_GL_CONTEXT_MINOR_VERSION:
+            if self.major and self.minor:
+                self.glformat.setVersion(self.major, self.minor)
         return M64ERR_SUCCESS
 
     def gl_get_attr(self, attr, value):
@@ -152,7 +160,10 @@ class Video():
             M64P_GL_ALPHA_SIZE: self.glformat.alphaBufferSize,
             M64P_GL_SWAP_CONTROL: self.glformat.swapInterval,
             M64P_GL_MULTISAMPLEBUFFERS: self.glformat.sampleBuffers,
-            M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples
+            M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples,
+            M64P_GL_CONTEXT_MAJOR_VERSION: self.glformat.majorVersion,
+            M64P_GL_CONTEXT_MINOR_VERSION: self.glformat.minorVersion,
+            M64P_GL_CONTEXT_PROFILE_MASK: self.glformat.profile
         }
         get_attr = attr_map[attr]
         new_value = int(get_attr())
@@ -172,9 +183,19 @@ class Video():
         output viewport in response to a ResizeVideoOutput() call"""
         return M64ERR_SUCCESS
 
+    def gl_get_default_framebuffer(self):
+        """Gets default framebuffer."""
+        return 0
+
+    def set_major(self, major):
+        self.major = major
+
+    def set_minor(self, minor):
+        self.minor = minor
+
 video = Video()
 vidext = m64p_video_extension_functions()
-vidext.Functions = 11
+vidext.Functions = 12
 vidext.VidExtFuncInit = FuncInit(video.init)
 vidext.VidExtFuncQuit = FuncQuit(video.quit)
 vidext.VidExtFuncListModes = FuncListModes(video.list_fullscreen_modes)
@@ -186,3 +207,4 @@ vidext.VidExtFuncGLSwapBuf = FuncGLSwapBuf(video.gl_swap_buf)
 vidext.VidExtFuncSetCaption = FuncSetCaption(video.set_caption)
 vidext.VidExtFuncToggleFS = FuncToggleFS(video.toggle_fs)
 vidext.VidExtFuncResizeWindow = FuncResizeWindow(video.resize_window)
+vidext.VidExtFuncGLGetDefaultFramebuffer  = FuncGLGetDefaultFramebuffer(video.gl_get_default_framebuffer)

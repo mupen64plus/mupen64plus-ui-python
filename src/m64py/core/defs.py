@@ -113,6 +113,9 @@ M64P_GL_ALPHA_SIZE = 7
 M64P_GL_SWAP_CONTROL = 8
 M64P_GL_MULTISAMPLEBUFFERS = 9
 M64P_GL_MULTISAMPLESAMPLES = 10
+M64P_GL_CONTEXT_MAJOR_VERSION = 11
+M64P_GL_CONTEXT_MINOR_VERSION = 12
+M64P_GL_CONTEXT_PROFILE_MASK = 13
 
 M64TYPE_INT = 1
 M64TYPE_FLOAT = 2
@@ -221,6 +224,7 @@ FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
 FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
 FuncToggleFS = C.CFUNCTYPE(m64p_error)
 FuncResizeWindow = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int)
+FuncGLGetDefaultFramebuffer = C.CFUNCTYPE(C.c_uint)
 
 
 class m64p_video_extension_functions(C.Structure):
@@ -236,7 +240,8 @@ class m64p_video_extension_functions(C.Structure):
         ('VidExtFuncGLSwapBuf', FuncGLSwapBuf),
         ('VidExtFuncSetCaption', FuncSetCaption),
         ('VidExtFuncToggleFS', FuncToggleFS),
-        ('VidExtFuncResizeWindow', FuncResizeWindow)
+        ('VidExtFuncResizeWindow', FuncResizeWindow),
+        ('VidExtFuncGLGetDefaultFramebuffer', FuncGLGetDefaultFramebuffer)
     ]
 
 LOGO = " __  __                         __   _  _   ____  _            \n"
