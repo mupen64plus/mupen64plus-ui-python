@@ -4,3 +4,7 @@ src/m64py.egg-info/
 
 # Files
 dist/*.egg
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
