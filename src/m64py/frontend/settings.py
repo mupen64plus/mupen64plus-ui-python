@@ -182,6 +182,12 @@ class Settings(QDialog, Ui_Settings):
             size = SIZE_1X
         return size
 
+    def get_parameter_help_safe(self, parameter):
+        help = self.core.config.get_parameter_help("NoCompiledJump")
+        if help is not None:
+            return help.decode()
+        return ""
+
     def get_section(self, combo):
         plugin = combo.currentText()
         index = combo.findText(plugin)
@@ -244,7 +250,7 @@ class Settings(QDialog, Ui_Settings):
         self.checkVsync.setChecked(
             bool(self.core.config.get_parameter("VerticalSync")))
         self.checkVsync.setToolTip(
-            self.core.config.get_parameter_help("VerticalSync").decode())
+            self.get_parameter_help_safe("VerticalSync"))
 
         if sys.platform == "win32":
             self.checkKeepAspect.setChecked(False)
@@ -263,15 +269,15 @@ class Settings(QDialog, Ui_Settings):
         self.checkOSD.setChecked(
             self.core.config.get_parameter("OnScreenDisplay"))
         self.checkOSD.setToolTip(
-            self.core.config.get_parameter_help("OnScreenDisplay").decode())
+            self.get_parameter_help_safe("OnScreenDisplay"))
         self.checkNoCompiledJump.setChecked(
             self.core.config.get_parameter("NoCompiledJump"))
         self.checkNoCompiledJump.setToolTip(
-            self.core.config.get_parameter_help("NoCompiledJump").decode())
+            self.get_parameter_help_safe("NoCompiledJump"))
         self.checkDisableExtraMem.setChecked(
             self.core.config.get_parameter("DisableExtraMem"))
         self.checkDisableExtraMem.setToolTip(
-            self.core.config.get_parameter_help("DisableExtraMem").decode())
+            self.get_parameter_help_safe("DisableExtraMem"))
 
         count_per_op = self.core.config.get_parameter("CountPerOp")
         if count_per_op is not None:
@@ -279,7 +285,7 @@ class Settings(QDialog, Ui_Settings):
         else:
             self.comboCountPerOp.setEnabled(False)
         self.comboCountPerOp.setToolTip(
-            self.core.config.get_parameter_help("CountPerOp").decode())
+            self.get_parameter_help_safe("CountPerOp"))
 
     def set_plugins(self):
         plugin_map = self.core.plugin_map
