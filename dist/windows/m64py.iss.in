@@ -31,15 +31,12 @@ Source: "m64py\*.dll"; DestDir: "{app}";
 Source: "m64py\*.zip"; DestDir: "{app}";
 Source: "m64py\*.v64"; DestDir: "{app}";
 Source: "m64py\*.pyd"; DestDir: "{app}";
-Source: "m64py\lib\*"; DestDir: "{app}\lib";
 Source: "m64py\doc\*"; DestDir: "{app}\doc";
+Source: "m64py\PyQt5\*"; DestDir: "{app}\PyQt5"; Flags: recursesubdirs
 Source: "m64py\AUTHORS"; DestDir: "{app}";
 Source: "m64py\COPYING"; DestDir: "{app}";
 Source: "m64py\README.rst"; DestDir: "{app}";
 Source: "m64py\ChangeLog"; DestDir: "{app}";
-Source: "m64py\lib\qt5_plugins\platforms\qwindows.dll"; DestDir: "{app}\lib\qt5_plugins\platforms";
-Source: "m64py\lib\qt5_plugins\imageformats\qjpeg.dll"; DestDir: "{app}\lib\qt5_plugins\imageformats";
-Source: "m64py\lib\qt5_plugins\imageformats\qsvg.dll"; DestDir: "{app}\lib\qt5_plugins\imageformats";
 
 [Icons]
 Name: {group}\M64Py; Filename: {app}\m64py.exe; Tasks: desktopicon;

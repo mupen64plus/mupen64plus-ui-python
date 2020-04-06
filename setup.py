@@ -69,24 +69,6 @@ class BuildQt(setuptools.Command):
                     self.compile_rc(os.path.join(dirpath, filename))
 
 
-def set_rthook():
-    import PyInstaller
-    hook_file = ""
-    module_dir = os.path.dirname(PyInstaller.__file__)
-    rthook = os.path.join(module_dir, "loader", "rthooks", "pyi_rth_qt5plugins.py")
-    with open(rthook, "r") as hook:
-        data = hook.read()
-    if 'sys._MEIPASS, "lib"' not in data:
-        lines = data.split("\n")
-        for line in lines:
-            if "MEIPASS" in line:
-                hook_file += "d = os.path.join(sys._MEIPASS, \"lib\", d)\n"
-            else:
-                hook_file += line + "\n"
-        with open(rthook, "w") as hook:
-            hook.write(hook_file)
-
-
 class BuildDmg(setuptools.Command):
 
     description = "Generate a .dmg file for distribution"
@@ -183,7 +165,6 @@ class BuildExe(setuptools.Command):
     user_options = []
 
     arch = "i686-w64-mingw32.static"
-    url = "https://bitbucket.org/ecsv/mupen64plus-mxe-daily/get/master.zip"
     dist_dir = os.path.join(BASE_DIR, "dist", "windows")
 
     def initialize_options(self):
@@ -193,9 +174,7 @@ class BuildExe(setuptools.Command):
         pass
 
     def copy_emulator(self):
-        tempdir = tempfile.mkdtemp()
-        zippath = os.path.join(tempdir, os.path.basename(self.url))
-        urllib.request.urlretrieve(self.url, zippath)
+        zippath = os.path.join(BASE_DIR, "dist", "windows", "bundle.zip")
         zip_file = zipfile.ZipFile(zippath)
         for name in zip_file.namelist():
             if self.arch in name:
@@ -214,7 +193,6 @@ class BuildExe(setuptools.Command):
                 unpacked.write(zip_file.read(name))
                 unpacked.close()
         zip_file.close()
-        shutil.rmtree(tempdir)
 
     def copy_files(self):
         dest_path = os.path.join(self.dist_dir, "m64py")
@@ -231,38 +209,18 @@ class BuildExe(setuptools.Command):
         for file_name in ["AUTHORS", "ChangeLog", "COPYING", "LICENSES", "README.rst"]:
             shutil.copy(os.path.join(BASE_DIR, file_name), dest_path)
 
-        import PyQt5
-        qt5_dir = os.path.dirname(PyQt5.__file__)
-        qwindows = os.path.join(qt5_dir, "Qt", "plugins", "platforms", "qwindows.dll")
-        qwindows_dest = os.path.join(dest_path, "lib", "qt5_plugins", "platforms")
-        if not os.path.exists(qwindows_dest):
-            os.makedirs(qwindows_dest)
-        shutil.copy(qwindows, qwindows_dest)
-
-    def move_files(self):
-        dest_path = os.path.join(self.dist_dir, "m64py", "lib")
-        plugins_path = os.path.join(self.dist_dir, "m64py", "qt5_plugins")
-        shutil.copytree(plugins_path, os.path.join(dest_path, "qt5_plugins"))
-        shutil.rmtree(plugins_path)
-
-        for file_name in glob.glob(os.path.join(self.dist_dir, "m64py", "*.pyd")):
-            if "PyQt5" not in file_name:
-                shutil.move(file_name, dest_path)
-
-        for file_name in glob.glob(os.path.join(self.dist_dir, "m64py", "api*.dll")):
-            shutil.move(file_name, dest_path)
-
-        for file_name in glob.glob(os.path.join(self.dist_dir, "m64py", "*.dll")):
-            print(file_name)
-            if "python3" not in file_name and "mupen64plus" not in os.path.basename(file_name):
-                shutil.move(file_name, dest_path)
-
     def remove_files(self):
         dest_path = os.path.join(self.dist_dir, "m64py")
         for dir_name in ["api", "man6", "applications", "apps"]:
             shutil.rmtree(os.path.join(dest_path, dir_name), True)
-        for file_name in glob.glob(os.path.join(dest_path, "glide*.exe")):
-            os.remove(file_name)
+        for dir_name in ["qml", "translations"]:
+            shutil.rmtree(os.path.join(dest_path, "PyQt5", "Qt", dir_name), True)
+        for file_name in glob.glob(os.path.join(dest_path, "PyQt5", "Qt*.pyd")):
+            if os.path.basename(file_name) not in ["Qt.pyd", "QtCore.pyd", "QtGui.pyd", "QtWidgets.pyd", "QtOpenGL.pyd"]:
+                os.remove(file_name)
+        for file_name in glob.glob(os.path.join(dest_path, "Qt5*.dll")):
+            if os.path.basename(file_name) not in ["Qt5Core.dll", "Qt5Gui.dll", "Qt5Widgets.dll", "Qt5OpenGL.dll"]:
+                os.remove(file_name)
 
     def run_build(self):
         import PyInstaller.building.build_main
@@ -295,10 +253,8 @@ class BuildExe(setuptools.Command):
 
     def run(self):
         self.run_command("build_qt")
-        set_rthook()
         self.run_build()
         self.copy_emulator()
-        self.move_files()
         self.copy_files()
         self.remove_files()
         self.run_build_installer()
@@ -346,11 +302,9 @@ class BuildZip(BuildExe):
 
     def run(self):
         self.run_command("build_qt")
-        set_rthook()
         self.set_config_path()
         self.run_build()
         self.copy_emulator()
-        self.move_files()
         self.copy_files()
         self.remove_files()
         self.run_build_zip()

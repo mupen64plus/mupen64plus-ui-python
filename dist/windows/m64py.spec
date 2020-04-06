@@ -4,7 +4,7 @@ from os.path import join
 DIST_DIR = os.environ["DIST_DIR"]
 BASE_DIR = os.environ["BASE_DIR"]
 
-a = Analysis([join(BASE_DIR, 'm64py')], hiddenimports=['pickle', 'PyQt5.Qt'], pathex=[join(BASE_DIR, 'src')], hookspath=[join(DIST_DIR, 'hooks')], runtime_hooks=[join(DIST_DIR, 'hooks', 'libdir.py')])
+a = Analysis([join(BASE_DIR, 'm64py')], hiddenimports=['pickle', 'PyQt5.Qt'], pathex=[join(BASE_DIR, 'src')])
 
 pyz = PYZ(a.pure)
 
