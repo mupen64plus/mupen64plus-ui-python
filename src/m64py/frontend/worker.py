@@ -206,8 +206,8 @@ class Worker(QThread):
 
     def get_screenshot(self, path):
         """Gets last saved screenshot."""
-        rom_name = str(self.core.rom_header.Name).replace(
-            ' ', '_').lower()
+        name = self.core.rom_header.Name.decode()
+        rom_name = name.replace(' ', '_').lower()
         screenshots = []
         for filename in os.listdir(path):
             if filename.startswith(rom_name):
