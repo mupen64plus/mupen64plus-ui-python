@@ -1,4 +1,6 @@
-include setup.py m64py AUTHORS README.rst CHANGELOG COPYING LICENSES
+include setup.py bin/m64py AUTHORS README.rst CHANGELOG COPYING LICENSES
 recursive-include src *.py *.ui *.qrc *.svg *.png *.jpg *.ts
-recursive-include xdg *.desktop *.png *.xml
+recursive-include xdg *.desktop *.png
+recursive-exclude dist *
+recursive-exclude test *
 global-exclude *_ui.py *_rc.py
