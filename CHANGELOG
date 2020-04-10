@@ -1,3 +1,11 @@
+v0.2.5  Apr 10, 2020:
+
+    * GLideN64 plugin is now included in binary releases
+    * Fix video extension
+    * Remove DelaySI option
+    * Change setup.py to Setuptools and refactor bits of code
+    * Bug fixes
+
 v0.2.4  Jan 19, 2017:
 
     * Dropped support for SDL1
