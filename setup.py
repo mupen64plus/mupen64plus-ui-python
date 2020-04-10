@@ -98,11 +98,11 @@ class BuildDmg(setuptools.Command):
         shutil.copy(os.path.join(BASE_DIR, "test", "mupen64plus.v64"), dest_path)
 
     def remove_files(self):
-        dest_path = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS")
+        dest_path = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents")
         for dir_name in ["include", "lib"]:
-            shutil.rmtree(os.path.join(dest_path, dir_name), True)
-        os.remove(os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents",
-                               "Resources", "icon-windowed.icns"))
+            shutil.rmtree(os.path.join(dest_path, "Resources", dir_name), True)
+            os.remove(os.path.join(dest_path, "MacOS", dir_name))
+        os.remove(os.path.join(dest_path, "Resources", "icon-windowed.icns"))
 
     def run_build(self):
         import PyInstaller.building.build_main
