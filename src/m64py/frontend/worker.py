@@ -88,7 +88,9 @@ class Worker(QThread):
         else:
             self.library_path = self.settings.qset.value(
                 "Paths/Library", find_library(CORE_NAME))
-        self.core.core_load(str(self.library_path))
+            if not self.library_path:
+                self.library_path = find_library(CORE_NAME)
+        self.core.core_load(self.library_path)
 
     def core_unload(self):
         """Unloads core library."""
