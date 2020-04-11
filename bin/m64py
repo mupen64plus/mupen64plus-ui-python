@@ -24,6 +24,8 @@ if os.path.isdir(os.path.join("..", "src")) and os.path.isfile(
         os.path.join("..", "setup.py")):
     sys.path.insert(0, os.path.realpath(os.path.join("..", "src")))
 
+os.environ["DBUS_FATAL_WARNINGS"] = "0"
+
 try:
     from PyQt5.QtWidgets import QApplication
     from PyQt5.QtCore import Qt, QLocale, QTranslator
