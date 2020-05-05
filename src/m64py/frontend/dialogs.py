@@ -14,14 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QListWidgetItem
 
 from m64py.utils import version_split
 from m64py.core.defs import FRONTEND_VERSION
-from m64py.ui.about_ui import Ui_AboutDialog
-from m64py.ui.license_ui import Ui_LicenseDialog
-from m64py.ui.archive_ui import Ui_ArchiveDialog
+
+try:
+    from m64py.ui.about_ui import Ui_AboutDialog
+    from m64py.ui.license_ui import Ui_LicenseDialog
+    from m64py.ui.archive_ui import Ui_ArchiveDialog
+except ModuleNotFoundError:
+    sys.stderr.write("You have to run setup.py build first\n")
+    sys.exit(1)
 
 
 class AboutDialog(QDialog, Ui_AboutDialog):
