@@ -26,8 +26,8 @@ try:
     from m64py.ui.license_ui import Ui_LicenseDialog
     from m64py.ui.archive_ui import Ui_ArchiveDialog
 except ModuleNotFoundError:
-    print("You have to run setup.py build first")
-    sys.exit(0)
+    sys.stderr.write("You have to run setup.py build first\n")
+    sys.exit(1)
 
 
 class AboutDialog(QDialog, Ui_AboutDialog):
