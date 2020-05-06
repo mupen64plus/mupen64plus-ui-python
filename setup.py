@@ -59,6 +59,10 @@ class BuildQt(setuptools.Command):
         with open(py_file, "w") as a_file:
             uic.compileUi(ui_file, a_file, from_imports=True)
 
+    def compile_ts(self, ts_file):
+        output_file = ts_file[:-3] + ".qm"
+        subprocess.call(["lconvert",ts_file,"-o",output_file])
+
     def run(self):
         basepath = os.path.join(os.path.dirname(__file__), "src", "m64py", "ui")
         for dirpath, _, filenames in os.walk(basepath):
@@ -67,6 +71,8 @@ class BuildQt(setuptools.Command):
                     self.compile_ui(os.path.join(dirpath, filename))
                 elif filename.endswith('.qrc'):
                     self.compile_rc(os.path.join(dirpath, filename))
+                elif filename.endswith('.ts'):
+                    self.compile_ts(os.path.join(dirpath, filename))
 
 
 class BuildDmg(setuptools.Command):

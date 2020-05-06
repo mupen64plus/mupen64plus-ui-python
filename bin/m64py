@@ -48,9 +48,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     from m64py.opts import opts, args
 
+    i18n_directory = os.path.join(os.path.realpath(__file__)[:-10],"src","m64py","ui","i18n")
     locale = QLocale.system().name()
     translator = QTranslator()
-    if translator.load(":i18n/m64py_" + locale, ":/"):
+    if translator.load(os.path.join(i18n_directory,"m64py_" + locale + ".qm")):
         app.installTranslator(translator)
 
     sys.stderr.write("%s\nM64Py - A frontend for Mupen64Plus version %s\n\n" % (
