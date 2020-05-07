@@ -60,11 +60,26 @@ class BuildQt(setuptools.Command):
             uic.compileUi(ui_file, a_file, from_imports=True)
 
     def compile_ts(self, ts_file):
-        output_file = ts_file[:-3] + ".qm"
-        subprocess.call(["lconvert",ts_file,"-o",output_file])
+        import PyQt5
+        qm_file = os.path.splitext(ts_file)[0] + ".qm"
+        if not distutils.dep_util.newer(ts_file, qm_file):
+            return
+        origpath = os.getenv("PATH")
+        path = origpath.split(os.pathsep)
+        path.append(os.path.dirname(PyQt5.__file__))
+        os.putenv("PATH", os.pathsep.join(path))
+        if subprocess.call(["lrelease", ts_file, "-qm", qm_file]) > 0:
+            self.warn("Unable to compile translation file {}".format(qm_file))
+            if not os.path.exists(qm_file):
+                sys.exit(1)
+        os.putenv("PATH", origpath)
 
     def run(self):
         basepath = os.path.join(os.path.dirname(__file__), "src", "m64py", "ui")
+        for dirpath, _, filenames in os.walk(basepath):
+            for filename in filenames:
+                if filename.endswith('.ts'):
+                    self.compile_ts(os.path.join(dirpath, filename))
         for dirpath, _, filenames in os.walk(basepath):
             for filename in filenames:
                 if filename.endswith('.ui'):
@@ -320,7 +335,7 @@ class CleanLocal(setuptools.Command):
 
     description = "Clean the local project directory"
 
-    wildcards = ['*.py[co]', '*_ui.py', '*_rc.py', '__pycache__']
+    wildcards = ['*.py[co]', '*_ui.py', '*_rc.py', '__pycache__', '*.qm']
     excludedirs = ['.git', 'build', 'dist']
     user_options = []
 
