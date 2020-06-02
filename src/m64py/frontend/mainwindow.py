@@ -302,6 +302,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionGraphics.setEnabled(not action)
         self.actionPlugins.setEnabled(not action)
 
+    """Wait up to 10 seconds for core initialization, checking once a second.
+       If not yet initialized, start another QTimer. Else, toggle UI actions."""
+    def wait_for_initialize(self):
+        if self.worker.core_state_query(M64CORE_EMU_STATE) == M64EMU_STOPPED:
+            self._initialize_attempt += 1
+            if self._initialize_attempt < 10:
+                QTimer.singleShot(1000, self.wait_for_initialize)
+        else: self.worker.toggle_actions()
+
     def on_rom_opened(self):
         if self.vidext:
             self.stack.setCurrentWidget(self.glwidget)
@@ -309,7 +318,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.cheats:
             self.cheats = Cheat(self)
         self.update_status(self.worker.core.rom_settings.goodname.decode())
-        QTimer.singleShot(2000, self.worker.toggle_actions)
+        """Use QTimer to wait for core initialization before toggling UI actions"""
+        self._initialize_attempt = 0
+        QTimer.singleShot(1000, self.wait_for_initialize)
 
     def on_rom_closed(self):
         if self.vidext and self.isFullScreen():
