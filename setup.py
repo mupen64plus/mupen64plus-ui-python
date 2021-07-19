@@ -68,7 +68,8 @@ class BuildQt(setuptools.Command):
         path = origpath.split(os.pathsep)
         path.append(os.path.dirname(PyQt5.__file__))
         os.putenv("PATH", os.pathsep.join(path))
-        if subprocess.call(["lrelease", ts_file, "-qm", qm_file]) > 0:
+        lr_exe = distutils.spawn.find_executable("lrelease") or distutils.spawn.find_executable("lrelease-qt5")
+        if subprocess.call([lr_exe, ts_file, "-qm", qm_file]) > 0:
             self.warn("Unable to compile translation file {}".format(qm_file))
             if not os.path.exists(qm_file):
                 sys.exit(1)
