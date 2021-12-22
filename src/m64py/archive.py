@@ -182,7 +182,11 @@ class RarCmd:
     def namelist(self):
         """Returns list of filenames in archive."""
         proc = Popen([RAR_CMD, 'vb', self.file], stdout=PIPE)
-        return [name.rstrip(os.linesep) for name in proc.stdout.readlines()]
+        lines = []
+        for name in proc.stdout.readlines():
+            name = name.decode()
+            lines.append(name.rstrip(os.linesep))
+        return lines
 
     def extract(self):
         """Extracts archive to temp dir."""
@@ -190,7 +194,7 @@ class RarCmd:
                 self.file, self.filename, self.tempdir]
         proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
-        if out[1] != '':
+        if out[1]:
             raise IOError("Error extracting file %s: %s." % (self.file, out[1]))
 
     def read(self, filename=None, size=-1):
@@ -220,7 +224,11 @@ class LzmaCmd:
     def namelist(self):
         """Returns list of filenames in archive."""
         proc = Popen([LZMA_CMD, 'l', self.file], stdout=PIPE)
-        lines = [name.rstrip(os.linesep) for name in proc.stdout.readlines() if '...A' in name]
+        lines = []
+        for name in proc.stdout.readlines():
+            name = name.decode()
+            if '...A' in name:
+                lines.append(name.rstrip(os.linesep))
         return [name[53:] for name in lines]
 
     def extract(self):
@@ -228,7 +236,7 @@ class LzmaCmd:
         cmd = [LZMA_CMD, 'x', '-o'+self.tempdir, self.file, self.filename]
         proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
-        if "Error" in out[0]:
+        if b"Error" in out[0]:
             raise IOError("Error extracting file %s: %s." % (
                 self.file, out[0]))
 
