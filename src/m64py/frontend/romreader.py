@@ -123,7 +123,7 @@ class ROMReader(QThread):
                 log.warn(str(err))
                 continue
             percent = float(filenum) / float(num_files) * 100
-            self.parent.progressBar.valueChanged.emit(percent)
+            self.parent.progressBar.valueChanged.emit(int(percent))
         self.exit()
 
     def stop(self):
