@@ -177,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         width, height = size.width(), size.height()
         dwidth, dheight = desktop.width(), desktop.height()
         cw, ch = (dwidth/2)-(width/2), (dheight/2)-(height/2)
-        self.move(cw, ch)
+        self.move(int(cw), int(ch))
 
     def connect_signals(self):
         """Connects signals."""
