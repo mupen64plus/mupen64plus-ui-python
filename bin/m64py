@@ -19,6 +19,7 @@
 import os
 import sys
 import signal
+import traceback
 
 if os.path.isdir(os.path.join("..", "src")) and os.path.isfile(
         os.path.join("..", "setup.py")):
@@ -41,6 +42,13 @@ except ImportError as err:
         os.linesep, str(err), os.linesep))
     sys.exit(1)
 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        return
+    print("".join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+    sys.exit(1)
+
+sys.excepthook = handle_exception
 
 if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_X11InitThreads)
