@@ -122,9 +122,8 @@ class Settings(QDialog, Ui_Settings):
     def connect_combo_signals(self, combomap):
         combo, button, settings = combomap
         if settings is not None:
-            if combo != self.comboInput:
-                combo.activated.connect(
-                    lambda: self.set_section(combo, button, settings))
+            combo.activated.connect(
+                lambda: self.set_section(combo, button, settings))
             button.clicked.connect(settings.show_dialog)
 
     def browse_dialog(self, args):
@@ -183,7 +182,7 @@ class Settings(QDialog, Ui_Settings):
         return size
 
     def get_parameter_help_safe(self, parameter):
-        help = self.core.config.get_parameter_help("NoCompiledJump")
+        help = self.core.config.get_parameter_help(parameter)
         if help is not None:
             return help.decode()
         return ""
@@ -198,18 +197,17 @@ class Settings(QDialog, Ui_Settings):
 
     def set_section(self, combo, button, settings):
         if settings:
-            if combo != self.comboInput:
-                section, desc = self.get_section(combo)
-                settings.set_section(section, desc)
-                self.core.config.open_section(section)
-                items = self.core.config.parameters[
-                    self.core.config.section].items()
-                if items:
-                    button.setEnabled(True)
-                else:
-                    button.setEnabled(False)
-            else:
+            section, desc = self.get_section(combo)
+            if section == "Input-Sdl":
+                section = "Input-SDL-Control1"
+            settings.set_section(section, desc)
+            self.core.config.open_section(section)
+            items = self.core.config.parameters[
+                self.core.config.section].items()
+            if items:
                 button.setEnabled(True)
+            else:
+                button.setEnabled(False)
         else:
             button.setEnabled(False)
 

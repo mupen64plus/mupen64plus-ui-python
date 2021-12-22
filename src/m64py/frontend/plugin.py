@@ -63,7 +63,8 @@ class Plugin(QDialog, Ui_PluginDialog):
             item = self.gridLayout.takeAt(0)
             self.gridLayout.removeWidget(item.widget())
             self.gridLayout.removeItem(item)
-            item.widget().hide()
+            if item.widget() is not None:
+                item.widget().hide()
             del item
 
     def add_items(self):

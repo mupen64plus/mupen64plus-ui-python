@@ -94,7 +94,7 @@ class Input(QDialog, Ui_InputDialog):
         if SDL_WasInit(SDL_INIT_VIDEO):
             SDL_QuitSubSystem(SDL_INIT_VIDEO)
 
-    def set_section(self, section):
+    def set_section(self, section, desc=None):
         self.section = section
 
     def set_enabled(self):
