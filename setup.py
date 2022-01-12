@@ -87,6 +87,8 @@ class BuildQt(setuptools.Command):
                     self.compile_ui(os.path.join(dirpath, filename))
                 elif filename.endswith('.qrc'):
                     self.compile_rc(os.path.join(dirpath, filename))
+                elif filename.endswith('.ts'):
+                    self.compile_ts(os.path.join(dirpath, filename))
 
 
 class BuildDmg(setuptools.Command):
