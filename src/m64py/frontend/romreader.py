@@ -18,6 +18,8 @@ import os
 import ctypes
 import fnmatch
 
+from pathlib import Path
+
 from PyQt5.QtCore import QThread
 
 from m64py.utils import sl
@@ -48,10 +50,8 @@ class ROMReader(QThread):
         """Returns list of files found in path."""
         files = []
         types = EXT_FILTER.split()
-        for filename in os.listdir(self.rom_path):
-            for ext in types:
-                if fnmatch.fnmatch(filename, ext):
-                    files.append(filename)
+        rom_path = Path(self.rom_path)
+        files = [file for type in types for file in rom_path.rglob(type)]
         return files
 
     def get_rom_crc(self, archive, fname):
@@ -106,8 +106,8 @@ class ROMReader(QThread):
         self.roms = []
         files = self.get_files()
         num_files = len(files)
-        for filenum, filename in enumerate(files):
-            fullpath = os.path.join(self.rom_path, filename)
+        for filenum, path in enumerate(files):
+            fullpath = str(path)
             try:
                 archive = Archive(fullpath)
                 for fname in archive.namelist:
@@ -115,9 +115,11 @@ class ROMReader(QThread):
                     if crc_tuple:
                         rom_settings = self.parent.core.get_rom_settings(
                             crc_tuple[0], crc_tuple[1])
+                        crc = "%X%X" % (crc_tuple[0], crc_tuple[1])
                         if rom_settings:
-                            crc = "%X%X" % (crc_tuple[0], crc_tuple[1])
                             self.roms.append((crc, rom_settings.goodname, fullpath, fname))
+                        else:
+                            self.roms.append((crc, path.name, fullpath, fname))
                 archive.close()
             except Exception as err:
                 log.warn(str(err))
