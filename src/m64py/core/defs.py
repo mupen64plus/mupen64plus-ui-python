@@ -196,7 +196,10 @@ class m64p_rom_settings(C.Structure):
         ('rumble', C.c_ubyte),
         ('transferpak', C.c_ubyte),
         ('mempak', C.c_ubyte),
-        ('biopak', C.c_ubyte)
+        ('biopak', C.c_ubyte),
+        ('disableextramem', C.c_ubyte),
+        ('countperop', C.c_uint),
+        ('sidmaduration', C.c_uint),
     ]
 
 
