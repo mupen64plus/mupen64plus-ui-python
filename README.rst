@@ -38,8 +38,8 @@ Dependencies
 Ubuntu
 ++++++
 
-``sudo apt install python3-pyqt5 pyqt5-dev-tools python3-pyqt5.qtopengl
-libsdl2-dev``
+
+``sudo apt install libsdl2-dev qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtopengl``
 
 PyPi
 ++++
