@@ -319,7 +319,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._initialize_attempt += 1
             if self._initialize_attempt < 10:
                 QTimer.singleShot(1000, self.wait_for_initialize)
-        else: self.worker.toggle_actions()
+        else:
+            self.window_size_triggered((self.width(), self.height()))
+            self.worker.toggle_actions()
 
     def on_rom_opened(self):
         if self.vidext:
