@@ -85,6 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.create_state_slots()
         self.create_widgets()
+
         self.recent_files = RecentFiles(self)
         self.connect_signals()
         self.worker.init()
@@ -122,29 +123,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.center_widget()
 
     def window_size_triggered(self, size):
-        width, height = size
+        window_width, window_height = size
         if self.vidext and self.worker.core.get_handle():
             fullscreen = self.window().isFullScreen()
-            # event.ignore() doesn't work on windows
+            game_height = window_height
+            game_width = window_width
+            
             if not sys.platform == "win32":
-                if not fullscreen and \
-                        bool(self.settings.get_int_safe("keep_aspect", 1)):
-                    width, height = self.keep_aspect(size)
+                if bool(self.settings.get_int_safe("keep_aspect", 1)):
+                    game_width = int((4 / 3) * window_height)
 
             self.worker.core.config.open_section("Video-General")
-            self.worker.core.config.set_parameter("ScreenWidth", width)
-            self.worker.core.config.set_parameter("ScreenHeight", height)
+            self.worker.core.config.set_parameter("ScreenWidth", game_width)
+            self.worker.core.config.set_parameter("ScreenHeight", game_height)
 
             if not fullscreen:
-                video_size = (width << 16) + height
+                video_size = (game_width << 16) + game_height
             else:
-                video_size = (width << 16) + (height + self.widgets_height)
+                video_size = (game_width << 16) + (game_height + self.widgets_height)
             if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
                 self.worker.core_state_set(M64CORE_VIDEO_SIZE, video_size)
 
-        self.set_sizes((width, height))
-        self.settings.qset.setValue("size", (width, height))
-        self.resize(width, height + self.widgets_height)
+            self.glwidget.move(int((window_width - game_width) / 2), 0)
+
+        self.set_sizes((window_width, window_height))
+        self.settings.qset.setValue("size", (window_width, window_height))
+        self.resize(window_width, window_height + self.widgets_height)
 
     def set_sizes(self, size):
         """Sets 'Window Size' radio buttons on resize event."""
@@ -194,11 +198,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def create_widgets(self):
         """Creates central widgets."""
         self.stack = QStackedWidget(self)
-        self.setCentralWidget(self.stack)
+        palette = self.stack.palette()
+        palette.setColor(self.stack.backgroundRole(), Qt.black)
+        self.stack.setPalette(palette)
+        self.stack.setAutoFillBackground(True)
+
         self.view = View(self)
-        self.stack.addWidget(self.view)
         self.glwidget = GLWidget(self)
         self.worker.video.set_widget(self)
+        
+        self.setCentralWidget(self.stack)
+        self.stack.addWidget(self.view)
         self.stack.addWidget(self.glwidget)
         self.stack.setCurrentWidget(self.view)
 
@@ -309,7 +319,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._initialize_attempt += 1
             if self._initialize_attempt < 10:
                 QTimer.singleShot(1000, self.wait_for_initialize)
-        else: self.worker.toggle_actions()
+        else:
+            self.window_size_triggered((self.width(), self.height()))
+            self.worker.toggle_actions()
 
     def on_rom_opened(self):
         if self.vidext:

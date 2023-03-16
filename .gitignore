@@ -12,3 +12,10 @@ __pycache__/
 # Resources
 *_ui.py
 *_rc.py
+
+# Generated
+src/m64py/ui/i18n/m64py_en.qm
+src/m64py/ui/i18n/m64py_de_DE.qm
+
+# Editor files
+.vscode
