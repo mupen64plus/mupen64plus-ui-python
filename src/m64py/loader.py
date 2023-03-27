@@ -79,7 +79,7 @@ class LibraryLoader(object):
             # of the default RTLD_LOCAL.  Without this, you end up with
             # libraries not being loadable, resulting in "Symbol not found"
             # errors
-            if sys.platform == 'darwin':
+            if sys.platform == "darwin":
                 return ctypes.CDLL(path, ctypes.RTLD_GLOBAL)
             else:
                 return ctypes.cdll.LoadLibrary(path)
@@ -101,9 +101,18 @@ class LibraryLoader(object):
     def getplatformpaths(self, libname):
         return []
 
+
 class DarwinLibraryLoader(LibraryLoader):
-    name_formats = ["lib%s.dylib", "lib%s.so", "lib%s.bundle",
-                    "%s.dylib", "%s.framework", "%s.so", "%s.bundle", "%s"]
+    name_formats = [
+        "lib%s.dylib",
+        "lib%s.so",
+        "lib%s.bundle",
+        "%s.dylib",
+        "%s.framework",
+        "%s.so",
+        "%s.bundle",
+        "%s",
+    ]
 
     def find_library(self, libname):
         paths = self.getpaths(libname)
@@ -145,11 +154,14 @@ class DarwinLibraryLoader(LibraryLoader):
         """
         dyld_fallback_library_path = _environ_path("DYLD_FALLBACK_LIBRARY_PATH")
         if not dyld_fallback_library_path:
-            dyld_fallback_library_path = [os.path.expanduser('~/lib'),
-                                          '/usr/local/lib', '/usr/lib']
+            dyld_fallback_library_path = [
+                os.path.expanduser("~/lib"),
+                "/usr/local/lib",
+                "/usr/lib",
+            ]
 
         dirs = []
-        if '/' in libname:
+        if "/" in libname:
             dirs.extend(_environ_path("DYLD_LIBRARY_PATH"))
         else:
             dirs.extend(_environ_path("LD_LIBRARY_PATH"))
@@ -159,14 +171,23 @@ class DarwinLibraryLoader(LibraryLoader):
 
         dirs.append(".")
 
-        dirs.append(os.path.realpath(os.path.join(
-            os.path.dirname(sys.executable), '..', 'Frameworks')))
+        dirs.append(
+            os.path.realpath(
+                os.path.join(os.path.dirname(sys.executable), "..", "Frameworks")
+            )
+        )
 
-        dirs.append(os.path.realpath(os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), '..', 'Frameworks')))
+        dirs.append(
+            os.path.realpath(
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)), "..", "Frameworks"
+                )
+            )
+        )
 
         dirs.extend(dyld_fallback_library_path)
         return dirs
+
 
 class PosixLibraryLoader(LibraryLoader):
     _ld_so_cache = None
@@ -180,27 +201,38 @@ class PosixLibraryLoader(LibraryLoader):
         # We assume the DT_RPATH and DT_RUNPATH binary sections are omitted.
 
         directories = []
-        for name in ("LD_LIBRARY_PATH",
-                     "SHLIB_PATH",  # HPUX
-                     "LIBPATH",  # OS/2, AIX
-                     "LIBRARY_PATH",  # BE/OS
-                     ):
+        for name in (
+            "LD_LIBRARY_PATH",
+            "SHLIB_PATH",  # HPUX
+            "LIBPATH",  # OS/2, AIX
+            "LIBRARY_PATH",  # BE/OS
+        ):
             if name in os.environ:
                 directories.extend(os.environ[name].split(os.pathsep))
         directories.extend(self.other_dirs)
         directories.append(".")
 
         try:
-            directories.extend([dir.strip() for dir in open('/etc/ld.so.conf')])
+            directories.extend([dir.strip() for dir in open("/etc/ld.so.conf")])
         except IOError:
             pass
 
-        directories.extend(['/lib64', '/lib', '/usr/lib64', '/usr/lib',
-                            '/usr/games/lib64', '/usr/games/lib', '/usr/local/lib',
-                            '/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu'])
+        directories.extend(
+            [
+                "/lib64",
+                "/lib",
+                "/usr/lib64",
+                "/usr/lib",
+                "/usr/games/lib64",
+                "/usr/games/lib",
+                "/usr/local/lib",
+                "/usr/lib/x86_64-linux-gnu",
+                "/usr/lib/i386-linux-gnu",
+            ]
+        )
 
         cache = {}
-        lib_re = re.compile(r'lib(.*)\.s[ol]')
+        lib_re = re.compile(r"lib(.*)\.s[ol]")
         for d in directories:
             try:
                 for path in glob.glob("%s/*.s[ol]*" % d):
@@ -241,8 +273,7 @@ class _WindowsLibrary(object):
             self.cdll = ctypes.cdll.LoadLibrary(path)
             self.windll = ctypes.windll.LoadLibrary(path)
         except WindowsError:
-            os.environ['PATH'] = ';'.join(
-                [os.path.dirname(path), os.environ['PATH']])
+            os.environ["PATH"] = ";".join([os.path.dirname(path), os.environ["PATH"]])
             path = os.path.basename(path)
             self.cdll = ctypes.cdll.LoadLibrary(path)
             self.windll = ctypes.windll.LoadLibrary(path)
@@ -255,6 +286,7 @@ class _WindowsLibrary(object):
                 return getattr(self.windll, name)
             except AttributeError:
                 raise
+
 
 class WindowsLibraryLoader(LibraryLoader):
     name_formats = ["%s.dll", "lib%s.dll", "%slib.dll"]
@@ -294,10 +326,11 @@ class WindowsLibraryLoader(LibraryLoader):
                 if path:
                     yield path
 
+
 loaderclass = {
-    "darwin":   DarwinLibraryLoader,
-    "cygwin":   WindowsLibraryLoader,
-    "win32":    WindowsLibraryLoader
+    "darwin": DarwinLibraryLoader,
+    "cygwin": WindowsLibraryLoader,
+    "win32": WindowsLibraryLoader,
 }
 
 loader = loaderclass.get(sys.platform, PosixLibraryLoader)()

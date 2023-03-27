@@ -29,25 +29,18 @@ if sys.platform.startswith("linux"):
         "/usr/games/lib/mupen64plus",
         "/usr/lib/x86_64-linux-gnu/mupen64plus",
         "/usr/lib/i386-linux-gnu/mupen64plus",
-        "."
+        ".",
     ]
 elif sys.platform.startswith("openbsd"):
     DLL_EXT = ".so"
     DLL_FILTER = ""
     DEFAULT_DYNLIB = "libmupen64plus.so"
-    SEARCH_DIRS = [
-        "/usr/local/lib/mupen64plus",
-        "."
-    ]
+    SEARCH_DIRS = ["/usr/local/lib/mupen64plus", "."]
 elif sys.platform == "darwin":
     DLL_EXT = ".dylib"
     DLL_FILTER = ".dylib"
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
-    SEARCH_DIRS = [
-        "/usr/local/lib/mupen64plus",
-        "/usr/lib/mupen64plus",
-        "."
-    ]
+    SEARCH_DIRS = ["/usr/local/lib/mupen64plus", "/usr/lib/mupen64plus", "."]
 elif sys.platform == "win32":
     DLL_EXT = ".dll"
     DLL_FILTER = ".dll"

@@ -17,8 +17,8 @@
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 from PyQt5.QtCore import Qt, QRectF
 
-class ImageView(QGraphicsView):
 
+class ImageView(QGraphicsView):
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
         self.setScene(QGraphicsScene())
@@ -27,8 +27,7 @@ class ImageView(QGraphicsView):
         size = event.size()
         for item in self.scene().items():
             pixmap = item.pixmap()
-            pixmap = pixmap.scaled(
-                size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             item.setPixmap(pixmap)
             self.ensureVisible(item)
             self.centerOn(item)

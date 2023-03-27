@@ -20,6 +20,7 @@ import re
 def which(prog):
     def is_exe(fpath):
         return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
     fpath, fname = os.path.split(prog)
     if fpath:
         if is_exe(prog):
@@ -33,17 +34,16 @@ def which(prog):
 
 
 def version_split(ver):
-    return "%d.%d.%d" % (
-        ((ver >> 16) & 0xffff),
-        ((ver >> 8) & 0xff),
-        ((ver & 0xff)))
+    return "%d.%d.%d" % (((ver >> 16) & 0xFFFF), ((ver >> 8) & 0xFF), ((ver & 0xFF)))
 
 
 def sl(mot):
-    return ((mot & 0x000000FF) << 24) |\
-           ((mot & 0x0000FF00) << 8) |\
-           ((mot & 0x00FF0000) >> 8) |\
-           ((mot & 0xFF000000) >> 24)
+    return (
+        ((mot & 0x000000FF) << 24)
+        | ((mot & 0x0000FF00) << 8)
+        | ((mot & 0x00FF0000) >> 8)
+        | ((mot & 0xFF000000) >> 24)
+    )
 
 
 def format_tooltip(tooltip):
@@ -70,11 +70,10 @@ def format_options(param_help):
     opts = {}
     if not param_help:
         return None
-    items = re.findall(
-        "(\d+|[\d,-]+)\s?=\s?([\w/ %-]+)", param_help)
+    items = re.findall("(\d+|[\d,-]+)\s?=\s?([\w/ %-]+)", param_help)
     for item in items:
         key, value = item
-        if '-' in key[1:] or ',' in key:
+        if "-" in key[1:] or "," in key:
             return None
         else:
             opts[int(key)] = value
