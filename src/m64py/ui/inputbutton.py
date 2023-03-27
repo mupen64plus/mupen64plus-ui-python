@@ -27,8 +27,8 @@ SDL_HAT_RIGHT = 0x02
 SDL_HAT_DOWN = 0x04
 SDL_HAT_LEFT = 0x08
 
-class InputButton(QPushButton):
 
+class InputButton(QPushButton):
     def __init__(self, parent=None):
         QPushButton.__init__(self, parent)
         self.key = None
@@ -39,14 +39,13 @@ class InputButton(QPushButton):
 
     def showEvent(self, event):
         dialog = self.parent.parentWidget().parent()
-        if hasattr(dialog, 'joystick'):
+        if hasattr(dialog, "joystick"):
             self.input = dialog
             self.joystick = dialog.joystick
         else:
             self.input = dialog.parent()
             self.joystick = dialog.parent().joystick
         self.connect_signals()
-
 
     def connect_signals(self):
         self.joystick.axis_value_changed.connect(self.on_axis_value_changed)
@@ -86,7 +85,8 @@ class InputButton(QPushButton):
         self.setText(self.tr("Press Key"))
         self.setCheckable(True)
         self.window().statusLabel.setText(
-            self.tr("Press <em>Escape</em> to cancel, <em>Backspace</em> to delete."))
+            self.tr("Press <em>Escape</em> to cancel, <em>Backspace</em> to delete.")
+        )
 
     def focusOutEvent(self, event):
         if self.input.is_joystick:

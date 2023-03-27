@@ -27,6 +27,7 @@ from m64py.utils import which
 
 try:
     import rarfile
+
     HAS_RAR = True
     RAR_CMD = None
 except ImportError:
@@ -35,6 +36,7 @@ except ImportError:
 
 try:
     from py7zlib import Archive7z
+
     HAS_7Z = True
     LZMA_CMD = None
 except ImportError:
@@ -44,17 +46,19 @@ except ImportError:
 ZIP, GZIP, BZIP, RAR, LZMA, ROM = range(6)
 
 EXT_FILTER = "*.*64 *.zip *.gz *.bz2"
-if HAS_RAR or RAR_CMD: EXT_FILTER += " *.rar"
-if HAS_7Z or LZMA_CMD: EXT_FILTER += " *.7z"
+if HAS_RAR or RAR_CMD:
+    EXT_FILTER += " *.rar"
+if HAS_7Z or LZMA_CMD:
+    EXT_FILTER += " *.7z"
 
 ROM_TYPE = {
-    b'80371240': 'z64 (native)',
-    b'37804012': 'v64 (byteswapped)',
-    b'40123780': 'n64 (wordswapped)'
+    b"80371240": "z64 (native)",
+    b"37804012": "v64 (byteswapped)",
+    b"40123780": "n64 (wordswapped)",
 }
 
 
-class Archive():
+class Archive:
     """Extracts ROM file from archive."""
 
     def __init__(self, filename):
@@ -80,7 +84,9 @@ class Archive():
             elif RAR_CMD:
                 self.fd = RarCmd(self.file)
             else:
-                raise IOError("rarfile module or rar/unrar is needed for %s." % self.file)
+                raise IOError(
+                    "rarfile module or rar/unrar is needed for %s." % self.file
+                )
         elif self.filetype == LZMA:
             if HAS_7Z:
                 self.fd = Archive7z(open(self.file, "rb"))
@@ -154,15 +160,15 @@ class Archive():
         fd = open(self.file, "rb")
         magic = fd.read(4)
         fd.close()
-        if magic == b'PK\03\04':
+        if magic == b"PK\03\04":
             return ZIP
-        elif magic.startswith(b'\037\213'):
+        elif magic.startswith(b"\037\213"):
             return GZIP
-        elif magic.startswith(b'BZh'):
+        elif magic.startswith(b"BZh"):
             return BZIP
-        elif magic == b'Rar!':
+        elif magic == b"Rar!":
             return RAR
-        elif magic == b'7z\xbc\xaf':
+        elif magic == b"7z\xbc\xaf":
             return LZMA
         elif binascii.hexlify(magic) in ROM_TYPE.keys():
             return ROM
@@ -181,7 +187,7 @@ class RarCmd:
 
     def namelist(self):
         """Returns list of filenames in archive."""
-        proc = Popen([RAR_CMD, 'vb', self.file], stdout=PIPE)
+        proc = Popen([RAR_CMD, "vb", self.file], stdout=PIPE)
         lines = []
         for name in proc.stdout.readlines():
             name = name.decode()
@@ -190,8 +196,18 @@ class RarCmd:
 
     def extract(self):
         """Extracts archive to temp dir."""
-        cmd = [RAR_CMD, 'x', '-kb', '-p-', '-o-', '-inul', '--',
-                self.file, self.filename, self.tempdir]
+        cmd = [
+            RAR_CMD,
+            "x",
+            "-kb",
+            "-p-",
+            "-o-",
+            "-inul",
+            "--",
+            self.file,
+            self.filename,
+            self.tempdir,
+        ]
         proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
         if out[1]:
@@ -223,22 +239,21 @@ class LzmaCmd:
 
     def namelist(self):
         """Returns list of filenames in archive."""
-        proc = Popen([LZMA_CMD, 'l', self.file], stdout=PIPE)
+        proc = Popen([LZMA_CMD, "l", self.file], stdout=PIPE)
         lines = []
         for name in proc.stdout.readlines():
             name = name.decode()
-            if '...A' in name:
+            if "...A" in name:
                 lines.append(name.rstrip(os.linesep))
         return [name[53:] for name in lines]
 
     def extract(self):
         """Extracts archive to temp dir."""
-        cmd = [LZMA_CMD, 'x', '-o'+self.tempdir, self.file, self.filename]
+        cmd = [LZMA_CMD, "x", "-o" + self.tempdir, self.file, self.filename]
         proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
         out = proc.communicate()
         if b"Error" in out[0]:
-            raise IOError("Error extracting file %s: %s." % (
-                self.file, out[0]))
+            raise IOError("Error extracting file %s: %s." % (self.file, out[0]))
 
     def read(self, filename=None, size=-1):
         """Reads data."""

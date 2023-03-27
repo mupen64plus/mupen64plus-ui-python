@@ -18,9 +18,11 @@ from optparse import OptionParser
 
 from m64py.core.defs import FRONTEND_VERSION
 
-usage = 'usage: %prog <romfile>'
+usage = "usage: %prog <romfile>"
 parser = OptionParser(usage=usage, version="M64Py Version %s" % FRONTEND_VERSION)
-parser.add_option("-v", "--verbose", action="store_true", dest="verbose", help="show verbose output")
+parser.add_option(
+    "-v", "--verbose", action="store_true", dest="verbose", help="show verbose output"
+)
 opts, args = parser.parse_args()
 
 VERBOSE = opts.verbose
