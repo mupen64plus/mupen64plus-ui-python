@@ -36,7 +36,7 @@ Source: "m64py\PyQt5\*"; DestDir: "{app}\PyQt5"; Flags: recursesubdirs
 Source: "m64py\AUTHORS"; DestDir: "{app}";
 Source: "m64py\COPYING"; DestDir: "{app}";
 Source: "m64py\README.rst"; DestDir: "{app}";
-Source: "m64py\ChangeLog"; DestDir: "{app}";
+Source: "m64py\CHANGELOG"; DestDir: "{app}";
 
 [Icons]
 Name: {group}\M64Py; Filename: {app}\m64py.exe; Tasks: desktopicon;
