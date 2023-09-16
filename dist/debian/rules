@@ -24,7 +24,7 @@ override_dh_auto_install:
 	mv $(DESTDIR)/usr/share/m64py/m64py/m64py $(DESTDIR)/usr/share/m64py/m64py_run
 
 override_dh_installchangelogs:
-	dh_installchangelogs ChangeLog
+	dh_installchangelogs CHANGELOG
 
 override_dh_gencontrol:
 	dh_gencontrol -pm64py -u-v$(VERSION)-$(RELEASE)
