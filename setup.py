@@ -61,6 +61,7 @@ class BuildQt(setuptools.Command):
 
     def compile_ts(self, ts_file):
         import PyQt5
+        from PyQt5.QtCore import QLibraryInfo
         qm_file = os.path.splitext(ts_file)[0] + ".qm"
         if not distutils.dep_util.newer(ts_file, qm_file):
             return
@@ -68,7 +69,12 @@ class BuildQt(setuptools.Command):
         path = origpath.split(os.pathsep)
         path.append(os.path.dirname(PyQt5.__file__))
         os.putenv("PATH", os.pathsep.join(path))
-        lr_exe = distutils.spawn.find_executable("lrelease") or distutils.spawn.find_executable("lrelease-qt5")
+        lr_exe = QLibraryInfo.location(QLibraryInfo.LibraryLocation.BinariesPath)
+        if lr_exe:
+            lr_exe = os.path.join(lr_exe, "lrelease")
+            if not os.path.exists(lr_exe):
+                lr_exe = None
+        lr_exe = lr_exe or distutils.spawn.find_executable("lrelease") or distutils.spawn.find_executable("lrelease-qt5")
         if lr_exe is None:
             self.warn("Unable to find Qt's Linguist lrelease or lrelease-qt5 tools")
             sys.exit(1)
