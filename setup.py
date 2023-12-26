@@ -15,6 +15,11 @@ import distutils.command.build as distutils_build
 import distutils.command.clean as distutils_clean
 import setuptools
 
+try:
+    from setuptools.modified import newer
+except ImportError:
+    from distutils.dep_util import newer
+
 # Add the src folder to the path
 sys.path.insert(0, os.path.realpath("src"))
 
@@ -39,7 +44,7 @@ class BuildQt(setuptools.Command):
     def compile_rc(self, qrc_file):
         import PyQt5
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
-        if not distutils.dep_util.newer(qrc_file, py_file):
+        if not newer(qrc_file, py_file):
             return
         origpath = os.getenv("PATH")
         path = origpath.split(os.pathsep)
@@ -54,7 +59,7 @@ class BuildQt(setuptools.Command):
     def compile_ui(self, ui_file):
         from PyQt5 import uic
         py_file = os.path.splitext(ui_file)[0] + "_ui.py"
-        if not distutils.dep_util.newer(ui_file, py_file):
+        if not newer(ui_file, py_file):
             return
         with open(py_file, "w") as a_file:
             uic.compileUi(ui_file, a_file, from_imports=True)
@@ -63,7 +68,7 @@ class BuildQt(setuptools.Command):
         import PyQt5
         from PyQt5.QtCore import QLibraryInfo
         qm_file = os.path.splitext(ts_file)[0] + ".qm"
-        if not distutils.dep_util.newer(ts_file, qm_file):
+        if not newer(ts_file, qm_file):
             return
         origpath = os.getenv("PATH")
         path = origpath.split(os.pathsep)
