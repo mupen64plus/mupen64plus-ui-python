@@ -24,6 +24,7 @@ except:
     glimport = False
 
 from PyQt5.QtOpenGL import QGLFormat
+from PyQt5.QtCore import QCoreApplication
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -176,6 +177,7 @@ class Video():
         """Swaps the front/back buffers after
         rendering an output video frame. """
         self.widget.swapBuffers()
+        QCoreApplication.processEvents()
         return M64ERR_SUCCESS
 
     def resize_window(self, width, height):

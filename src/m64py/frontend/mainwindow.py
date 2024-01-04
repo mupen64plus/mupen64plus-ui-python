@@ -243,15 +243,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
+        if self.worker.is_stopping:
+            return
         if not filepath:
             action = self.sender()
             filepath = action.data()
         self.worker.core_state_query(M64CORE_EMU_STATE)
+        def after():
+            self.worker.set_filepath(filepath, filename)
+            self.worker.start()
+            self.raise_()
         if self.worker.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
-            self.worker.stop()
-        self.worker.set_filepath(filepath, filename)
-        self.worker.start()
-        self.raise_()
+            self.worker.stop(and_then=after)
+        else:
+            after()
 
     def update_status(self, status):
         """Updates label in status bar."""
