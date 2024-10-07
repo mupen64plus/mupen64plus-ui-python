@@ -73,7 +73,7 @@ class Plugin(QDialog, Ui_PluginDialog):
             param_name, param_type = item
             param_name = param_name.decode()
             param_help = self.config.get_parameter_help(param_name).decode()
-            param_desc = re.split(':|\(|--', param_help)[0].strip()
+            param_desc = re.split(r':|\(|--', param_help)[0].strip()
             if len(param_desc) > 35 or len(param_name) > len(param_desc):
                 param_desc = param_name
             param_help = '[' + param_name + '] ' + param_help

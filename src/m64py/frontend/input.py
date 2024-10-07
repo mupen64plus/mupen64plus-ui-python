@@ -28,8 +28,8 @@ from m64py.frontend.joystick import Joystick
 from m64py.frontend.keymap import SCANCODE2KEYCODE, KEYCODE2SCANCODE
 from m64py.ui.input_ui import Ui_InputDialog
 
-KEY_RE = re.compile("([a-z]+)\((.*)\)")
-AXIS_RE = re.compile("([a-z]+)\((.*?),(.*?)\)")
+KEY_RE = re.compile(r"([a-z]+)\((.*)\)")
+AXIS_RE = re.compile(r"([a-z]+)\((.*?),(.*?)\)")
 
 
 class Input(QDialog, Ui_InputDialog):

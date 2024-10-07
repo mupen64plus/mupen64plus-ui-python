@@ -191,7 +191,7 @@ class Cheat(QDialog, Ui_CheatDialog):
             self.parent.worker.core.rom_header.Country_code & 0xff)
         rom_section = rom_section.upper()
 
-        code_re = re.compile('^([0-9A-F]{8})\s+([?|0-9A-F]{4})\s?(.*)$', re.M)
+        code_re = re.compile(r'^([0-9A-F]{8})\s+([?|0-9A-F]{4})\s?(.*)$', re.M)
 
         try:
             fd = open(cheat_file, 'r')
