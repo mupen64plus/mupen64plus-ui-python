@@ -35,6 +35,10 @@ class Log:
         if self.logview:
             self.logview.msg_written.emit(msg)
 
+    def flush(self):
+        if self.out:
+            self.out.flush()
+
 
 class LogView(QDialog, Ui_LogView):
     msg_written = pyqtSignal(str)

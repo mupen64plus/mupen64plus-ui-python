@@ -20,9 +20,10 @@ from m64py.platform import DLL_EXT
 
 CORE_NAME = "mupen64plus"
 CORE_API_VERSION = 0x20001
-CONFIG_API_VERSION = 0x20000
-MINIMUM_CORE_VERSION = 0x016300
-FRONTEND_VERSION = "0.2.5"
+CONFIG_API_VERSION = 0x20302
+VIDEXT_API_VERSION = 0x030300
+MINIMUM_CORE_VERSION = 0x020600
+FRONTEND_VERSION = "0.2.6"
 
 SIZE_1X = (320, 240)
 SIZE_2X = (640, 480)
@@ -69,6 +70,8 @@ M64VIDEO_NONE = 1
 M64VIDEO_WINDOWED = 2
 M64VIDEO_FULLSCREEN = 3
 
+M64VIDEOFLAG_SUPPORT_RESIZING = 1
+
 M64CORE_EMU_STATE = 1
 M64CORE_VIDEO_MODE = 2
 M64CORE_SAVESTATE_SLOT = 3
@@ -80,6 +83,7 @@ M64CORE_AUDIO_MUTE = 8
 M64CORE_INPUT_GAMESHARK = 9
 M64CORE_STATE_LOADCOMPLETE = 10
 M64CORE_STATE_SAVECOMPLETE = 11
+M64CORE_SCREENSHOT_CAPTURED = 12
 
 M64CMD_NOP = 0
 M64CMD_ROM_OPEN = 1
@@ -102,6 +106,15 @@ M64CMD_CORE_STATE_SET = 17
 M64CMD_READ_SCREEN = 18
 M64CMD_RESET = 19
 M64CMD_ADVANCE_FRAME = 20
+M64CMD_SET_MEDIA_LOADER = 21
+M64CMD_NETPLAY_INIT = 22
+M64CMD_NETPLAY_CONTROL_PLAYER = 23
+M64CMD_NETPLAY_GET_VERSION = 24
+M64CMD_NETPLAY_CLOSE = 25
+M64CMD_PIF_OPEN = 26
+M64CMD_ROM_SET_SETTINGS = 27
+M64CMD_DISK_OPEN = 28
+M64CMD_DISK_CLOSE = 29
 
 M64P_GL_DOUBLEBUFFER = 1
 M64P_GL_BUFFER_SIZE = 2
@@ -116,6 +129,10 @@ M64P_GL_MULTISAMPLESAMPLES = 10
 M64P_GL_CONTEXT_MAJOR_VERSION = 11
 M64P_GL_CONTEXT_MINOR_VERSION = 12
 M64P_GL_CONTEXT_PROFILE_MASK = 13
+
+M64P_GL_CONTEXT_PROFILE_CORE = 0
+M64P_GL_CONTEXT_PROFILE_COMPATIBILITY = 1
+M64P_GL_CONTEXT_PROFILE_ES = 2
 
 M64TYPE_INT = 1
 M64TYPE_FLOAT = 2
@@ -166,27 +183,28 @@ m64p_error = C.c_int
 m64p_GLattr = C.c_int
 
 
-class m64p_rom_header(C.Structure):
+class M64pRomHeader(C.Structure):
     _fields_ = [
-        ('init_PI_BSB_DOM1_LAT_REG', C.c_ubyte),
-        ('init_PI_BSB_DOM1_PGS_REG', C.c_ubyte),
-        ('init_PI_BSB_DOM1_PWD_REG', C.c_ubyte),
-        ('init_PI_BSB_DOM1_PGS_REG2', C.c_ubyte),
-        ('ClockRate', C.c_uint),
-        ('PC', C.c_uint),
-        ('Release', C.c_uint),
-        ('CRC1', C.c_uint),
-        ('CRC2', C.c_uint),
-        ('Unknown', C.c_uint * 2),
+        ('init_PI_BSB_DOM1_LAT_REG', C.c_uint8),
+        ('init_PI_BSB_DOM1_PGS_REG', C.c_uint8),
+        ('init_PI_BSB_DOM1_PWD_REG', C.c_uint8),
+        ('init_PI_BSB_DOM1_PGS_REG2', C.c_uint8),
+        ('ClockRate', C.c_uint32),
+        ('PC', C.c_uint32),
+        ('Release', C.c_uint32),
+        ('CRC1', C.c_uint32),
+        ('CRC2', C.c_uint32),
+        ('Unknown', C.c_uint32 * 2),
         ('Name', C.c_char * 20),
-        ('unknown', C.c_uint),
-        ('Manufacturer_ID', C.c_uint),
-        ('Cartridge_ID', C.c_ushort),
-        ('Country_code', C.c_ushort)
+        ('unknown', C.c_uint32),
+        ('Manufacturer_ID', C.c_uint32),
+        ('Cartridge_ID', C.c_uint16),
+        ('Country_code', C.c_uint8),
+        ('Version', C.c_uint8)
     ]
 
 
-class m64p_rom_settings(C.Structure):
+class M64pRomSettings(C.Structure):
     _fields_ = [
         ('goodname', C.c_char * 256),
         ('MD5', C.c_char * 33),
@@ -196,18 +214,22 @@ class m64p_rom_settings(C.Structure):
         ('rumble', C.c_ubyte),
         ('transferpak', C.c_ubyte),
         ('mempak', C.c_ubyte),
-        ('biopak', C.c_ubyte)
+        ('biopak', C.c_ubyte),
+        ('disableextramem', C.c_ubyte),
+        ('countperop', C.c_uint),
+        ('sidmaduration', C.c_uint),
+        ('aidmamodifier', C.c_uint)
     ]
 
 
-class m64p_cheat_code(C.Structure):
+class M64pCheatCode(C.Structure):
     _fields_ = [
-        ('address', C.c_uint),
+        ('address', C.c_uint32),
         ('value', C.c_int),
     ]
 
 
-class m64p_2d_size(C.Structure):
+class M64p2dSize(C.Structure):
     _fields_ = [
         ('uiWidth', C.c_uint),
         ('uiHeight', C.c_uint)
@@ -215,8 +237,10 @@ class m64p_2d_size(C.Structure):
 
 FuncInit = C.CFUNCTYPE(m64p_error)
 FuncQuit = C.CFUNCTYPE(m64p_error)
-FuncListModes = C.CFUNCTYPE(m64p_error, C.POINTER(m64p_2d_size), C.POINTER(C.c_int))
-FuncSetMode = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int)
+FuncListModes = C.CFUNCTYPE(m64p_error, C.POINTER(M64p2dSize), C.POINTER(C.c_int))
+FuncListRates = C.CFUNCTYPE(m64p_error, M64p2dSize, C.POINTER(C.c_int), C.POINTER(C.c_int))
+FuncSetMode = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int, C.c_int)
+FuncSetModeWithRate = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int, C.c_int, C.c_int, C.c_int, C.c_int)
 FuncGLGetProc = C.CFUNCTYPE(C.c_void_p, C.c_char_p)
 FuncGLSetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.c_int)
 FuncGLGetAttr = C.CFUNCTYPE(m64p_error, m64p_GLattr, C.POINTER(C.c_int))
@@ -224,16 +248,21 @@ FuncGLSwapBuf = C.CFUNCTYPE(m64p_error)
 FuncSetCaption = C.CFUNCTYPE(m64p_error, C.c_char_p)
 FuncToggleFS = C.CFUNCTYPE(m64p_error)
 FuncResizeWindow = C.CFUNCTYPE(m64p_error, C.c_int, C.c_int)
-FuncGLGetDefaultFramebuffer = C.CFUNCTYPE(C.c_uint)
+FuncGLGetDefaultFramebuffer = C.CFUNCTYPE(C.c_uint32)
+FuncInitWithRenderMode = C.CFUNCTYPE(m64p_error, C.c_int)
+FuncVKGetSurface = C.CFUNCTYPE(m64p_error, C.POINTER(C.c_void_p), C.c_void_p)
+FuncVKGetInstanceExtensions = C.CFUNCTYPE(m64p_error, C.POINTER(C.c_char_p), C.POINTER(C.c_uint32))
 
 
-class m64p_video_extension_functions(C.Structure):
+class M64pVideoExtensionFunctions(C.Structure):
     _fields_ = [
         ('Functions', C.c_uint),
         ('VidExtFuncInit', FuncInit),
         ('VidExtFuncQuit', FuncQuit),
         ('VidExtFuncListModes', FuncListModes),
+        ('VidExtFuncListRates', FuncListRates),
         ('VidExtFuncSetMode', FuncSetMode),
+        ('VidExtFuncSetModeWithRate', FuncSetModeWithRate),
         ('VidExtFuncGLGetProc', FuncGLGetProc),
         ('VidExtFuncGLSetAttr', FuncGLSetAttr),
         ('VidExtFuncGLGetAttr', FuncGLGetAttr),
@@ -241,12 +270,8 @@ class m64p_video_extension_functions(C.Structure):
         ('VidExtFuncSetCaption', FuncSetCaption),
         ('VidExtFuncToggleFS', FuncToggleFS),
         ('VidExtFuncResizeWindow', FuncResizeWindow),
-        ('VidExtFuncGLGetDefaultFramebuffer', FuncGLGetDefaultFramebuffer)
+        ('VidExtFuncGLGetDefaultFramebuffer', FuncGLGetDefaultFramebuffer),
+        ('VidExtFuncInitWithRenderMode', FuncInitWithRenderMode),
+        ('VidExtFuncVKGetSurface', FuncVKGetSurface),
+        ('VidExtFuncVKGetInstanceExtensions', FuncVKGetInstanceExtensions)
     ]
-
-LOGO = " __  __                         __   _  _   ____  _            \n"
-LOGO += "|  \/  |_   _ _ __   ___ _ __  / /_ | || | |  _ \| |_   _ ___  \n"
-LOGO += "| |\/| | | | | '_ \ / _ \ '_ \| '_ \| || |_| |_) | | | | / __| \n"
-LOGO += "| |  | | |_| | |_) |  __/ | | | (_) |__   _|  __/| | |_| \__ \ \n"
-LOGO += "|_|  |_|\__,_| .__/ \___|_| |_|\___/   |_| |_|   |_|\__,_|___/ \n"
-LOGO += "             |_|                                               \n"

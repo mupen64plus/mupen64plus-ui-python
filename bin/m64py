@@ -36,7 +36,7 @@ except ImportError as err:
     sys.exit(1)
 
 try:
-    from m64py.core.defs import FRONTEND_VERSION, LOGO
+    from m64py.core.defs import FRONTEND_VERSION
 except ImportError as err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
@@ -51,8 +51,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_exception
 
 if __name__ == "__main__":
-    QApplication.setAttribute(Qt.AA_X11InitThreads)
-
     app = QApplication(sys.argv)
     from m64py.opts import opts, args
 
@@ -61,8 +59,8 @@ if __name__ == "__main__":
     if translator.load(":i18n/m64py_" + locale, ":/"):
         app.installTranslator(translator)
 
-    sys.stderr.write("%s\nM64Py - A frontend for Mupen64Plus version %s\n\n" % (
-        LOGO, FRONTEND_VERSION))
+    sys.stderr.write("M64Py - A frontend for Mupen64Plus version %s\n\n" % (
+        FRONTEND_VERSION))
 
     from m64py.frontend.mainwindow import MainWindow
     window = MainWindow((opts, args))

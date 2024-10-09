@@ -140,6 +140,7 @@ class Plugin(QDialog, Ui_PluginDialog):
     def save_items(self):
         for param_name, item in self.widgets.items():
             widget, widget_class, opts = item
+            param_value = None
             if widget_class == QLineEdit:
                 param_value = widget.text().encode()
             elif widget_class == QSpinBox:

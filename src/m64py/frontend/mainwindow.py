@@ -17,10 +17,11 @@
 import os
 import sys
 
+from PyQt5.QtOpenGL import QGLContext
 from PyQt5.QtGui import QKeySequence, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy
-from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy, QDialog
+from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot, QThread
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
@@ -34,6 +35,7 @@ from m64py.frontend.settings import Settings
 from m64py.frontend.glwidget import GLWidget
 from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.recentfiles import RecentFiles
+from m64py.frontend.keymap import QT2SDL2
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -48,12 +50,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     save_image = pyqtSignal(bool)
     info_dialog = pyqtSignal(str)
     archive_dialog = pyqtSignal(list)
+    vidext_init = pyqtSignal(QGLContext)
+    toggle_fs = pyqtSignal()
 
     def __init__(self, optparse):
         """Constructor"""
         QMainWindow.__init__(self, None)
         self.setupUi(self)
         self.opts, self.args = optparse
+
+        self._initialize_attempt = 0
 
         logview.setParent(self)
         logview.setWindowFlags(Qt.Dialog)
@@ -71,7 +77,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             SIZE_3X: self.action3X}
 
         self.slots = {}
-        self.view = None
         self.stack = None
         self.glwidget = None
         self.cheats = None
@@ -97,16 +102,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if event.type() == QEvent.WindowStateChange:
             if event.oldState() == Qt.WindowMaximized:
                 self.maximized = False
-            elif event.oldState() == Qt.WindowNoState and \
-                    self.windowState() == Qt.WindowMaximized:
+            elif event.oldState() == Qt.WindowNoState and self.windowState() == Qt.WindowMaximized:
                 self.maximized = True
 
     def resizeEvent(self, event):
         event.ignore()
         size = event.size()
-        width, height = size.width(), size.height()
         if self.widgets_height:
-            width, height = size.width(), size.height() - self.widgets_height
+            width, height = size.width(), size.height()
             self.window_size_triggered((width, height))
         else:
             width, height = size.width(), size.height()
@@ -122,11 +125,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.create_size_actions()
             self.center_widget()
 
+    def mouseDoubleClickEvent(self, event):
+        self.toggle_fs.emit()
+
+    def keyPressEvent(self, event):
+        if self.worker.state == M64EMU_RUNNING:
+            key = event.key()
+            modifiers = event.modifiers()
+            if modifiers & Qt.AltModifier and \
+                    (key == Qt.Key_Enter or key == Qt.Key_Return):
+                self.toggle_fs.emit()
+            elif key == Qt.Key_F3:
+                self.worker.save_title()
+            elif key == Qt.Key_F4:
+                self.worker.save_snapshot()
+            else:
+                try:
+                    sdl_key = QT2SDL2[key]
+                    self.worker.send_sdl_keydown(sdl_key)
+                except KeyError:
+                    pass
+
+    def keyReleaseEvent(self, event):
+        if self.worker.state == M64EMU_RUNNING:
+            key = event.key()
+            try:
+                sdl_key = QT2SDL2[key]
+                self.worker.send_sdl_keyup(sdl_key)
+            except KeyError:
+                pass
+
     def window_size_triggered(self, size):
         window_width, window_height = size
         if self.vidext and self.worker.core.get_handle():
-            fullscreen = self.window().isFullScreen()
-            game_height = window_height
+            game_height = window_height - self.widgets_height
             game_width = window_width
             
             if not sys.platform == "win32":
@@ -137,18 +169,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.worker.core.config.set_parameter("ScreenWidth", game_width)
             self.worker.core.config.set_parameter("ScreenHeight", game_height)
 
-            if not fullscreen:
-                video_size = (game_width << 16) + game_height
-            else:
-                video_size = (game_width << 16) + (game_height + self.widgets_height)
+            video_size = (game_width << 16) + game_height
             if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
                 self.worker.core_state_set(M64CORE_VIDEO_SIZE, video_size)
 
             self.glwidget.move(int((window_width - game_width) / 2), 0)
 
-        self.set_sizes((window_width, window_height))
-        self.settings.qset.setValue("size", (window_width, window_height))
-        self.resize(window_width, window_height + self.widgets_height)
+        self.set_sizes((window_width, window_height - self.widgets_height))
+        self.settings.qset.setValue("size", (window_width, window_height - self.widgets_height))
+        self.resize(window_width, window_height)
 
     def set_sizes(self, size):
         """Sets 'Window Size' radio buttons on resize event."""
@@ -194,23 +223,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.save_image.connect(self.on_save_image)
         self.info_dialog.connect(self.on_info_dialog)
         self.archive_dialog.connect(self.on_archive_dialog)
+        self.toggle_fs.connect(self.on_toggle_fs)
+        self.vidext_init.connect(self.on_vidext_init)
 
     def create_widgets(self):
         """Creates central widgets."""
-        self.stack = QStackedWidget(self)
+        self.stack = QStackedWidget(None)
         palette = self.stack.palette()
         palette.setColor(self.stack.backgroundRole(), Qt.black)
         self.stack.setPalette(palette)
         self.stack.setAutoFillBackground(True)
 
-        self.view = View(self)
         self.glwidget = GLWidget(self)
-        self.worker.video.set_widget(self)
-        
+
+        self.worker.video.set_widget(self, self.glwidget)
         self.setCentralWidget(self.stack)
-        self.stack.addWidget(self.view)
+
+        self.stack.addWidget(View(self))
         self.stack.addWidget(self.glwidget)
-        self.stack.setCurrentWidget(self.view)
+        self.stack.setCurrentIndex(0)
 
     def create_state_slots(self):
         """Creates state slot actions."""
@@ -240,6 +271,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             action.setText("%dX" % num)
             action.setToolTip("%sx%s" % (width, height))
             action.triggered.connect(lambda t, wi=w, he=h: self.resize(wi, he))
+
+    def on_vidext_init(self, context):
+        context.moveToThread(self.worker)
+
+    def on_toggle_fs(self):
+        if self.isFullScreen():
+            self.menubar.show()
+            self.statusbar.show()
+        else:
+            self.menubar.hide()
+            self.statusbar.hide()
+        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
 
     def on_file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
@@ -325,19 +368,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def on_rom_opened(self):
         if self.vidext:
-            self.stack.setCurrentWidget(self.glwidget)
-            self.glwidget.setFocus(True)
+            self.stack.setCurrentIndex(1)
         if not self.cheats:
             self.cheats = Cheat(self)
         self.update_status(self.worker.core.rom_settings.goodname.decode())
         """Use QTimer to wait for core initialization before toggling UI actions"""
-        self._initialize_attempt = 0
         QTimer.singleShot(1000, self.wait_for_initialize)
 
     def on_rom_closed(self):
         if self.vidext and self.isFullScreen():
-            self.glwidget.toggle_fs.emit()
-        self.stack.setCurrentWidget(self.view)
+            self.toggle_fs.emit()
+        self.stack.setCurrentIndex(0)
         self.actionMute.setChecked(False)
         self.actionPause.setChecked(False)
         self.actionLimitFPS.setChecked(True)
@@ -505,7 +546,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 class View(QGraphicsView):
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
-        self.parent = parent
         self.setContentsMargins(QMargins())
         self.setStyleSheet("QGraphicsView {border:0px solid;margin:0px;}")
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)

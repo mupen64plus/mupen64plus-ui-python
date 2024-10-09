@@ -20,10 +20,11 @@ try:
     # nvidia hack
     from OpenGL import GL
     glimport = True
-except:
+except ModuleNotFoundError:
     glimport = False
 
 from PyQt5.QtOpenGL import QGLFormat
+from PyQt5.QtWidgets import QApplication
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -35,18 +36,20 @@ try:
     if not SDL_WasInit(SDL_INIT_VIDEO):
         SDL_InitSubSystem(SDL_INIT_VIDEO)
     MODES = []
+    RATES = []
     display = SDL_DisplayMode()
-    for mode in range(SDL_GetNumDisplayModes(0)):
-        ret = SDL_GetDisplayMode(0, mode, ctypes.byref(display))
+    for m in range(SDL_GetNumDisplayModes(0)):
+        ret = SDL_GetDisplayMode(0, m, ctypes.byref(display))
         if (display.w, display.h) not in MODES:
             MODES.append((display.w, display.h))
+            RATES.append(display.refresh_rate)
     if SDL_WasInit(SDL_INIT_VIDEO):
         SDL_QuitSubSystem(SDL_INIT_VIDEO)
 except Exception as err:
     log.warn(str(err))
 
 
-class Video():
+class Video:
     """Mupen64Plus video extension"""
 
     def __init__(self):
@@ -58,10 +61,10 @@ class Video():
         self.major = None
         self.minor = None
 
-    def set_widget(self, parent):
+    def set_widget(self, parent, widget):
         """Sets GL widget."""
         self.parent = parent
-        self.widget = self.parent.glwidget
+        self.widget = widget
 
     def init(self):
         """Initialize GL context."""
@@ -70,16 +73,18 @@ class Video():
             self.glcontext = self.widget.context()
             self.glcontext.setFormat(self.glformat)
             self.glcontext.create()
+            self.parent.vidext_init.emit(self.glcontext)
         return M64ERR_SUCCESS
 
     def quit(self):
         """Shuts down the video system."""
         if self.glcontext:
             self.glcontext.doneCurrent()
+            self.glcontext.moveToThread(QApplication.instance().thread())
             self.glcontext = None
         return M64ERR_SUCCESS
 
-    def list_fullscreen_modes(self, size_array, num_sizes):
+    def list_modes(self, size_array, num_sizes):
         """Enumerates the available resolutions
         for fullscreen video modes."""
         num_sizes.contents.value = len(MODES)
@@ -89,18 +94,30 @@ class Video():
             size_array[num].uiHeight = height
         return M64ERR_SUCCESS
 
-    def set_video_mode(self, width, height, bits, mode):
+    def list_rates(self, size_array, num_rates, rates):
+        """Enumerates the available rates
+        for fullscreen video modes."""
+        num_rates.contents.value = len(RATES)
+        for num, rate in enumerate(RATES):
+            rates[num] = rate
+        return M64ERR_SUCCESS
+
+    def set_mode(self, width, height, bits, mode, flags):
         """Creates a rendering window."""
-        self.glcontext.makeCurrent()
-        if self.glcontext.isValid():
+        self.widget.makeCurrent()
+        if self.widget.isValid():
             if glimport:
-                GL.glClearColor(0.0, 0.0, 0.0, 1.0);
-                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+                GL.glClearColor(0.0, 0.0, 0.0, 1.0)
+                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
                 self.widget.swapBuffers()
-                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
             return M64ERR_SUCCESS
         else:
             return M64ERR_SYSTEM_FAIL
+
+    def set_mode_with_rate(self, width, height, rate, bits, mode, flags):
+        """Creates a rendering window."""
+        return self.set_mode(width, height, bits, mode, flags)
 
     def set_caption(self, title):
         """Sets the caption text of the
@@ -112,7 +129,7 @@ class Video():
     def toggle_fs(self):
         """Toggles between fullscreen and
         windowed rendering modes. """
-        self.widget.toggle_fs.emit()
+        self.parent.toggle_fs.emit()
         return M64ERR_SUCCESS
 
     def gl_get_proc(self, proc):
@@ -128,8 +145,8 @@ class Video():
         """Sets OpenGL attributes."""
         attr_map = {
             M64P_GL_DOUBLEBUFFER: self.glformat.setDoubleBuffer,
-            M64P_GL_BUFFER_SIZE: self.glformat.setDepthBufferSize,
-            M64P_GL_DEPTH_SIZE: self.glformat.setDepth,
+            M64P_GL_BUFFER_SIZE: None,
+            M64P_GL_DEPTH_SIZE: self.glformat.setDepthBufferSize,
             M64P_GL_RED_SIZE: self.glformat.setRedBufferSize,
             M64P_GL_GREEN_SIZE: self.glformat.setGreenBufferSize,
             M64P_GL_BLUE_SIZE: self.glformat.setBlueBufferSize,
@@ -139,21 +156,25 @@ class Video():
             M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples,
             M64P_GL_CONTEXT_MAJOR_VERSION: self.set_major,
             M64P_GL_CONTEXT_MINOR_VERSION: self.set_minor,
-            M64P_GL_CONTEXT_PROFILE_MASK: self.glformat.setProfile
+            M64P_GL_CONTEXT_PROFILE_MASK: self.set_profile
         }
+
         set_attr = attr_map[attr]
-        set_attr(value)
+        if set_attr:
+            set_attr(value)
+
         if attr == M64P_GL_CONTEXT_MAJOR_VERSION or attr == M64P_GL_CONTEXT_MINOR_VERSION:
             if self.major and self.minor:
                 self.glformat.setVersion(self.major, self.minor)
+
         return M64ERR_SUCCESS
 
     def gl_get_attr(self, attr, value):
         """Gets OpenGL attributes."""
         attr_map = {
             M64P_GL_DOUBLEBUFFER: self.glformat.doubleBuffer,
-            M64P_GL_BUFFER_SIZE: self.glformat.depthBufferSize,
-            M64P_GL_DEPTH_SIZE: self.glformat.depth,
+            M64P_GL_BUFFER_SIZE: None,
+            M64P_GL_DEPTH_SIZE: self.glformat.depthBufferSize,
             M64P_GL_RED_SIZE: self.glformat.redBufferSize,
             M64P_GL_GREEN_SIZE: self.glformat.greenBufferSize,
             M64P_GL_BLUE_SIZE: self.glformat.blueBufferSize,
@@ -163,19 +184,23 @@ class Video():
             M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples,
             M64P_GL_CONTEXT_MAJOR_VERSION: self.glformat.majorVersion,
             M64P_GL_CONTEXT_MINOR_VERSION: self.glformat.minorVersion,
-            M64P_GL_CONTEXT_PROFILE_MASK: self.glformat.profile
+            M64P_GL_CONTEXT_PROFILE_MASK: self.get_profile
         }
+
         get_attr = attr_map[attr]
-        new_value = int(get_attr())
-        if new_value == value.contents.value:
-            return M64ERR_SUCCESS
-        else:
-            return M64ERR_SYSTEM_FAIL
+        if get_attr:
+            new_value = int(get_attr())
+            value.contents.value = new_value
+            if new_value != value.contents.value:
+                return M64ERR_SYSTEM_FAIL
+
+        return M64ERR_SUCCESS
 
     def gl_swap_buf(self):
         """Swaps the front/back buffers after
         rendering an output video frame. """
-        self.widget.swapBuffers()
+        if self.widget.isValid():
+            self.widget.swapBuffers()
         return M64ERR_SUCCESS
 
     def resize_window(self, width, height):
@@ -187,19 +212,47 @@ class Video():
         """Gets default framebuffer."""
         return 0
 
+    def init_with_render_mode(self, mode):
+        return self.init()
+
+    def vk_get_surface(self, a, b):
+        return M64ERR_SUCCESS
+
+    def vk_get_instance_extensions(self, a, b):
+        return M64ERR_SUCCESS
+
     def set_major(self, major):
         self.major = major
 
     def set_minor(self, minor):
         self.minor = minor
 
+    def set_profile(self, value):
+        if value == M64P_GL_CONTEXT_PROFILE_CORE:
+            self.glformat.setProfile(QGLFormat.CoreProfile)
+        elif value == M64P_GL_CONTEXT_PROFILE_COMPATIBILITY:
+            self.glformat.setProfile(QGLFormat.CompatibilityProfile)
+        else:
+            self.glformat.setProfile(QGLFormat.CompatibilityProfile)
+
+    def get_profile(self):
+        profile = self.glformat.profile()
+        if profile == QGLFormat.CoreProfile:
+            return M64P_GL_CONTEXT_PROFILE_CORE
+        elif profile == QGLFormat.CompatibilityProfile:
+            return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
+        else:
+            return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
+
 video = Video()
-vidext = m64p_video_extension_functions()
-vidext.Functions = 12
+vidext = M64pVideoExtensionFunctions()
+vidext.Functions = 17
 vidext.VidExtFuncInit = FuncInit(video.init)
 vidext.VidExtFuncQuit = FuncQuit(video.quit)
-vidext.VidExtFuncListModes = FuncListModes(video.list_fullscreen_modes)
-vidext.VidExtFuncSetMode = FuncSetMode(video.set_video_mode)
+vidext.VidExtFuncListModes = FuncListModes(video.list_modes)
+vidext.VidExtFuncListRates = FuncListRates(video.list_rates)
+vidext.VidExtFuncSetMode = FuncSetMode(video.set_mode)
+vidext.VidExtFuncSetModeWithRate = FuncSetModeWithRate(video.set_mode_with_rate)
 vidext.VidExtFuncGLGetProc = FuncGLGetProc(video.gl_get_proc)
 vidext.VidExtFuncGLSetAttr = FuncGLSetAttr(video.gl_set_attr)
 vidext.VidExtFuncGLGetAttr = FuncGLGetAttr(video.gl_get_attr)
@@ -208,3 +261,6 @@ vidext.VidExtFuncSetCaption = FuncSetCaption(video.set_caption)
 vidext.VidExtFuncToggleFS = FuncToggleFS(video.toggle_fs)
 vidext.VidExtFuncResizeWindow = FuncResizeWindow(video.resize_window)
 vidext.VidExtFuncGLGetDefaultFramebuffer  = FuncGLGetDefaultFramebuffer(video.gl_get_default_framebuffer)
+vidext.VidExtFuncInitWithRenderMode  = FuncInitWithRenderMode(video.init_with_render_mode)
+vidext.VidExtFuncVKGetSurface  = FuncVKGetSurface(video.vk_get_surface)
+vidext.VidExtFuncVKGetInstanceExtensions  = FuncVKGetInstanceExtensions(video.vk_get_instance_extensions)

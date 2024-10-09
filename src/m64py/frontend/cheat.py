@@ -18,7 +18,7 @@ import os
 import re
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QDialog, QTreeWidgetItem, QListWidgetItem
+from PyQt5.QtWidgets import QDialog, QTreeWidgetItem, QListWidgetItem, QTreeWidgetItemIterator
 from PyQt5.QtCore import Qt
 
 from m64py.core.defs import *
@@ -127,7 +127,7 @@ class Cheat(QDialog, Ui_CheatDialog):
                 name = "%s\\%s" % (parent.text(column), name)
         data = item.data(column, Qt.UserRole)
         if state == Qt.Checked:
-            codes_type = m64p_cheat_code * len(data)
+            codes_type = M64pCheatCode * len(data)
             codes = codes_type()
             for num, cheat in enumerate(data):
                 cd, address, value, choices = cheat

@@ -18,8 +18,8 @@ import re
 
 
 def which(prog):
-    def is_exe(fpath):
-        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    def is_exe(fp):
+        return os.path.exists(fp) and os.access(fp, os.X_OK)
     fpath, fname = os.path.split(prog)
     if fpath:
         if is_exe(prog):
@@ -36,7 +36,7 @@ def version_split(ver):
     return "%d.%d.%d" % (
         ((ver >> 16) & 0xffff),
         ((ver >> 8) & 0xff),
-        ((ver & 0xff)))
+        (ver & 0xff))
 
 
 def sl(mot):
@@ -71,7 +71,7 @@ def format_options(param_help):
     if not param_help:
         return None
     items = re.findall(
-        "(\d+|[\d,-]+)\s?=\s?([\w/ %-]+)", param_help)
+        r"(\d+|[\d,-]+)\s?=\s?([\w/ %-]+)", param_help)
     for item in items:
         key, value = item
         if '-' in key[1:] or ',' in key:

@@ -105,7 +105,6 @@ class Worker(QThread):
             self.core.core_startup(
                 str(self.library_path), self.parent.vidext)
 
-
     def core_shutdown(self):
         """Shutdowns core library."""
         if self.core.get_handle():
@@ -335,6 +334,7 @@ class Worker(QThread):
         """Toggles actions state."""
         self.state = self.core_state_query(M64CORE_EMU_STATE)
         cheat = bool(self.parent.cheats.cheats) if self.parent.cheats else False
+        (load, pause, action, cheats) = True, False, False, False
         if self.state == M64EMU_STOPPED:
             (load, pause, action, cheats) = True, False, False, False
         elif self.state == M64EMU_PAUSED:

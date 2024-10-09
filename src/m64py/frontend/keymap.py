@@ -18,9 +18,9 @@ from PyQt5.QtCore import Qt
 
 from m64py.frontend.keycodes import *
 
-QT2SDL2 = {}
-SCANCODE2KEYCODE = {}
-KEYCODE2SCANCODE = {}
+QT2SDL2 = dict()
+SCANCODE2KEYCODE = dict()
+KEYCODE2SCANCODE = dict()
 
 QT2SDL2[Qt.Key_A] = SDL_SCANCODE_A
 QT2SDL2[Qt.Key_B] = SDL_SCANCODE_B

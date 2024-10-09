@@ -16,10 +16,8 @@
 
 import os
 import sys
-import signal
-import ctypes as C
-import subprocess
 import binascii
+import ctypes as C
 
 from m64py.core.defs import *
 from m64py.core.config import Config
@@ -71,8 +69,8 @@ class Core:
         self.plugins = {}
         self.rom_type = None
         self.rom_length = None
-        self.rom_header = m64p_rom_header()
-        self.rom_settings = m64p_rom_settings()
+        self.rom_header = M64pRomHeader()
+        self.rom_settings = M64pRomSettings()
         self.core_path = ""
         self.core_name = "Mupen64Plus Core"
         self.core_version = "Unknown"
@@ -127,6 +125,13 @@ class Core:
                         os.path.basename(self.core_path),
                         version_split(config_ver),
                         version_split(CONFIG_API_VERSION)))
+                if vidext_ver & 0xffff0000 != VIDEXT_API_VERSION & 0xffff0000:
+                    raise Exception(
+                        "emulator core '%s' is incompatible, "
+                        "vidext API major version %s doesn't match application: (%s)" % (
+                            os.path.basename(self.core_path),
+                            version_split(config_ver),
+                            version_split(CONFIG_API_VERSION)))
 
                 self.core_name = plugin_name
                 self.core_version = plugin_version
@@ -291,7 +296,7 @@ class Core:
             if rval != M64ERR_SUCCESS:
                 log.debug("detach_plugins()")
                 log.warn(self.error_message(rval))
-                log.warn("core failed to dettach %s plugin." % (
+                log.warn("core failed to detach %s plugin." % (
                     plugin_name))
 
     def rom_open(self, romfile):
@@ -478,7 +483,7 @@ class Core:
     def get_rom_settings(self, crc1, crc2):
         """Searches through the data in the ini file for given crc hashes,
         if found, fills in the RomSettings structure with the data."""
-        rom_settings = m64p_rom_settings()
+        rom_settings = M64pRomSettings()
         rval = self.m64p.CoreGetRomSettings(
             C.byref(rom_settings),
             C.c_int(C.sizeof(rom_settings)),

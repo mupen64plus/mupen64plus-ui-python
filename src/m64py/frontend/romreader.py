@@ -21,7 +21,7 @@ import fnmatch
 from PyQt5.QtCore import QThread
 
 from m64py.utils import sl
-from m64py.core.defs import m64p_rom_header
+from m64py.core.defs import M64pRomHeader
 from m64py.frontend.log import log
 from m64py.archive import Archive, EXT_FILTER
 
@@ -55,7 +55,7 @@ class ROMReader(QThread):
         return files
 
     def get_rom_crc(self, archive, fname):
-        rom_header = m64p_rom_header()
+        rom_header = M64pRomHeader()
         ctypes.memmove(
             ctypes.byref(rom_header),
             archive.read(fname, ctypes.sizeof(rom_header)),
