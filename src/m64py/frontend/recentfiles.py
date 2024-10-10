@@ -14,9 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtCore import QFileInfo
+from PyQt6.QtGui import QIcon, QPixmap, QAction
+from PyQt6.QtCore import QFileInfo
 
 
 class RecentFiles():

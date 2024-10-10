@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QLabel, QSpinBox, QComboBox, QLineEdit, QCheckBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QLabel, QSpinBox, QComboBox, QLineEdit, QCheckBox
 import re
 
 from m64py.core.defs import *
@@ -84,8 +84,8 @@ class Plugin(QDialog, Ui_PluginDialog):
                 widget = QLineEdit()
                 widget.setToolTip(param_help)
                 self.gridLayout.addWidget(
-                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignRight)
-                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
+                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignmentFlag.AlignRight)
+                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignmentFlag.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_INT:
                 row1 += 1
@@ -98,7 +98,7 @@ class Plugin(QDialog, Ui_PluginDialog):
                     widget = QComboBox()
                     widget.setToolTip(param_help)
                     widget.setMinimumContentsLength(14)
-                    widget.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+                    widget.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
                     for idx, key in enumerate(sorted(opts.keys())):
                         value = opts[key]
                         opts[key] = (idx, value)
@@ -106,8 +106,8 @@ class Plugin(QDialog, Ui_PluginDialog):
                         widget.addItem(value)
                         widget.setItemData(idx, data)
                 self.gridLayout.addWidget(
-                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignRight)
-                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignLeft)
+                    QLabel(format_label(param_desc)), row1, 1, Qt.AlignmentFlag.AlignRight)
+                self.gridLayout.addWidget(widget, row1, 2, Qt.AlignmentFlag.AlignLeft)
                 self.widgets[param_name] = (widget, widget.__class__, opts)
             elif param_type == M64TYPE_BOOL:
                 row2 += 1

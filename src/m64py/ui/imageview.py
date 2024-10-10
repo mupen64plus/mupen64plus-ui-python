@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
-from PyQt5.QtCore import Qt, QRectF
+from PyQt6.QtWidgets import QGraphicsView, QGraphicsScene
+from PyQt6.QtCore import Qt, QRectF
 
 class ImageView(QGraphicsView):
 
@@ -28,7 +28,7 @@ class ImageView(QGraphicsView):
         for item in self.scene().items():
             pixmap = item.pixmap()
             pixmap = pixmap.scaled(
-                size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             item.setPixmap(pixmap)
             self.ensureVisible(item)
             self.centerOn(item)

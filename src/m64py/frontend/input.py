@@ -16,8 +16,7 @@
 
 import re
 
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtGui import QKeySequence
+from PyQt6.QtWidgets import QDialog
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2.keyboard import SDL_GetScancodeName, SDL_GetScancodeFromName

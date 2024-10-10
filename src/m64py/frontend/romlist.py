@@ -16,9 +16,9 @@
 
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QListWidgetItem, QGraphicsPixmapItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QMainWindow, QListWidgetItem, QGraphicsPixmapItem
 
 from m64py.frontend.romreader import ROMReader
 from m64py.ui.romlist_ui import Ui_ROMList
@@ -37,7 +37,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         """Constructor."""
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
 
         self.parent = parent
         self.core = self.parent.worker.core
@@ -47,7 +47,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.snapshot_item = None
 
         rect = self.frameGeometry()
-        rect.moveCenter(QDesktopWidget().availableGeometry().center())
+        rect.moveCenter(self.screen().geometry().center())
         self.move(rect.topLeft())
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
@@ -73,7 +73,7 @@ class ROMList(QMainWindow, Ui_ROMList):
         self.reader.stop()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
     def connect_signals(self):
@@ -95,7 +95,7 @@ class ROMList(QMainWindow, Ui_ROMList):
                 if isinstance(goodname, bytes):
                     goodname = goodname.decode()
                 list_item = QListWidgetItem(goodname)
-                list_item.setData(Qt.UserRole, (crc, goodname, path, fname))
+                list_item.setData(Qt.ItemDataRole.UserRole, (crc, goodname, path, fname))
                 self.listWidget.addItem(list_item)
         self.progressBar.setValue(0)
         self.progressBar.hide()
@@ -135,19 +135,19 @@ class ROMList(QMainWindow, Ui_ROMList):
 
     def on_item_open(self):
         item = self.listWidget.currentItem()
-        crc, goodname, path, fname = item.data(Qt.UserRole)
+        crc, goodname, path, fname = item.data(Qt.ItemDataRole.UserRole)
         if path:
             self.file_open(path, fname)
 
     def on_item_activated(self, item):
-        crc, goodname, path, fname = item.data(Qt.UserRole)
+        crc, goodname, path, fname = item.data(Qt.ItemDataRole.UserRole)
         if path:
             self.file_open(path, fname)
 
     def on_item_changed(self, current, previous):
         if not current:
             return
-        crc, goodname, path, fname = current.data(Qt.UserRole)
+        crc, goodname, path, fname = current.data(Qt.ItemDataRole.UserRole)
 
         title = QPixmap(os.path.join(
             self.user_data_path, "title", "%s.png") % crc)
@@ -169,9 +169,9 @@ class ROMList(QMainWindow, Ui_ROMList):
             self.snapshotView.scene().removeItem(self.snapshot_item)
 
         title_pixmap = title.scaled(
-            self.titleView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.titleView.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         snapshot_pixmap = snapshot.scaled(
-            self.snapshotView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.snapshotView.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
 
         title_item = QGraphicsPixmapItem(title_pixmap)
         snapshot_item = QGraphicsPixmapItem(snapshot_pixmap)

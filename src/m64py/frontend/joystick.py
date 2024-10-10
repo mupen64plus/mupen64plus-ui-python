@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import QObject, pyqtSignal, QTime, QTimer
+from PyQt6.QtCore import QObject, pyqtSignal, QTime, QTimer
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
 from sdl2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
@@ -195,6 +195,6 @@ class Joystick(QObject):
                 elif self.auto_repeat and changed != 0:
                     if self.button_repeat_timers[i].elapsed() >= self.auto_repeat_delay:
                         self.button_value_changed.emit(i, changed)
-                        self.button[si] = changed
+                        self.button[i] = changed
                 else:
                     self.button_repeat_timers[i].restart()

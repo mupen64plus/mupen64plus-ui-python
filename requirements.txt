@@ -1,2 +1,2 @@
-pyqt5
+pyqt6
 pysdl2

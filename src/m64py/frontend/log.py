@@ -17,17 +17,17 @@
 import sys
 import logging
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtGui import QTextCursor
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QDialog
+from PyQt6.QtGui import QTextCursor
 
 from m64py.ui.logview_ui import Ui_LogView
 
 
 class Log:
-    def __init__(self, out=None, logview=None):
+    def __init__(self, out=None, view=None):
         self.out = out
-        self.logview = logview
+        self.logview = view
 
     def write(self, msg):
         if self.out:
@@ -50,7 +50,7 @@ class LogView(QDialog, Ui_LogView):
         self.msg_written.connect(self.on_msg_written)
 
     def on_msg_written(self, msg):
-        self.textEdit.moveCursor(QTextCursor.End)
+        self.textEdit.moveCursor(QTextCursor.MoveOperation.End)
         self.textEdit.insertPlainText(msg)
 
 

@@ -18,8 +18,8 @@ import os
 import re
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QDialog, QTreeWidgetItem, QListWidgetItem, QTreeWidgetItemIterator
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QTreeWidgetItem, QListWidgetItem, QTreeWidgetItemIterator
+from PyQt6.QtCore import Qt
 
 from m64py.core.defs import *
 from m64py.utils import sl
@@ -69,41 +69,31 @@ class Cheat(QDialog, Ui_CheatDialog):
                         for k3,v3 in sorted(v2.items()):
                             child2 = QTreeWidgetItem(child1)
                             child2.setText(0, k3)
-                            child2.setCheckState(0, Qt.Unchecked)
-                            child2.setData(0, Qt.UserRole, v3)
+                            child2.setCheckState(0, Qt.CheckState.Unchecked)
+                            child2.setData(0, Qt.ItemDataRole.UserRole, v3)
                             self.treeWidget.addTopLevelItem(child2)
                     else:
-                        child1.setCheckState(0, Qt.Unchecked)
-                        child1.setData(0, Qt.UserRole, v2)
+                        child1.setCheckState(0, Qt.CheckState.Unchecked)
+                        child1.setData(0, Qt.ItemDataRole.UserRole, v2)
             else:
-                top.setCheckState(0, Qt.Unchecked)
-                top.setData(0, Qt.UserRole, v1)
+                top.setCheckState(0, Qt.CheckState.Unchecked)
+                top.setData(0, Qt.ItemDataRole.UserRole, v1)
 
-        self.treeWidget.sortItems(0, Qt.AscendingOrder)
+        self.treeWidget.sortItems(0, Qt.SortOrder.AscendingOrder)
         self.treeWidget.itemChanged.connect(self.activate_cheat)
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
-        self.treeWidget.itemSelectionChanged.connect(self.on_selection_changed)
         self.pushUnmarkAll.clicked.connect(self.on_unmark_all)
-
-    def on_selection_changed(self):
-        """Sets description"""
-        items = self.treeWidget.selectedItems()
-        for item in items:
-            data = item.data(0, Qt.UserRole)
-            if data:
-                for cheat in data:
-                    cd, address, value, choices = cheat
-                    desc = cd if cd else ""
-                    self.labelDesc.setText(desc)
 
     def on_item_clicked(self, item, column):
         """Sets description"""
-        data = item.data(column, Qt.UserRole)
+        data = item.data(column, Qt.ItemDataRole.UserRole)
         if data:
             for cheat in data:
                 cd, address, value, choices = cheat
                 desc = cd if cd else ""
                 self.labelDesc.setText(desc)
+                if desc:
+                    break
 
     def on_unmark_all(self):
         """Deactivates all cheats"""
@@ -111,8 +101,8 @@ class Cheat(QDialog, Ui_CheatDialog):
         while it.value():
             item = it.value()
             state = item.checkState(0)
-            if state == Qt.Checked:
-                item.setCheckState(0, Qt.Unchecked)
+            if state == Qt.CheckState.Checked:
+                item.setCheckState(0, Qt.CheckState.Unchecked)
             it += 1
 
     def activate_cheat(self, item, column):
@@ -125,8 +115,8 @@ class Cheat(QDialog, Ui_CheatDialog):
             parent = parent.parent()
             if parent:
                 name = "%s\\%s" % (parent.text(column), name)
-        data = item.data(column, Qt.UserRole)
-        if state == Qt.Checked:
+        data = item.data(column, Qt.ItemDataRole.UserRole)
+        if state == Qt.CheckState.Checked:
             codes_type = M64pCheatCode * len(data)
             codes = codes_type()
             for num, cheat in enumerate(data):
@@ -136,7 +126,7 @@ class Cheat(QDialog, Ui_CheatDialog):
                     rval = choices.exec_()
                     if rval == QDialog.Accepted:
                         curr_item = choices.listWidget.currentItem()
-                        value = curr_item.data(Qt.UserRole)
+                        value = curr_item.data(Qt.ItemDataRole.UserRole)
                     else:
                         #item.setCheckState(0, Qt.Unchecked)
                         return
@@ -282,5 +272,5 @@ class Choices(QDialog, Ui_ChoicesDialog):
         for choice in sorted(self.choices, key=lambda choice: choice[1]):
             value, name = choice
             item = QListWidgetItem(name.replace('"', ''))
-            item.setData(Qt.UserRole, value)
+            item.setData(Qt.ItemDataRole.UserRole, value)
             self.listWidget.addItem(item)

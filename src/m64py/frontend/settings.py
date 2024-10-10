@@ -17,8 +17,8 @@
 import os
 import sys
 
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtWidgets import QDialog, QFileDialog, QRadioButton, QVBoxLayout
+from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtWidgets import QDialog, QFileDialog, QRadioButton, QVBoxLayout
 
 from m64py.core.defs import *
 from m64py.loader import find_library
@@ -42,7 +42,7 @@ class Settings(QDialog, Ui_Settings):
         self.combomap = {}
 
         self.qset = QSettings("m64py", "m64py")
-        self.qset.setDefaultFormat(QSettings.IniFormat)
+        self.qset.setDefaultFormat(QSettings.Format.IniFormat)
 
         self.add_items()
         self.connect_signals()
@@ -130,11 +130,11 @@ class Settings(QDialog, Ui_Settings):
         widget, groupbox, directory = args
         dialog = QFileDialog()
         if directory:
-            dialog.setFileMode(QFileDialog.Directory)
+            dialog.setFileMode(QFileDialog.FileMode.Directory)
             path = dialog.getExistingDirectory(
-                self, groupbox.title(), widget.text(), QFileDialog.ShowDirsOnly)
+                self, groupbox.title(), widget.text(), QFileDialog.Option.ShowDirsOnly)
         else:
-            dialog.setFileMode(QFileDialog.ExistingFile)
+            dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
             path, _ = dialog.getOpenFileName(
                 self, groupbox.title(), widget.text(),
                 "%s (*%s);;All files (*)" % (groupbox.title(), DLL_FILTER))
@@ -297,7 +297,7 @@ class Settings(QDialog, Ui_Settings):
                 combo.addItem(name)
                 index = combo.findText(str(name))
                 combo.setItemData(index, plugin_desc)
-                combo.setItemData(index, plugin_desc, Qt.ToolTipRole)
+                combo.setItemData(index, plugin_desc, Qt.ItemDataRole.ToolTipRole)
             current = self.qset.value("Plugins/%s" % (
                 PLUGIN_NAME[plugin_type]), PLUGIN_DEFAULT[plugin_type])
             index = combo.findText(current)
@@ -319,7 +319,7 @@ class Settings(QDialog, Ui_Settings):
                 "%sx%s" % (w, h), (w, h))
 
         index = self.comboResolution.findText(
-            "%sx%s" % (width, height), Qt.MatchExactly)
+            "%sx%s" % (width, height), Qt.MatchFlag.MatchExactly)
         if index == -1: index = 0
         self.comboResolution.setCurrentIndex(index)
         self.comboResolution.setEnabled(not self.parent.vidext)

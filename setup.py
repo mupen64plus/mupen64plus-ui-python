@@ -9,10 +9,8 @@ import sys
 import tempfile
 import urllib
 import zipfile
+import fileinput
 
-import distutils
-import distutils.command.build as distutils_build
-import distutils.command.clean as distutils_clean
 import setuptools
 
 try:
@@ -42,52 +40,52 @@ class BuildQt(setuptools.Command):
         pass
 
     def compile_rc(self, qrc_file):
-        import PyQt5
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
         if not newer(qrc_file, py_file):
             return
-        origpath = os.getenv("PATH")
-        path = origpath.split(os.pathsep)
-        path.append(os.path.dirname(PyQt5.__file__))
-        os.putenv("PATH", os.pathsep.join(path))
-        if subprocess.call(["pyrcc5", qrc_file, "-o", py_file]) > 0:
+        path = os.getenv("PATH").split(os.pathsep)
+        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
+                     "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
+                     "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
+        os.environ["PATH"] = os.pathsep.join(path)
+        rcc_exe = shutil.which("rcc")
+        if rcc_exe is None:
+            self.warn("Unable to find Qt Resource Compiler (rcc)")
+            sys.exit(1)
+        if subprocess.call(["rcc", "-g", "python", qrc_file, "-o", py_file]) > 0:
             self.warn("Unable to compile resource file {}".format(qrc_file))
             if not os.path.exists(py_file):
                 sys.exit(1)
-        os.putenv("PATH", origpath)
+        for line in fileinput.input(py_file, inplace=True):
+            if "PySide6" in line:
+                line = line.replace("PySide6", "PyQt6")
+            sys.stdout.write(line)
 
     def compile_ui(self, ui_file):
-        from PyQt5 import uic
+        from PyQt6 import uic
         py_file = os.path.splitext(ui_file)[0] + "_ui.py"
         if not newer(ui_file, py_file):
             return
         with open(py_file, "w") as a_file:
-            uic.compileUi(ui_file, a_file, from_imports=True)
+            uic.compileUi(ui_file, a_file)
 
     def compile_ts(self, ts_file):
-        import PyQt5
-        from PyQt5.QtCore import QLibraryInfo
         qm_file = os.path.splitext(ts_file)[0] + ".qm"
         if not newer(ts_file, qm_file):
             return
-        origpath = os.getenv("PATH")
-        path = origpath.split(os.pathsep)
-        path.append(os.path.dirname(PyQt5.__file__))
-        os.putenv("PATH", os.pathsep.join(path))
-        lr_exe = QLibraryInfo.location(QLibraryInfo.LibraryLocation.BinariesPath)
-        if lr_exe:
-            lr_exe = os.path.join(lr_exe, "lrelease")
-            if not os.path.exists(lr_exe):
-                lr_exe = None
-        lr_exe = lr_exe or distutils.spawn.find_executable("lrelease") or distutils.spawn.find_executable("lrelease-qt5")
+        path = os.getenv("PATH").split(os.pathsep)
+        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
+                     "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
+                     "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
+        os.environ["PATH"] = os.pathsep.join(path)
+        lr_exe = shutil.which("lrelease")
         if lr_exe is None:
-            self.warn("Unable to find Qt's Linguist lrelease or lrelease-qt5 tools")
+            self.warn("Unable to find Qt Linguist (lrelease)")
             sys.exit(1)
         if subprocess.call([lr_exe, ts_file, "-qm", qm_file]) > 0:
             self.warn("Unable to compile translation file {}".format(qm_file))
             if not os.path.exists(qm_file):
                 sys.exit(1)
-        os.putenv("PATH", origpath)
 
     def run(self):
         basepath = os.path.join(os.path.dirname(__file__), "src", "m64py", "ui")
@@ -120,7 +118,7 @@ class BuildDmg(setuptools.Command):
     def copy_emulator(self):
         src_path = os.path.join(self.dist_dir, "mupen64plus", "Contents")
         dest_path = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents")
-        distutils.dir_util.copy_tree(src_path, dest_path)
+        shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
 
     def copy_files(self):
         dest_path = os.path.join(self.dist_dir, "dmg")
@@ -189,7 +187,7 @@ class BuildDmg(setuptools.Command):
 
 class BuildExe(setuptools.Command):
     """
-    Requires PyQt5, rarfile, PyLZMA, PyWin32, PyInstaller and Inno
+    Requires PyQt6, rarfile, PyLZMA, PyWin32, PyInstaller and Inno
     Setup 5.
     """
 
@@ -233,7 +231,7 @@ class BuildExe(setuptools.Command):
         rar_dir = os.path.join(os.environ["ProgramFiles(x86)"], "Unrar")
         if not os.path.isfile(os.path.join(rar_dir, "UnRAR.exe")):
             tempdir = tempfile.mkdtemp()
-            urllib.request.urlretrieve("http://www.rarlab.com/rar/unrarw32.exe",
+            urllib.request.urlretrieve("http://www.rarlab.com/rar/unrarw64.exe",
                                        os.path.join(tempdir, "unrar.exe"))
             subprocess.call([os.path.join(tempdir, "unrar.exe"), "-s"])
             shutil.rmtree(tempdir)
@@ -248,12 +246,12 @@ class BuildExe(setuptools.Command):
         for dir_name in ["api", "man6", "applications", "apps"]:
             shutil.rmtree(os.path.join(dest_path, dir_name), True)
         for dir_name in ["qml", "translations"]:
-            shutil.rmtree(os.path.join(dest_path, "PyQt5", "Qt", dir_name), True)
-        for file_name in glob.glob(os.path.join(dest_path, "PyQt5", "Qt*.pyd")):
-            if os.path.basename(file_name) not in ["Qt.pyd", "QtCore.pyd", "QtGui.pyd", "QtWidgets.pyd", "QtOpenGL.pyd"]:
+            shutil.rmtree(os.path.join(dest_path, "PyQt6", "Qt", dir_name), True)
+        for file_name in glob.glob(os.path.join(dest_path, "PyQt6", "Qt*.pyd")):
+            if os.path.basename(file_name) not in ["Qt.pyd", "QtCore.pyd", "QtGui.pyd", "QtWidgets.pyd"]:
                 os.remove(file_name)
-        for file_name in glob.glob(os.path.join(dest_path, "Qt5*.dll")):
-            if os.path.basename(file_name) not in ["Qt5Core.dll", "Qt5Gui.dll", "Qt5Widgets.dll", "Qt5OpenGL.dll"]:
+        for file_name in glob.glob(os.path.join(dest_path, "Qt6*.dll")):
+            if os.path.basename(file_name) not in ["Qt6Core.dll", "Qt6Gui.dll", "Qt6Widgets.dll"]:
                 os.remove(file_name)
 
     def run_build(self):
@@ -381,23 +379,11 @@ class CleanLocal(setuptools.Command):
                 os.remove(a_path)
 
 
-class MyBuild(distutils_build.build):
-    def run(self):
-        self.run_command("build_qt")
-        distutils_build.build.run(self)
-
-
-class MyClean(distutils_clean.clean):
-    def run(self):
-        self.run_command("clean_local")
-        distutils_clean.clean.run(self)
-
-
 setuptools.setup(
     name="m64py",
     version=FRONTEND_VERSION,
     description="A frontend for Mupen64Plus",
-    long_description="A Qt5 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
+    long_description="A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
     author="Milan Nikolic",
     author_email="gen2brain@gmail.com",
     license="GNU GPLv3",
@@ -405,16 +391,15 @@ setuptools.setup(
     package_dir={'': "src"},
     packages=["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
     scripts=["bin/m64py"],
-    requires=["PyQt5", "PySDL2"],
+    requires=["PyQt6", "PySDL2"],
     platforms=["Linux", "Windows", "Darwin"],
     cmdclass={
-        'build': MyBuild,
+        'build': BuildQt,
         'build_dmg': BuildDmg,
         'build_exe': BuildExe,
         'build_qt': BuildQt,
         'build_zip': BuildZip,
-        'clean': MyClean,
-        'clean_local': CleanLocal
+        'clean': CleanLocal
     },
     data_files=[
         ("share/pixmaps", ["xdg/m64py.png"]),

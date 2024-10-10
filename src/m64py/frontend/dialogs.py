@@ -15,19 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QMessageBox, QListWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QMessageBox, QListWidgetItem
 
 from m64py.utils import version_split
 from m64py.core.defs import FRONTEND_VERSION
 
-try:
-    from m64py.ui.about_ui import Ui_AboutDialog
-    from m64py.ui.license_ui import Ui_LicenseDialog
-    from m64py.ui.archive_ui import Ui_ArchiveDialog
-except ModuleNotFoundError:
-    sys.stderr.write("You have to run setup.py build first\n")
-    sys.exit(1)
+from m64py.ui.about_ui import Ui_AboutDialog
+from m64py.ui.license_ui import Ui_LicenseDialog
+from m64py.ui.archive_ui import Ui_ArchiveDialog
 
 
 class AboutDialog(QDialog, Ui_AboutDialog):
@@ -70,6 +66,6 @@ class ArchiveDialog(QDialog, Ui_ArchiveDialog):
         self.listWidget.clear()
         for fname in files:
             item = QListWidgetItem(fname)
-            item.setData(Qt.UserRole, fname)
+            item.setData(Qt.ItemDataRole.UserRole, fname)
             self.listWidget.addItem(item)
         self.listWidget.setCurrentRow(0)

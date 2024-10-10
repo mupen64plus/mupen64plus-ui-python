@@ -28,10 +28,10 @@ if os.path.isdir(os.path.join("..", "src")) and os.path.isfile(
 os.environ["DBUS_FATAL_WARNINGS"] = "0"
 
 try:
-    from PyQt5.QtWidgets import QApplication
-    from PyQt5.QtCore import Qt, QLocale, QTranslator
+    from PyQt6.QtWidgets import QApplication
+    from PyQt6.QtCore import Qt, QLocale, QTranslator
 except ImportError as err:
-    sys.stderr.write("This application needs PyQt5 module%sError:%s%s" % (
+    sys.stderr.write("This application needs PyQt6 module%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
     sys.exit(1)
 
@@ -40,6 +40,12 @@ try:
 except ImportError as err:
     sys.stderr.write("Can't import m64py modules%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
+    sys.exit(1)
+
+try:
+    from m64py.ui import i18n_rc
+except ImportError:
+    sys.stderr.write("You have to run setup.py build first\n")
     sys.exit(1)
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -73,6 +79,6 @@ if __name__ == "__main__":
             signal.signal(signal.SIGINT, signal.SIG_DFL)
         except AttributeError:
             pass
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
     except KeyboardInterrupt:
         pass

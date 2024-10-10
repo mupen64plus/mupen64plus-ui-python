@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtCore import Qt
 
 from sdl2.keyboard import SDL_GetScancodeName
 
@@ -35,7 +35,7 @@ class InputButton(QPushButton):
         self.parent = parent
         self.input = None
         self.joystick = None
-        self.setFocusPolicy(Qt.ClickFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
 
     def showEvent(self, event):
         dialog = self.parent.parentWidget().parent()
@@ -55,15 +55,15 @@ class InputButton(QPushButton):
 
     def keyPressEvent(self, event):
         modifier = event.modifiers()
-        if modifier == Qt.NoModifier or modifier == Qt.KeypadModifier:
+        if modifier == Qt.KeyboardModifier.NoModifier or modifier == Qt.KeyboardModifier.KeypadModifier:
             key = event.key()
         else:
             key = modifier.__int__()
 
-        if key == Qt.Key_Escape:
+        if key == Qt.Key.Key_Escape:
             text = self.key
             self.setCheckable(False)
-        elif key == Qt.Key_Backspace:
+        elif key == Qt.Key.Key_Backspace:
             text = self.tr("Select...")
             self.setCheckable(False)
         else:

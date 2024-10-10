@@ -17,10 +17,10 @@
 import os
 import sys
 
-from PyQt5.QtGui import QKeySequence, QPixmap, QOpenGLContext
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy, QWidget, QDialog
-from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QKeySequence, QPixmap, QOpenGLContext, QAction, QActionGroup
+from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+from PyQt6.QtWidgets import QLabel, QFileDialog, QStackedWidget, QSizePolicy, QWidget, QDialog
+from PyQt6.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
@@ -34,6 +34,9 @@ from m64py.frontend.settings import Settings
 from m64py.frontend.glwidget import GLWidget
 from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.recentfiles import RecentFiles
+from m64py.frontend.keymap import QT2SDL2
+from m64py.ui import icons_rc
+from m64py.ui import images_rc
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -61,11 +64,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._initialize_attempt = 0
 
         logview.setParent(self)
-        logview.setWindowFlags(Qt.Dialog)
+        logview.setWindowFlags(Qt.WindowType.Dialog)
 
         self.statusbar_label = QLabel()
         self.statusbar_label.setIndent(2)
-        self.statusbar_label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.statusbar_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
         self.statusbar.addPermanentWidget(self.statusbar_label, 1)
         self.update_status(self.tr(
             "Welcome to M64Py version %s." % FRONTEND_VERSION))
@@ -97,10 +100,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.worker.quit()
 
     def changeEvent(self, event):
-        if event.type() == QEvent.WindowStateChange:
-            if event.oldState() == Qt.WindowMaximized:
+        if event.type() == QEvent.Type.WindowStateChange:
+            if event.oldState() == Qt.WindowState.WindowMaximized:
                 self.maximized = False
-            elif event.oldState() == Qt.WindowNoState and self.windowState() == Qt.WindowMaximized:
+            elif (event.oldState() == Qt.WindowState.WindowNoState and
+                  self.windowState() == Qt.WindowState.WindowMaximized):
                 self.maximized = True
 
     def resizeEvent(self, event):
@@ -122,6 +126,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.resize(width, height + self.widgets_height)
             self.create_size_actions()
             self.center_widget()
+
+    def keyPressEvent(self, event):
+        if self.worker.state != M64EMU_RUNNING:
+            return
+
+        key = event.key()
+        modifiers = event.modifiers()
+
+        if modifiers & Qt.KeyboardModifier.AltModifier and (key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return):
+            self.toggle_fs.emit()
+        elif key == Qt.Key.Key_F3:
+            self.worker.save_title()
+        elif key == Qt.Key.Key_F4:
+            self.worker.save_snapshot()
+        else:
+            try:
+                sdl_key = QT2SDL2[key]
+                self.worker.send_sdl_keydown(sdl_key)
+            except KeyError:
+                pass
+
+    def keyReleaseEvent(self, event):
+        if self.worker.state != M64EMU_RUNNING:
+            return
+
+        key = event.key()
+        try:
+            sdl_key = QT2SDL2[key]
+            self.worker.send_sdl_keyup(sdl_key)
+        except KeyError:
+            pass
 
     def window_size_triggered(self, size):
         window_width, window_height = size
@@ -172,7 +207,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def center_widget(self):
         """Centers widget on desktop."""
         size = self.size()
-        desktop = QApplication.desktop()
+        desktop = self.screen().geometry()
         width, height = size.width(), size.height()
         dwidth, dheight = desktop.width(), desktop.height()
         cw, ch = (dwidth/2)-(width/2), (dheight/2)-(height/2)
@@ -196,7 +231,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Creates central widgets."""
         self.stack = QStackedWidget(None)
         palette = self.stack.palette()
-        palette.setColor(self.stack.backgroundRole(), Qt.black)
+        palette.setColor(self.stack.backgroundRole(), Qt.GlobalColor.black)
         self.stack.setPalette(palette)
         self.stack.setAutoFillBackground(True)
 
@@ -251,13 +286,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.menubar.hide()
             self.statusbar.hide()
-        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
 
     def on_file_open(self, filepath=None, filename=None):
         """Opens ROM file."""
         if not filepath:
             action = self.sender()
             filepath = action.data()
+        if not os.path.isfile(filepath):
+            InfoDialog(self, "File %s not found." % filepath).exec()
+            return
         self.worker.core_state_query(M64CORE_EMU_STATE)
         if self.worker.state in [M64EMU_RUNNING, M64EMU_PAUSED]:
             self.worker.stop()
@@ -291,10 +329,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_archive_dialog(self, files):
         """Shows archive dialog."""
         archive = ArchiveDialog(self, files)
-        rval = archive.exec_()
-        if rval == QDialog.Accepted:
+        rval = archive.exec()
+        if rval == QDialog.DialogCode.Accepted:
             curr_item = archive.listWidget.currentItem()
-            fname = curr_item.data(Qt.UserRole)
+            fname = curr_item.data(Qt.ItemDataRole.UserRole)
             self.worker.filename = fname
 
     def on_state_changed(self, states):
@@ -324,9 +362,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionGraphics.setEnabled(not action)
         self.actionPlugins.setEnabled(not action)
 
-    """Wait up to 10 seconds for core initialization, checking once a second.
-       If not yet initialized, start another QTimer. Else, toggle UI actions."""
     def wait_for_initialize(self):
+        """Wait up to 10 seconds for core initialization, checking once a second.
+           If not yet initialized, start another QTimer. Else, toggle UI actions."""
         if self.worker.core_state_query(M64CORE_EMU_STATE) == M64EMU_STOPPED:
             self._initialize_attempt += 1
             if self._initialize_attempt < 10:
@@ -361,7 +399,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionManually_triggered(self):
         """Shows ROM file dialog."""
         dialog = QFileDialog()
-        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         last_dir = self.settings.qset.value("last_dir")
         file_path, _ = dialog.getOpenFileName(
                 self, self.tr("Load ROM Image"), last_dir,
@@ -395,7 +433,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionLoadFrom_triggered(self):
         """Loads state from file."""
         dialog = QFileDialog()
-        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_path, _ = dialog.getOpenFileName(
             self, self.tr("Load State From File"),
             os.path.join(self.worker.core.config.get_path("UserData"), "save"),
@@ -518,6 +556,6 @@ class View(QGraphicsView):
         QGraphicsView.__init__(self, parent)
         self.setContentsMargins(QMargins())
         self.setStyleSheet("QGraphicsView {border:0px solid;margin:0px;}")
-        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
+        self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
         self.setScene(QGraphicsScene(self))
         self.scene().addItem(QGraphicsPixmapItem(QPixmap(":/images/front.png")))

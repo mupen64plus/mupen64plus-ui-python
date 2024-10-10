@@ -32,7 +32,7 @@ Source: "m64py\*.zip"; DestDir: "{app}";
 Source: "m64py\*.v64"; DestDir: "{app}";
 Source: "m64py\*.pyd"; DestDir: "{app}";
 Source: "m64py\doc\*"; DestDir: "{app}\doc";
-Source: "m64py\PyQt5\*"; DestDir: "{app}\PyQt5"; Flags: recursesubdirs
+Source: "m64py\PyQt6\*"; DestDir: "{app}\PyQt6"; Flags: recursesubdirs
 Source: "m64py\AUTHORS"; DestDir: "{app}";
 Source: "m64py\COPYING"; DestDir: "{app}";
 Source: "m64py\README.rst"; DestDir: "{app}";

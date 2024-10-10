@@ -16,8 +16,8 @@
 
 import ctypes
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QSurfaceFormat
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QSurfaceFormat
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -62,9 +62,9 @@ class Video:
         if not self.glcontext:
             self.glformat = QSurfaceFormat.defaultFormat()
             self.glformat.setVersion(3, 3)
-            self.glformat.setOption(QSurfaceFormat.DeprecatedFunctions, 1)
-            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
-            self.glformat.setRenderableType(QSurfaceFormat.OpenGL)
+            self.glformat.setOption(QSurfaceFormat.FormatOption.DeprecatedFunctions, 1)
+            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
+            self.glformat.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
             self.glformat.setDepthBufferSize(24)
             self.glformat.setSwapInterval(0)
 
@@ -220,29 +220,29 @@ class Video:
 
     def set_profile(self, value):
         if value == M64P_GL_CONTEXT_PROFILE_CORE:
-            self.glformat.setProfile(QSurfaceFormat.CoreProfile)
+            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
         elif value == M64P_GL_CONTEXT_PROFILE_COMPATIBILITY:
-            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
+            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
         else:
-            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
+            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
 
     def get_profile(self):
         profile = self.glformat.profile()
-        if profile == QSurfaceFormat.CoreProfile:
+        if profile == QSurfaceFormat.OpenGLContextProfile.CoreProfile:
             return M64P_GL_CONTEXT_PROFILE_CORE
-        elif profile == QSurfaceFormat.CompatibilityProfile:
+        elif profile == QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile:
             return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
         else:
             return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
 
     def set_doublebuffer(self, value):
         if value == 1:
-            self.glformat.setSwapBehavior(QSurfaceFormat.DoubleBuffer)
+            self.glformat.setSwapBehavior(QSurfaceFormat.SwapBehavior.DoubleBuffer)
         elif value == 0:
-            self.glformat.setSwapBehavior(QSurfaceFormat.SingleBuffer)
+            self.glformat.setSwapBehavior(QSurfaceFormat.SwapBehavior.SingleBuffer)
 
     def get_doublebuffer(self):
-        if self.glformat.swapBehavior() == QSurfaceFormat.DoubleBuffer:
+        if self.glformat.swapBehavior() == QSurfaceFormat.SwapBehavior.DoubleBuffer:
             return 1
         return 0
 

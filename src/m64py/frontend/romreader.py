@@ -18,7 +18,7 @@ import os
 import ctypes
 import fnmatch
 
-from PyQt5.QtCore import QThread
+from PyQt6.QtCore import QThread
 
 from m64py.utils import sl
 from m64py.core.defs import M64pRomHeader
@@ -99,7 +99,7 @@ class ROMReader(QThread):
             crc2 |= ((crc2_pre >> 24) & 0xff) << 0
         else:
             return None
-        return (crc1, crc2)
+        return crc1, crc2
 
     def read_files(self):
         """Reads files."""
@@ -115,9 +115,11 @@ class ROMReader(QThread):
                     if crc_tuple:
                         rom_settings = self.parent.core.get_rom_settings(
                             crc_tuple[0], crc_tuple[1])
+                        crc = "%X%X" % (crc_tuple[0], crc_tuple[1])
                         if rom_settings:
-                            crc = "%X%X" % (crc_tuple[0], crc_tuple[1])
                             self.roms.append((crc, rom_settings.goodname, fullpath, fname))
+                        else:
+                            self.roms.append((crc, os.path.splitext(os.path.basename(fname))[0], fullpath, fname))
                 archive.close()
             except Exception as err:
                 log.warn(str(err))
@@ -135,4 +137,4 @@ class ROMReader(QThread):
     def run(self):
         """Starts thread."""
         self.read_files()
-        self.exec_()
+        self.exec()
