@@ -17,11 +17,10 @@
 import os
 import sys
 
-from PyQt5.QtOpenGL import QGLContext
-from PyQt5.QtGui import QKeySequence, QPixmap
+from PyQt5.QtGui import QKeySequence, QPixmap, QOpenGLContext
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy, QDialog
-from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot, QThread
+from PyQt5.QtWidgets import QAction, QLabel, QFileDialog, QStackedWidget, QActionGroup, QSizePolicy, QWidget, QDialog
+from PyQt5.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
@@ -35,7 +34,6 @@ from m64py.frontend.settings import Settings
 from m64py.frontend.glwidget import GLWidget
 from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.recentfiles import RecentFiles
-from m64py.frontend.keymap import QT2SDL2
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -50,7 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     save_image = pyqtSignal(bool)
     info_dialog = pyqtSignal(str)
     archive_dialog = pyqtSignal(list)
-    vidext_init = pyqtSignal(QGLContext)
+    vidext_init = pyqtSignal(QOpenGLContext)
     toggle_fs = pyqtSignal()
 
     def __init__(self, optparse):
@@ -59,6 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.opts, self.args = optparse
 
+        self._initialized = False
         self._initialize_attempt = 0
 
         logview.setParent(self)
@@ -78,7 +77,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.slots = {}
         self.stack = None
-        self.glwidget = None
         self.cheats = None
         self.maximized = False
         self.widgets_height = None
@@ -125,36 +123,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.create_size_actions()
             self.center_widget()
 
-    def mouseDoubleClickEvent(self, event):
-        self.toggle_fs.emit()
-
-    def keyPressEvent(self, event):
-        if self.worker.state == M64EMU_RUNNING:
-            key = event.key()
-            modifiers = event.modifiers()
-            if modifiers & Qt.AltModifier and \
-                    (key == Qt.Key_Enter or key == Qt.Key_Return):
-                self.toggle_fs.emit()
-            elif key == Qt.Key_F3:
-                self.worker.save_title()
-            elif key == Qt.Key_F4:
-                self.worker.save_snapshot()
-            else:
-                try:
-                    sdl_key = QT2SDL2[key]
-                    self.worker.send_sdl_keydown(sdl_key)
-                except KeyError:
-                    pass
-
-    def keyReleaseEvent(self, event):
-        if self.worker.state == M64EMU_RUNNING:
-            key = event.key()
-            try:
-                sdl_key = QT2SDL2[key]
-                self.worker.send_sdl_keyup(sdl_key)
-            except KeyError:
-                pass
-
     def window_size_triggered(self, size):
         window_width, window_height = size
         if self.vidext and self.worker.core.get_handle():
@@ -172,8 +140,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             video_size = (game_width << 16) + game_height
             if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
                 self.worker.core_state_set(M64CORE_VIDEO_SIZE, video_size)
-
-            self.glwidget.move(int((window_width - game_width) / 2), 0)
 
         self.set_sizes((window_width, window_height - self.widgets_height))
         self.settings.qset.setValue("size", (window_width, window_height - self.widgets_height))
@@ -234,14 +200,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stack.setPalette(palette)
         self.stack.setAutoFillBackground(True)
 
-        self.glwidget = GLWidget(self)
-
-        self.worker.video.set_widget(self, self.glwidget)
-        self.setCentralWidget(self.stack)
+        glwidget = GLWidget(self)
+        self.worker.video.set_widget(self, glwidget)
 
         self.stack.addWidget(View(self))
-        self.stack.addWidget(self.glwidget)
+        self.stack.addWidget(QWidget.createWindowContainer(glwidget, self))
         self.stack.setCurrentIndex(0)
+
+        self.setCentralWidget(self.stack)
 
     def create_state_slots(self):
         """Creates state slot actions."""
@@ -273,7 +239,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             action.triggered.connect(lambda t, wi=w, he=h: self.resize(wi, he))
 
     def on_vidext_init(self, context):
+        context.doneCurrent()
+        context.create()
         context.moveToThread(self.worker)
+        self._initialized = True
 
     def on_toggle_fs(self):
         if self.isFullScreen():
@@ -386,6 +355,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_status("ROM closed.")
         del self.cheats
         self.cheats = None
+        self._initialized = False
 
     @pyqtSlot()
     def on_actionManually_triggered(self):

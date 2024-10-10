@@ -14,24 +14,60 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtCore import Qt, QMargins
-from PyQt5.QtOpenGL import QGLWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QWindow, QOpenGLContext
+
+from m64py.core.defs import *
+from m64py.frontend.keymap import QT2SDL2
 
 
-class GLWidget(QGLWidget):
+class GLWidget(QWindow):
 
     def __init__(self, parent=None):
-        QGLWidget.__init__(self, parent)
-        self.setAttribute(Qt.WA_NativeWindow, True)
-        self.setContentsMargins(QMargins())
-        self.setFocusPolicy(Qt.StrongFocus)
+        self.parent = parent
+        QWindow.__init__(self, None)
 
-    def showEvent(self, event):
-        self.setFocus(True)
+        self.setSurfaceType(QWindow.OpenGLSurface)
+        self.ctx = QOpenGLContext()
+
+    def context(self):
+        return self.ctx
 
     def resizeEvent(self, event):
         size = event.size()
-        self.resize(size.width(), size.height())
+        width, height = int(size.width() * self.devicePixelRatio()), int(size.height() * self.devicePixelRatio())
+        self.resize(width, height)
 
-    def paintEvent(self, event):
-        pass
+    def mouseDoubleClickEvent(self, event):
+        self.parent.toggle_fs.emit()
+
+    def keyPressEvent(self, event):
+        if self.parent.worker.state != M64EMU_RUNNING:
+            return
+
+        key = event.key()
+        modifiers = event.modifiers()
+
+        if modifiers & Qt.AltModifier and (key == Qt.Key_Enter or key == Qt.Key_Return):
+            self.parent.toggle_fs.emit()
+        elif key == Qt.Key_F3:
+            self.parent.worker.save_title()
+        elif key == Qt.Key_F4:
+            self.parent.worker.save_snapshot()
+        else:
+            try:
+                sdl_key = QT2SDL2[key]
+                self.parent.worker.send_sdl_keydown(sdl_key)
+            except KeyError:
+                pass
+
+    def keyReleaseEvent(self, event):
+        if self.parent.worker.state != M64EMU_RUNNING:
+            return
+
+        key = event.key()
+        try:
+            sdl_key = QT2SDL2[key]
+            self.parent.worker.send_sdl_keyup(sdl_key)
+        except KeyError:
+            pass

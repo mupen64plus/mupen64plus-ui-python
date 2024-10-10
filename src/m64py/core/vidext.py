@@ -16,15 +16,8 @@
 
 import ctypes
 
-try:
-    # nvidia hack
-    from OpenGL import GL
-    glimport = True
-except ModuleNotFoundError:
-    glimport = False
-
-from PyQt5.QtOpenGL import QGLFormat
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QSurfaceFormat
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -58,8 +51,6 @@ class Video:
         self.widget = None
         self.glformat = None
         self.glcontext = None
-        self.major = None
-        self.minor = None
 
     def set_widget(self, parent, widget):
         """Sets GL widget."""
@@ -69,11 +60,16 @@ class Video:
     def init(self):
         """Initialize GL context."""
         if not self.glcontext:
-            self.glformat = QGLFormat()
+            self.glformat = QSurfaceFormat.defaultFormat()
+            self.glformat.setVersion(3, 3)
+            self.glformat.setOption(QSurfaceFormat.DeprecatedFunctions, 1)
+            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
+            self.glformat.setRenderableType(QSurfaceFormat.OpenGL)
+            self.glformat.setDepthBufferSize(24)
+            self.glformat.setSwapInterval(0)
+
             self.glcontext = self.widget.context()
             self.glcontext.setFormat(self.glformat)
-            self.glcontext.create()
-            self.parent.vidext_init.emit(self.glcontext)
         return M64ERR_SUCCESS
 
     def quit(self):
@@ -104,13 +100,18 @@ class Video:
 
     def set_mode(self, width, height, bits, mode, flags):
         """Creates a rendering window."""
-        self.widget.makeCurrent()
-        if self.widget.isValid():
-            if glimport:
-                GL.glClearColor(0.0, 0.0, 0.0, 1.0)
-                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-                self.widget.swapBuffers()
-                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self.parent.vidext_init.emit(self.glcontext)
+        while not self.parent._initialized:
+            continue
+
+        self.glcontext.makeCurrent(self.widget)
+
+        if self.glcontext.isValid():
+            # GL = self.glcontext.functions()
+            # GL.glClearColor(0.0, 0.0, 0.0, 1.0)
+            # GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            # self.glcontext.swapBuffers(self.glcontext.surface())
+            # GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
             return M64ERR_SUCCESS
         else:
             return M64ERR_SYSTEM_FAIL
@@ -135,7 +136,7 @@ class Video:
     def gl_get_proc(self, proc):
         """Used to get a pointer to
         an OpenGL extension function."""
-        addr = self.glcontext.getProcAddress(proc.decode())
+        addr = self.glcontext.getProcAddress(proc)
         if addr is not None:
             return addr.__int__()
         else:
@@ -144,18 +145,18 @@ class Video:
     def gl_set_attr(self, attr, value):
         """Sets OpenGL attributes."""
         attr_map = {
-            M64P_GL_DOUBLEBUFFER: self.glformat.setDoubleBuffer,
-            M64P_GL_BUFFER_SIZE: None,
+            M64P_GL_DOUBLEBUFFER: self.set_doublebuffer,
+            M64P_GL_BUFFER_SIZE: self.set_buffer_size,
             M64P_GL_DEPTH_SIZE: self.glformat.setDepthBufferSize,
             M64P_GL_RED_SIZE: self.glformat.setRedBufferSize,
             M64P_GL_GREEN_SIZE: self.glformat.setGreenBufferSize,
             M64P_GL_BLUE_SIZE: self.glformat.setBlueBufferSize,
             M64P_GL_ALPHA_SIZE: self.glformat.setAlphaBufferSize,
             M64P_GL_SWAP_CONTROL: self.glformat.setSwapInterval,
-            M64P_GL_MULTISAMPLEBUFFERS: self.glformat.setSampleBuffers,
+            M64P_GL_MULTISAMPLEBUFFERS: None,
             M64P_GL_MULTISAMPLESAMPLES: self.glformat.setSamples,
-            M64P_GL_CONTEXT_MAJOR_VERSION: self.set_major,
-            M64P_GL_CONTEXT_MINOR_VERSION: self.set_minor,
+            M64P_GL_CONTEXT_MAJOR_VERSION: self.glformat.setMajorVersion,
+            M64P_GL_CONTEXT_MINOR_VERSION: self.glformat.setMinorVersion,
             M64P_GL_CONTEXT_PROFILE_MASK: self.set_profile
         }
 
@@ -163,24 +164,20 @@ class Video:
         if set_attr:
             set_attr(value)
 
-        if attr == M64P_GL_CONTEXT_MAJOR_VERSION or attr == M64P_GL_CONTEXT_MINOR_VERSION:
-            if self.major and self.minor:
-                self.glformat.setVersion(self.major, self.minor)
-
         return M64ERR_SUCCESS
 
     def gl_get_attr(self, attr, value):
         """Gets OpenGL attributes."""
         attr_map = {
-            M64P_GL_DOUBLEBUFFER: self.glformat.doubleBuffer,
-            M64P_GL_BUFFER_SIZE: None,
+            M64P_GL_DOUBLEBUFFER: self.get_doublebuffer,
+            M64P_GL_BUFFER_SIZE: self.get_buffer_size,
             M64P_GL_DEPTH_SIZE: self.glformat.depthBufferSize,
             M64P_GL_RED_SIZE: self.glformat.redBufferSize,
             M64P_GL_GREEN_SIZE: self.glformat.greenBufferSize,
             M64P_GL_BLUE_SIZE: self.glformat.blueBufferSize,
             M64P_GL_ALPHA_SIZE: self.glformat.alphaBufferSize,
             M64P_GL_SWAP_CONTROL: self.glformat.swapInterval,
-            M64P_GL_MULTISAMPLEBUFFERS: self.glformat.sampleBuffers,
+            M64P_GL_MULTISAMPLEBUFFERS: None,
             M64P_GL_MULTISAMPLESAMPLES: self.glformat.samples,
             M64P_GL_CONTEXT_MAJOR_VERSION: self.glformat.majorVersion,
             M64P_GL_CONTEXT_MINOR_VERSION: self.glformat.minorVersion,
@@ -199,8 +196,8 @@ class Video:
     def gl_swap_buf(self):
         """Swaps the front/back buffers after
         rendering an output video frame. """
-        if self.widget.isValid():
-            self.widget.swapBuffers()
+        if self.glcontext.isValid():
+            self.glcontext.swapBuffers(self.glcontext.surface())
         return M64ERR_SUCCESS
 
     def resize_window(self, width, height):
@@ -210,7 +207,7 @@ class Video:
 
     def gl_get_default_framebuffer(self):
         """Gets default framebuffer."""
-        return 0
+        return self.glcontext.defaultFramebufferObject()
 
     def init_with_render_mode(self, mode):
         return self.init()
@@ -221,28 +218,44 @@ class Video:
     def vk_get_instance_extensions(self, a, b):
         return M64ERR_SUCCESS
 
-    def set_major(self, major):
-        self.major = major
-
-    def set_minor(self, minor):
-        self.minor = minor
-
     def set_profile(self, value):
         if value == M64P_GL_CONTEXT_PROFILE_CORE:
-            self.glformat.setProfile(QGLFormat.CoreProfile)
+            self.glformat.setProfile(QSurfaceFormat.CoreProfile)
         elif value == M64P_GL_CONTEXT_PROFILE_COMPATIBILITY:
-            self.glformat.setProfile(QGLFormat.CompatibilityProfile)
+            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
         else:
-            self.glformat.setProfile(QGLFormat.CompatibilityProfile)
+            self.glformat.setProfile(QSurfaceFormat.CompatibilityProfile)
 
     def get_profile(self):
         profile = self.glformat.profile()
-        if profile == QGLFormat.CoreProfile:
+        if profile == QSurfaceFormat.CoreProfile:
             return M64P_GL_CONTEXT_PROFILE_CORE
-        elif profile == QGLFormat.CompatibilityProfile:
+        elif profile == QSurfaceFormat.CompatibilityProfile:
             return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
         else:
             return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
+
+    def set_doublebuffer(self, value):
+        if value == 1:
+            self.glformat.setSwapBehavior(QSurfaceFormat.DoubleBuffer)
+        elif value == 0:
+            self.glformat.setSwapBehavior(QSurfaceFormat.SingleBuffer)
+
+    def get_doublebuffer(self):
+        if self.glformat.swapBehavior() == QSurfaceFormat.DoubleBuffer:
+            return 1
+        return 0
+
+    def set_buffer_size(self, value):
+        val = int(value/4)
+        self.glformat.setAlphaBufferSize(val)
+        self.glformat.setRedBufferSize(val)
+        self.glformat.setGreenBufferSize(val)
+        self.glformat.setBlueBufferSize(val)
+
+    def get_buffer_size(self):
+        return (self.glformat.alphaBufferSize() + self.glformat.redBufferSize() +
+                self.glformat.greenBufferSize() + self.glformat.blueBufferSize())
 
 video = Video()
 vidext = M64pVideoExtensionFunctions()
