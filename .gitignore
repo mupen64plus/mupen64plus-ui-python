@@ -14,8 +14,8 @@ __pycache__/
 *_rc.py
 
 # Generated
-src/m64py/ui/i18n/m64py_en.qm
-src/m64py/ui/i18n/m64py_de_DE.qm
+src/m64py/ui/i18n/*.qm
 
 # Editor files
+.idea
 .vscode

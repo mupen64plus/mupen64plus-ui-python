@@ -43,12 +43,7 @@ class BuildQt(setuptools.Command):
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
         if not newer(qrc_file, py_file):
             return
-        path = os.getenv("PATH").split(os.pathsep)
-        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
-                     "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
-                     "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
-        os.environ["PATH"] = os.pathsep.join(path)
-        rcc_exe = shutil.which("rcc")
+        rcc_exe = self.find_executable("rcc")
         if rcc_exe is None:
             self.warn("Unable to find Qt Resource Compiler (rcc)")
             sys.exit(1)
@@ -73,12 +68,7 @@ class BuildQt(setuptools.Command):
         qm_file = os.path.splitext(ts_file)[0] + ".qm"
         if not newer(ts_file, qm_file):
             return
-        path = os.getenv("PATH").split(os.pathsep)
-        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
-                     "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
-                     "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
-        os.environ["PATH"] = os.pathsep.join(path)
-        lr_exe = shutil.which("lrelease")
+        lr_exe = self.find_executable("lrelease")
         if lr_exe is None:
             self.warn("Unable to find Qt Linguist (lrelease)")
             sys.exit(1)
@@ -86,6 +76,34 @@ class BuildQt(setuptools.Command):
             self.warn("Unable to compile translation file {}".format(qm_file))
             if not os.path.exists(qm_file):
                 sys.exit(1)
+
+    def find_executable(self, name):
+        from PyQt6.QtCore import QLibraryInfo
+        path = os.getenv("PATH").split(os.pathsep)
+
+        bin_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.BinariesPath)
+        path.insert(0, bin_path)
+        os.environ["PATH"] = os.pathsep.join(path)
+        exe = shutil.which(name)
+        if exe:
+            return exe
+
+        libexec_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.LibraryExecutablesPath)
+        path.insert(0, libexec_path)
+        os.environ["PATH"] = os.pathsep.join(path)
+        exe = shutil.which(name)
+        if exe:
+            return exe
+
+        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
+                     "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
+                     "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
+        os.environ["PATH"] = os.pathsep.join(path)
+        exe = shutil.which(name)
+        if exe:
+            return exe
+
+        return None
 
     def run(self):
         basepath = os.path.join(os.path.dirname(__file__), "src", "m64py", "ui")

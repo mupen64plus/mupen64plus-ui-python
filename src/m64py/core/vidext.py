@@ -51,6 +51,7 @@ class Video:
         self.widget = None
         self.glformat = None
         self.glcontext = None
+        self.render_mode = M64P_RENDER_OPENGL
 
     def set_widget(self, parent, widget):
         """Sets GL widget."""
@@ -59,25 +60,32 @@ class Video:
 
     def init(self):
         """Initialize GL context."""
-        if not self.glcontext:
-            self.glformat = QSurfaceFormat.defaultFormat()
-            self.glformat.setVersion(3, 3)
-            self.glformat.setOption(QSurfaceFormat.FormatOption.DeprecatedFunctions, 1)
-            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
-            self.glformat.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
-            self.glformat.setDepthBufferSize(24)
-            self.glformat.setSwapInterval(0)
+        if self.render_mode == M64P_RENDER_OPENGL:
+            if not self.glcontext:
+                self.glformat = QSurfaceFormat.defaultFormat()
+                self.glformat.setVersion(3, 3)
+                self.glformat.setOption(QSurfaceFormat.FormatOption.DeprecatedFunctions, 1)
+                self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
+                self.glformat.setDepthBufferSize(24)
+                self.glformat.setSwapInterval(0)
 
-            self.glcontext = self.widget.context()
-            self.glcontext.setFormat(self.glformat)
+                self.glcontext = self.widget.context()
+                self.glcontext.setFormat(self.glformat)
+
         return M64ERR_SUCCESS
+
+    def init_with_render_mode(self, mode):
+        self.render_mode = mode
+        return self.init()
 
     def quit(self):
         """Shuts down the video system."""
-        if self.glcontext:
-            self.glcontext.doneCurrent()
-            self.glcontext.moveToThread(QApplication.instance().thread())
-            self.glcontext = None
+        if self.render_mode == M64P_RENDER_OPENGL:
+            if self.glcontext:
+                self.glcontext.doneCurrent()
+                self.glcontext.moveToThread(QApplication.instance().thread())
+                self.glcontext = None
+
         return M64ERR_SUCCESS
 
     def list_modes(self, size_array, num_sizes):
@@ -88,6 +96,7 @@ class Video:
             width, height = mode
             size_array[num].uiWidth = width
             size_array[num].uiHeight = height
+
         return M64ERR_SUCCESS
 
     def list_rates(self, size_array, num_rates, rates):
@@ -96,25 +105,19 @@ class Video:
         num_rates.contents.value = len(RATES)
         for num, rate in enumerate(RATES):
             rates[num] = rate
+
         return M64ERR_SUCCESS
 
     def set_mode(self, width, height, bits, mode, flags):
         """Creates a rendering window."""
-        self.parent.vidext_init.emit(self.glcontext)
-        while not self.parent._initialized:
-            continue
+        if self.render_mode == M64P_RENDER_OPENGL:
+            self.parent.vidext_init.emit(self.glcontext)
+            while not self.parent._initialized:
+                continue
 
-        self.glcontext.makeCurrent(self.widget)
+            self.glcontext.makeCurrent(self.widget)
 
-        if self.glcontext.isValid():
-            # GL = self.glcontext.functions()
-            # GL.glClearColor(0.0, 0.0, 0.0, 1.0)
-            # GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-            # self.glcontext.swapBuffers(self.glcontext.surface())
-            # GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-            return M64ERR_SUCCESS
-        else:
-            return M64ERR_SYSTEM_FAIL
+        return M64ERR_SUCCESS
 
     def set_mode_with_rate(self, width, height, rate, bits, mode, flags):
         """Creates a rendering window."""
@@ -136,6 +139,8 @@ class Video:
     def gl_get_proc(self, proc):
         """Used to get a pointer to
         an OpenGL extension function."""
+        if self.render_mode != M64P_RENDER_OPENGL:
+            return 0
         addr = self.glcontext.getProcAddress(proc)
         if addr is not None:
             return addr.__int__()
@@ -144,6 +149,9 @@ class Video:
 
     def gl_set_attr(self, attr, value):
         """Sets OpenGL attributes."""
+        if self.render_mode != M64P_RENDER_OPENGL:
+            return M64ERR_INVALID_STATE
+
         attr_map = {
             M64P_GL_DOUBLEBUFFER: self.set_doublebuffer,
             M64P_GL_BUFFER_SIZE: self.set_buffer_size,
@@ -168,6 +176,9 @@ class Video:
 
     def gl_get_attr(self, attr, value):
         """Gets OpenGL attributes."""
+        if self.render_mode != M64P_RENDER_OPENGL:
+            return M64ERR_INVALID_STATE
+
         attr_map = {
             M64P_GL_DOUBLEBUFFER: self.get_doublebuffer,
             M64P_GL_BUFFER_SIZE: self.get_buffer_size,
@@ -196,6 +207,9 @@ class Video:
     def gl_swap_buf(self):
         """Swaps the front/back buffers after
         rendering an output video frame. """
+        if self.render_mode != M64P_RENDER_OPENGL:
+            return M64ERR_INVALID_STATE
+
         if self.glcontext.isValid():
             self.glcontext.swapBuffers(self.glcontext.surface())
         return M64ERR_SUCCESS
@@ -207,10 +221,10 @@ class Video:
 
     def gl_get_default_framebuffer(self):
         """Gets default framebuffer."""
-        return self.glcontext.defaultFramebufferObject()
+        if self.render_mode != M64P_RENDER_OPENGL:
+            return 0
 
-    def init_with_render_mode(self, mode):
-        return self.init()
+        return self.glcontext.defaultFramebufferObject()
 
     def vk_get_surface(self, a, b):
         return M64ERR_SUCCESS
@@ -221,10 +235,13 @@ class Video:
     def set_profile(self, value):
         if value == M64P_GL_CONTEXT_PROFILE_CORE:
             self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
+            self.glformat.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
         elif value == M64P_GL_CONTEXT_PROFILE_COMPATIBILITY:
             self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
-        else:
-            self.glformat.setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
+            self.glformat.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
+        elif value == M64P_GL_CONTEXT_PROFILE_ES:
+            self.glformat.setRenderableType(QSurfaceFormat.RenderableType.OpenGLES)
+            self.glformat.setVersion(2, 0)
 
     def get_profile(self):
         profile = self.glformat.profile()
@@ -232,8 +249,8 @@ class Video:
             return M64P_GL_CONTEXT_PROFILE_CORE
         elif profile == QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile:
             return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
-        else:
-            return M64P_GL_CONTEXT_PROFILE_COMPATIBILITY
+        elif self.glformat.renderableType() == QSurfaceFormat.RenderableType.OpenGLES:
+            return M64P_GL_CONTEXT_PROFILE_ES
 
     def set_doublebuffer(self, value):
         if value == 1:

@@ -6,7 +6,7 @@
      / / / / / / /_/ /__  __/ /_/ / /_/ /
     /_/ /_/ /_/\____/  /_/ / .___/\__, /
                           /_/    /____/
-        http://m64py.sourceforge.net
+        https://m64py.sourceforge.net
         A frontend for Mupen64Plus
 
 
@@ -32,7 +32,7 @@ Features
 Dependencies
 ============
 
-* `PyQt6 <https://www.riverbankcomputing.com/software/pyqt/download5>`_ (QtCore, QtGui, QtWidgets)
+* `PyQt6 <https://www.riverbankcomputing.com/software/pyqt>`_ (QtCore, QtGui, QtWidgets)
 * `PySDL2 <https://pysdl2.readthedocs.io>`_
 
 Ubuntu
