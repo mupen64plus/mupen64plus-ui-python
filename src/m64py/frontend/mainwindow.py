@@ -15,17 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 
-from PyQt6.QtGui import QKeySequence, QPixmap, QOpenGLContext, QAction, QActionGroup
-from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PyQt6.QtWidgets import QLabel, QFileDialog, QStackedWidget, QSizePolicy, QWidget, QDialog
+from PyQt6.QtGui import QKeySequence, QOpenGLContext, QAction, QActionGroup
+from PyQt6.QtWidgets import QMainWindow, QLabel, QFileDialog, QStackedWidget, QSizePolicy, QWidget, QDialog
 from PyQt6.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
 from m64py.archive import EXT_FILTER
 from m64py.frontend.log import logview
+from m64py.frontend.view import View
 from m64py.frontend.cheat import Cheat
 from m64py.frontend.worker import Worker
 from m64py.frontend.rominfo import RomInfo
@@ -46,12 +45,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     rom_closed = pyqtSignal()
     file_open = pyqtSignal(str, str)
     file_opening = pyqtSignal(str)
+    toggle_fs = pyqtSignal()
     set_caption = pyqtSignal(str)
     state_changed = pyqtSignal(tuple)
     info_dialog = pyqtSignal(str)
     archive_dialog = pyqtSignal(list)
-    vidext_init = pyqtSignal(QOpenGLContext)
-    toggle_fs = pyqtSignal()
+    vidext_set_mode = pyqtSignal(QOpenGLContext)
 
     def __init__(self, optparse):
         """Constructor"""
@@ -79,8 +78,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.slots = {}
         self.stack = None
         self.cheats = None
-        self.maximized = False
         self.widgets_height = None
+
+        self.glwidget = None
 
         self.settings = Settings(self)
         self.worker = Worker(self)
@@ -90,20 +90,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.create_state_slots()
         self.create_widgets()
 
+        self.installEventFilter(self)
+        self.installEventFilter(self.glwidget)
+
         self.recent_files = RecentFiles(self)
         self.connect_signals()
         self.worker.init()
 
     def closeEvent(self, event):
         self.worker.quit()
-
-    def changeEvent(self, event):
-        if event.type() == QEvent.Type.WindowStateChange:
-            if event.oldState() == Qt.WindowState.WindowMaximized:
-                self.maximized = False
-            elif (event.oldState() == Qt.WindowState.WindowNoState and
-                  self.windowState() == Qt.WindowState.WindowMaximized):
-                self.maximized = True
 
     def showEvent(self, event):
         if not self.widgets_height:
@@ -115,26 +110,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.create_size_actions()
             self.center_widget()
 
-    def keyPressEvent(self, event):
-        if self.worker.state != M64EMU_RUNNING:
-            return
-
-        key = event.key()
-        modifiers = event.modifiers()
-
-        if modifiers & Qt.KeyboardModifier.AltModifier and (key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return):
-            self.toggle_fs.emit()
-        else:
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Type.KeyPress:
+            if self.worker.state not in (M64EMU_RUNNING, M64EMU_PAUSED):
+                return False
+            key = event.key()
+            modifiers = event.modifiers()
+            if modifiers & Qt.KeyboardModifier.AltModifier and (key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return):
+                self.toggle_fs.emit()
+            else:
+                if key in QT2SDL2:
+                    self.worker.send_sdl_keydown(QT2SDL2[key])
+            return True
+        elif event.type() == QEvent.Type.KeyRelease:
+            if self.worker.state not in (M64EMU_RUNNING, M64EMU_PAUSED):
+                return False
+            key = event.key()
             if key in QT2SDL2:
-                self.worker.send_sdl_keydown(QT2SDL2[key])
+                self.worker.send_sdl_keyup(QT2SDL2[key])
+            return True
 
-    def keyReleaseEvent(self, event):
-        if self.worker.state != M64EMU_RUNNING:
-            return
-
-        key = event.key()
-        if key in QT2SDL2:
-            self.worker.send_sdl_keyup(QT2SDL2[key])
+        return super().eventFilter(source, event)
 
     def resizeEvent(self, event):
         event.ignore()
@@ -192,7 +188,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_dialog.connect(self.on_info_dialog)
         self.archive_dialog.connect(self.on_archive_dialog)
         self.toggle_fs.connect(self.on_toggle_fs)
-        self.vidext_init.connect(self.on_vidext_init)
+        self.vidext_set_mode.connect(self.on_vidext_set_mode)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -202,11 +198,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stack.setPalette(palette)
         self.stack.setAutoFillBackground(True)
 
-        glwidget = GLWidget(self)
-        self.worker.video.set_widget(self, glwidget)
+        self.glwidget = GLWidget(self)
+
+        self.worker.video.set_widget(self, self.glwidget)
 
         self.stack.addWidget(View(self))
-        self.stack.addWidget(QWidget.createWindowContainer(glwidget, self))
+        self.stack.addWidget(QWidget.createWindowContainer(self.glwidget, self))
         self.stack.setCurrentIndex(0)
 
         self.setCentralWidget(self.stack)
@@ -240,7 +237,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             action.setToolTip("%sx%s" % (width, height))
             action.triggered.connect(lambda t, wi=w, he=h: self.resize(wi, he))
 
-    def on_vidext_init(self, context):
+    def update_status(self, status):
+        """Updates label in status bar."""
+        self.statusbar_label.setText(status)
+
+    def wait_for_initialize(self):
+        """Wait up to 10 seconds for core initialization, checking once a second.
+           If not yet initialized, start another QTimer. Else, toggle UI actions."""
+        if self.worker.core_state_query(M64CORE_EMU_STATE) == M64EMU_STOPPED:
+            self._initialize_attempt += 1
+            if self._initialize_attempt < 10:
+                QTimer.singleShot(1000, self.wait_for_initialize)
+        else:
+            self.window_size_triggered((self.width(), self.height()))
+            self.worker.toggle_actions()
+
+    def on_vidext_set_mode(self, context):
         context.doneCurrent()
         context.create()
         context.moveToThread(self.worker)
@@ -250,9 +262,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.isFullScreen():
             self.menubar.show()
             self.statusbar.show()
+            self.glwidget.setCursor(Qt.CursorShape.ArrowCursor)
         else:
             self.menubar.hide()
             self.statusbar.hide()
+            self.glwidget.setCursor(Qt.CursorShape.BlankCursor)
         self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
 
     def on_file_open(self, filepath=None, filename=None):
@@ -270,18 +284,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.worker.start()
         self.raise_()
 
-    def update_status(self, status):
-        """Updates label in status bar."""
-        self.statusbar_label.setText(status)
-
-    def on_set_caption(self, title):
-        """Sets window title."""
-        self.setWindowTitle(title)
-
     def on_file_opening(self, filepath):
         """Updates status on file opening."""
         self.update_status("Loading %s..." % (
             os.path.basename(filepath)))
+
+    def on_set_caption(self, title):
+        """Sets window title."""
+        self.setWindowTitle(title)
 
     def on_info_dialog(self, info):
         """Shows info dialog."""
@@ -324,17 +334,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionEmulator.setEnabled(not action)
         self.actionGraphics.setEnabled(not action)
         self.actionPlugins.setEnabled(not action)
-
-    def wait_for_initialize(self):
-        """Wait up to 10 seconds for core initialization, checking once a second.
-           If not yet initialized, start another QTimer. Else, toggle UI actions."""
-        if self.worker.core_state_query(M64CORE_EMU_STATE) == M64EMU_STOPPED:
-            self._initialize_attempt += 1
-            if self._initialize_attempt < 10:
-                QTimer.singleShot(1000, self.wait_for_initialize)
-        else:
-            self.window_size_triggered((self.width(), self.height()))
-            self.worker.toggle_actions()
 
     def on_rom_opened(self):
         if self.vidext:
@@ -512,13 +511,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_actionLog_triggered(self):
         """Shows log dialog."""
         logview.show()
-
-
-class View(QGraphicsView):
-    def __init__(self, parent=None):
-        QGraphicsView.__init__(self, parent)
-        self.setContentsMargins(QMargins())
-        self.setStyleSheet("QGraphicsView {border:0px solid;margin:0px;}")
-        self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
-        self.setScene(QGraphicsScene(self))
-        self.scene().addItem(QGraphicsPixmapItem(QPixmap(":/images/front.png")))

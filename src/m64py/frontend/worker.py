@@ -15,12 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import shutil
 
-from PyQt6.QtCore import QThread, QTimer
+from PyQt6.QtCore import QThread
 from sdl2 import SDL_EnableScreenSaver, SDL_DisableScreenSaver
 
-from m64py.utils import sl
 from m64py.core.defs import *
 from m64py.frontend.log import log
 from m64py.loader import find_library, unload_library

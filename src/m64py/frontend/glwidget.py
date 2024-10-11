@@ -23,6 +23,7 @@ class GLWidget(QWindow):
         QWindow.__init__(self, None)
         self.parent = parent
         self.ctx = QOpenGLContext()
+        self.setSurfaceType(QSurface.SurfaceType.OpenGLSurface)
 
     def context(self):
         return self.ctx

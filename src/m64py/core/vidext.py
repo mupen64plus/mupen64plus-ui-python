@@ -17,7 +17,7 @@
 import ctypes
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QSurface, QSurfaceFormat, QGuiApplication
+from PyQt6.QtGui import QSurfaceFormat, QGuiApplication
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -73,8 +73,6 @@ class Video:
                 if QGuiApplication.platformName() != "wayland":
                     self.glcontext.setFormat(self.glformat)
 
-            self.widget.setSurfaceType(QSurface.SurfaceType.OpenGLSurface)
-
         return M64ERR_SUCCESS
 
     def init_with_render_mode(self, mode):
@@ -88,8 +86,6 @@ class Video:
                 self.glcontext.doneCurrent()
                 self.glcontext.moveToThread(QApplication.instance().thread())
                 self.glcontext = None
-
-            self.widget.destroy()
 
         return M64ERR_SUCCESS
 
@@ -116,7 +112,7 @@ class Video:
     def set_mode(self, width, height, bits, mode, flags):
         """Creates a rendering window."""
         if self.render_mode == M64P_RENDER_OPENGL:
-            self.parent.vidext_init.emit(self.glcontext)
+            self.parent.vidext_set_mode.emit(self.glcontext)
             while not self.parent._initialized:
                 continue
 
