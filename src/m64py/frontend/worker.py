@@ -205,53 +205,6 @@ class Worker(QThread):
         """Saves screenshot."""
         self.core.take_next_screenshot()
 
-    def get_screenshot(self, path):
-        """Gets last saved screenshot."""
-        name = self.core.rom_header.Name.decode()
-        rom_name = name.replace(' ', '_').lower()
-        screenshots = []
-        for filename in os.listdir(path):
-            if filename.startswith(rom_name):
-                screenshots.append(os.path.join(
-                    path, filename))
-        if screenshots:
-            return sorted(screenshots)[-1]
-        return None
-
-    def save_image(self, title=True):
-        """Saves snapshot or title image."""
-        data_path = self.core.config.get_path("UserData")
-        capture = "title" if title else "snapshot"
-        dst_path = os.path.join(data_path, capture)
-        if not os.path.isdir(dst_path):
-            os.makedirs(dst_path)
-        screenshot = self.get_screenshot(
-            os.path.join(data_path, "screenshot"))
-        if screenshot:
-            image_name = "%X%X.png" % (
-                sl(self.core.rom_header.CRC1), sl(self.core.rom_header.CRC2))
-            try:
-                shutil.copyfile(screenshot, os.path.join(dst_path, image_name))
-                log.info("Captured %s" % capture)
-            except IOError:
-                log.exception("couldn't save image %s" % image_name)
-
-    def save_title(self):
-        """Saves title."""
-        self.save_screenshot()
-        QTimer.singleShot(1500, self.save_title_image)
-
-    def save_snapshot(self):
-        """Saves snapshot."""
-        self.save_screenshot()
-        QTimer.singleShot(1500, self.save_snapshot_image)
-
-    def save_title_image(self):
-        self.parent.save_image.emit(True)
-
-    def save_snapshot_image(self):
-        self.parent.save_image.emit(False)
-
     def state_load(self, state_path=None):
         """Loads state."""
         self.core.state_load(state_path)

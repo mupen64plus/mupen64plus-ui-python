@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 
 from PyQt6.QtCore import Qt, QSettings
 from PyQt6.QtWidgets import QDialog, QFileDialog, QRadioButton, QVBoxLayout
@@ -250,13 +249,6 @@ class Settings(QDialog, Ui_Settings):
         self.checkVsync.setToolTip(
             self.get_parameter_help_safe("VerticalSync"))
 
-        if sys.platform == "win32":
-            self.checkKeepAspect.setChecked(False)
-            self.checkKeepAspect.setEnabled(False)
-        else:
-            keep_aspect = bool(self.get_int_safe("keep_aspect", 1))
-            self.checkKeepAspect.setChecked(keep_aspect)
-
         disable_screensaver = bool(self.get_int_safe("disable_screensaver", 1))
         self.checkDisableScreenSaver.setChecked(disable_screensaver)
 
@@ -340,7 +332,7 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("ScreenHeight", int(height))
         self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.core.config.set_parameter("VerticalSync", self.checkVsync.isChecked())
-        self.qset.setValue("keep_aspect", int(self.checkKeepAspect.isChecked()))
+
         self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
 

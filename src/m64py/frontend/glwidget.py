@@ -20,19 +20,12 @@ from PyQt6.QtGui import QWindow, QOpenGLContext, QSurface
 class GLWidget(QWindow):
 
     def __init__(self, parent=None):
-        self.parent = parent
         QWindow.__init__(self, None)
-
-        self.setSurfaceType(QSurface.SurfaceType.OpenGLSurface)
+        self.parent = parent
         self.ctx = QOpenGLContext()
 
     def context(self):
         return self.ctx
-
-    def resizeEvent(self, event):
-        size = event.size()
-        width, height = int(size.width() * self.devicePixelRatio()), int(size.height() * self.devicePixelRatio())
-        self.resize(width, height)
 
     def mouseDoubleClickEvent(self, event):
         self.parent.toggle_fs.emit()

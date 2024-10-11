@@ -23,15 +23,13 @@ import tempfile
 from subprocess import Popen, PIPE
 import binascii
 
-from m64py.utils import which
-
 try:
     import rarfile
     HAS_RAR = True
     RAR_CMD = None
 except ImportError:
     HAS_RAR = False
-    RAR_CMD = which("rar") or which("unrar")
+    RAR_CMD = shutil.which("rar") or shutil.which("unrar")
 
 try:
     from py7zlib import Archive7z
@@ -39,7 +37,7 @@ try:
     LZMA_CMD = None
 except ImportError:
     HAS_7Z = False
-    LZMA_CMD = which("7z")
+    LZMA_CMD = shutil.which("7z")
 
 ZIP, GZIP, BZIP, RAR, LZMA, ROM = range(6)
 

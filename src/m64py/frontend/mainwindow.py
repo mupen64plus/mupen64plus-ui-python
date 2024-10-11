@@ -48,7 +48,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     file_opening = pyqtSignal(str)
     set_caption = pyqtSignal(str)
     state_changed = pyqtSignal(tuple)
-    save_image = pyqtSignal(bool)
     info_dialog = pyqtSignal(str)
     archive_dialog = pyqtSignal(list)
     vidext_init = pyqtSignal(QOpenGLContext)
@@ -70,8 +69,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar_label.setIndent(2)
         self.statusbar_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
         self.statusbar.addPermanentWidget(self.statusbar_label, 1)
-        self.update_status(self.tr(
-            "Welcome to M64Py version %s." % FRONTEND_VERSION))
+        self.update_status(self.tr("M64Py version %s." % FRONTEND_VERSION))
 
         self.sizes = {
             SIZE_1X: self.action1X,
@@ -107,16 +105,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                   self.windowState() == Qt.WindowState.WindowMaximized):
                 self.maximized = True
 
-    def resizeEvent(self, event):
-        event.ignore()
-        size = event.size()
-        if self.widgets_height:
-            width, height = size.width(), size.height()
-            self.window_size_triggered((width, height))
-        else:
-            width, height = size.width(), size.height()
-            self.resize(width, height)
-
     def showEvent(self, event):
         if not self.widgets_height:
             width, height = self.settings.get_size_safe()
@@ -136,49 +124,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if modifiers & Qt.KeyboardModifier.AltModifier and (key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return):
             self.toggle_fs.emit()
-        elif key == Qt.Key.Key_F3:
-            self.worker.save_title()
-        elif key == Qt.Key.Key_F4:
-            self.worker.save_snapshot()
         else:
-            try:
-                sdl_key = QT2SDL2[key]
-                self.worker.send_sdl_keydown(sdl_key)
-            except KeyError:
-                pass
+            if key in QT2SDL2:
+                self.worker.send_sdl_keydown(QT2SDL2[key])
 
     def keyReleaseEvent(self, event):
         if self.worker.state != M64EMU_RUNNING:
             return
 
         key = event.key()
-        try:
-            sdl_key = QT2SDL2[key]
-            self.worker.send_sdl_keyup(sdl_key)
-        except KeyError:
-            pass
+        if key in QT2SDL2:
+            self.worker.send_sdl_keyup(QT2SDL2[key])
+
+    def resizeEvent(self, event):
+        event.ignore()
+        size = event.size()
+        if self.widgets_height:
+            width, height = size.width(), size.height()
+            self.window_size_triggered((width, height))
+        else:
+            width, height = size.width(), size.height()
+            self.resize(width, height)
 
     def window_size_triggered(self, size):
-        window_width, window_height = size
+        width, height = size
         if self.vidext and self.worker.core.get_handle():
-            game_height = window_height - self.widgets_height
-            game_width = window_width
-            
-            if not sys.platform == "win32":
-                if bool(self.settings.get_int_safe("keep_aspect", 1)):
-                    game_width = int((4 / 3) * window_height)
-
             self.worker.core.config.open_section("Video-General")
-            self.worker.core.config.set_parameter("ScreenWidth", game_width)
-            self.worker.core.config.set_parameter("ScreenHeight", game_height)
+            self.worker.core.config.set_parameter("ScreenWidth", width)
+            self.worker.core.config.set_parameter("ScreenHeight", height - self.widgets_height)
 
-            video_size = (game_width << 16) + game_height
+            video_size = ((int(width * self.devicePixelRatio()) << 16) +
+                          (int(height * self.devicePixelRatio()) - self.widgets_height))
             if self.worker.state in (M64EMU_RUNNING, M64EMU_PAUSED):
                 self.worker.core_state_set(M64CORE_VIDEO_SIZE, video_size)
 
-        self.set_sizes((window_width, window_height - self.widgets_height))
-        self.settings.qset.setValue("size", (window_width, window_height - self.widgets_height))
-        self.resize(window_width, window_height)
+        self.set_sizes((width, height - self.widgets_height))
+        self.settings.qset.setValue("size", (width, height - self.widgets_height))
+
+        self.resize(width, height)
 
     def set_sizes(self, size):
         """Sets 'Window Size' radio buttons on resize event."""
@@ -188,21 +171,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             for action in self.sizes.values():
                 action.setChecked(False)
-
-    def keep_aspect(self, size):
-        """Keeps 4:3 aspect ratio."""
-        width, height = size
-        if self.maximized:
-            return width, height
-        fixed_ratio = 1.3333333333333333
-        current_ratio = float(width)/float(height)
-        if fixed_ratio > current_ratio:
-            w = int(width)
-            h = int(width/fixed_ratio)
-        else:
-            h = int(height)
-            w = int(height*fixed_ratio)
-        return w, h
 
     def center_widget(self):
         """Centers widget on desktop."""
@@ -221,7 +189,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_opening.connect(self.on_file_opening)
         self.set_caption.connect(self.on_set_caption)
         self.state_changed.connect(self.on_state_changed)
-        self.save_image.connect(self.on_save_image)
         self.info_dialog.connect(self.on_info_dialog)
         self.archive_dialog.connect(self.on_archive_dialog)
         self.toggle_fs.connect(self.on_toggle_fs)
@@ -315,10 +282,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Updates status on file opening."""
         self.update_status("Loading %s..." % (
             os.path.basename(filepath)))
-
-    def on_save_image(self, title):
-        """Saves snapshot or title image."""
-        self.worker.save_image(title)
 
     def on_info_dialog(self, info):
         """Shows info dialog."""

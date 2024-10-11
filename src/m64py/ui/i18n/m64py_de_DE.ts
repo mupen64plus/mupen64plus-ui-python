@@ -587,8 +587,8 @@
     </message>
     <message>
         <location filename="mainwindow.py" line="60"/>
-        <source>Welcome to M64Py version %s.</source>
-        <translation type="unfinished">Willkommen zu M64py version %s.</translation>
+        <source>M64Py version %s.</source>
+        <translation type="unfinished">M64py version %s.</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="323"/>
