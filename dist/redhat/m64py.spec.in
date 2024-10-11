@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Prefix: %{_prefix}
 BuildArch: noarch
 Vendor: Milan Nikolic <gen2brain@gmail.com>
-Url: http://m64py.sourceforge.net
+Url: https://m64py.sourceforge.net
 Requires: PyQt6 PySDL2
 
 %description

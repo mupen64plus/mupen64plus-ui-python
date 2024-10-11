@@ -405,7 +405,7 @@ setuptools.setup(
     author="Milan Nikolic",
     author_email="gen2brain@gmail.com",
     license="GNU GPLv3",
-    url="http://m64py.sourceforge.net",
+    url="https://m64py.sourceforge.net",
     package_dir={'': "src"},
     packages=["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
     scripts=["bin/m64py"],
