@@ -17,7 +17,7 @@
 import ctypes
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QSurfaceFormat
+from PyQt6.QtGui import QSurfaceFormat, QGuiApplication
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_QuitSubSystem, SDL_INIT_VIDEO
 from sdl2 import SDL_GetNumDisplayModes, SDL_DisplayMode, SDL_GetDisplayMode
@@ -70,7 +70,8 @@ class Video:
                 self.glformat.setSwapInterval(0)
 
                 self.glcontext = self.widget.context()
-                self.glcontext.setFormat(self.glformat)
+                if QGuiApplication.platformName() != "wayland":
+                    self.glcontext.setFormat(self.glformat)
 
         return M64ERR_SUCCESS
 
