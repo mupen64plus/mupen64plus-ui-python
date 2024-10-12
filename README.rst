@@ -35,11 +35,17 @@ Dependencies
 * `PyQt6 <https://www.riverbankcomputing.com/software/pyqt>`_ (QtCore, QtGui, QtWidgets)
 * `PySDL2 <https://pysdl2.readthedocs.io>`_
 
-Ubuntu
+Ubuntu 1x.xx
 ++++++
 
 
 ``sudo apt install libsdl2-dev qttools6-dev-tools pyqt6-dev-tools python3-pyqt6``
+
+Kubuntu/Ubuntu 14.04 (Trusty Tahr)
+++++++++++++++
+
+``apt-get install python3-pyqt5 pyqt5-dev-tools python3-pyqt5.qtopengl libsdl2-dev``
+
 
 PyPi
 ++++
