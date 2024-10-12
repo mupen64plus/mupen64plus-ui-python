@@ -167,17 +167,17 @@ class Settings(QDialog, Ui_Settings):
 
     def get_size_safe(self):
         try:
-            size = self.qset.value("size", SIZE_1X)
+            size = self.qset.value("size", SIZE_2X)
         except TypeError:
-            size = SIZE_1X
+            size = SIZE_2X
         if not type(size) == tuple:
-            size = SIZE_1X
+            size = SIZE_2X
         if len(size) != 2:
-            size = SIZE_1X
+            size = SIZE_2X
         if type(size[0]) != int or type(size[1]) != int:
-            size = SIZE_1X
+            size = SIZE_2X
         if size[0] <= 0 or size[1] <= 0:
-            size = SIZE_1X
+            size = SIZE_2X
         return size
 
     def get_parameter_help_safe(self, parameter):
@@ -293,6 +293,10 @@ class Settings(QDialog, Ui_Settings):
             current = self.qset.value("Plugins/%s" % (
                 PLUGIN_NAME[plugin_type]), PLUGIN_DEFAULT[plugin_type])
             index = combo.findText(current)
+            if index == -1:
+                current = self.qset.value("Plugins/%s" % (
+                    PLUGIN_NAME[plugin_type]), PLUGIN_FALLBACK[plugin_type])
+                index = combo.findText(current)
             if index == -1:
                 index = 0
             combo.setCurrentIndex(index)

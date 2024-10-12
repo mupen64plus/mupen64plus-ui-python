@@ -167,6 +167,14 @@ PLUGIN_NAME = {
 PLUGIN_DEFAULT = {
     M64PLUGIN_NULL: "NULL",
     M64PLUGIN_RSP: "mupen64plus-rsp-hle%s" % DLL_EXT,
+    M64PLUGIN_GFX: "mupen64plus-video-GLideN64%s" % DLL_EXT,
+    M64PLUGIN_AUDIO: "mupen64plus-audio-sdl%s" % DLL_EXT,
+    M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT
+}
+
+PLUGIN_FALLBACK = {
+    M64PLUGIN_NULL: "NULL",
+    M64PLUGIN_RSP: "mupen64plus-rsp-hle%s" % DLL_EXT,
     M64PLUGIN_GFX: "mupen64plus-video-rice%s" % DLL_EXT,
     M64PLUGIN_AUDIO: "mupen64plus-audio-sdl%s" % DLL_EXT,
     M64PLUGIN_INPUT: "mupen64plus-input-sdl%s" % DLL_EXT

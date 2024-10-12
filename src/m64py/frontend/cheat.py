@@ -123,8 +123,8 @@ class Cheat(QDialog, Ui_CheatDialog):
                 cd, address, value, choices = cheat
                 if choices:
                     choices = Choices(self, name, choices)
-                    rval = choices.exec_()
-                    if rval == QDialog.Accepted:
+                    rval = choices.exec()
+                    if rval == QDialog.DialogCode.Accepted:
                         curr_item = choices.listWidget.currentItem()
                         value = curr_item.data(Qt.ItemDataRole.UserRole)
                     else:
