@@ -48,18 +48,23 @@ class Video:
     def __init__(self):
         """Constructor."""
         self.parent = None
-        self.widget = None
+        self.glwidget = None
         self.glformat = None
         self.glcontext = None
+        self.vkwidget = None
+        self.vkinstance = None
         self.render_mode = M64P_RENDER_OPENGL
 
-    def set_widget(self, parent, widget):
+    def set_widgets(self, parent, glwidget, vkwidget):
         """Sets GL widget."""
         self.parent = parent
-        self.widget = widget
+        self.glwidget = glwidget
+        self.vkwidget = vkwidget
 
     def init(self):
         """Initialize GL context."""
+        self.parent.vidext_init.emit(self.render_mode)
+
         if self.render_mode == M64P_RENDER_OPENGL:
             if not self.glcontext:
                 self.glformat = QSurfaceFormat.defaultFormat()
@@ -69,9 +74,11 @@ class Video:
                 self.glformat.setDepthBufferSize(24)
                 self.glformat.setSwapInterval(0)
 
-                self.glcontext = self.widget.context()
+                self.glcontext = self.glwidget.context()
                 if QGuiApplication.platformName() != "wayland":
                     self.glcontext.setFormat(self.glformat)
+        elif self.render_mode == M64P_RENDER_VULKAN:
+            pass
 
         return M64ERR_SUCCESS
 
@@ -81,6 +88,8 @@ class Video:
 
     def quit(self):
         """Shuts down the video system."""
+        self.parent.vidext_quit.emit()
+
         if self.render_mode == M64P_RENDER_OPENGL:
             if self.glcontext:
                 self.glcontext.doneCurrent()
@@ -116,7 +125,7 @@ class Video:
             while not self.parent._initialized:
                 continue
 
-            self.glcontext.makeCurrent(self.widget)
+            self.glcontext.makeCurrent(self.glwidget)
 
         return M64ERR_SUCCESS
 
@@ -228,9 +237,13 @@ class Video:
         return self.glcontext.defaultFramebufferObject()
 
     def vk_get_surface(self, a, b):
+        if self.render_mode != M64P_RENDER_VULKAN:
+            return M64ERR_INVALID_STATE
         return M64ERR_SUCCESS
 
     def vk_get_instance_extensions(self, a, b):
+        if self.render_mode != M64P_RENDER_VULKAN:
+            return M64ERR_INVALID_STATE
         return M64ERR_SUCCESS
 
     def set_profile(self, value):

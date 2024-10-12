@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import QMessageBox
 from m64py.utils import sl
 
 
-class RomInfo():
+class RomInfo:
     """ROM information dialog"""
 
     def __init__(self, parent=None):

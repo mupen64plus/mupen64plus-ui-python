@@ -31,6 +31,7 @@ from m64py.frontend.rominfo import RomInfo
 from m64py.frontend.romlist import ROMList
 from m64py.frontend.settings import Settings
 from m64py.frontend.glwidget import GLWidget
+from m64py.frontend.vkwidget import VKWidget
 from m64py.ui.mainwindow_ui import Ui_MainWindow
 from m64py.frontend.recentfiles import RecentFiles
 from m64py.frontend.keymap import QT2SDL2
@@ -50,7 +51,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     state_changed = pyqtSignal(tuple)
     info_dialog = pyqtSignal(str)
     archive_dialog = pyqtSignal(list)
+    vidext_init = pyqtSignal(int)
     vidext_set_mode = pyqtSignal(QOpenGLContext)
+    vidext_quit = pyqtSignal()
 
     def __init__(self, optparse):
         """Constructor"""
@@ -81,6 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.widgets_height = None
 
         self.glwidget = None
+        self.vkwidget = None
 
         self.settings = Settings(self)
         self.worker = Worker(self)
@@ -92,6 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.installEventFilter(self)
         self.installEventFilter(self.glwidget)
+        self.installEventFilter(self.vkwidget)
 
         self.recent_files = RecentFiles(self)
         self.connect_signals()
@@ -188,7 +193,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.info_dialog.connect(self.on_info_dialog)
         self.archive_dialog.connect(self.on_archive_dialog)
         self.toggle_fs.connect(self.on_toggle_fs)
+        self.vidext_init.connect(self.on_vidext_init)
         self.vidext_set_mode.connect(self.on_vidext_set_mode)
+        self.vidext_quit.connect(self.on_vidext_quit)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -199,11 +206,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stack.setAutoFillBackground(True)
 
         self.glwidget = GLWidget(self)
+        self.vkwidget = VKWidget(self)
 
-        self.worker.video.set_widget(self, self.glwidget)
+        self.worker.video.set_widgets(self, self.glwidget, self.vkwidget)
 
         self.stack.addWidget(View(self))
         self.stack.addWidget(QWidget.createWindowContainer(self.glwidget, self))
+        self.stack.addWidget(QWidget.createWindowContainer(self.vkwidget, self))
         self.stack.setCurrentIndex(0)
 
         self.setCentralWidget(self.stack)
@@ -252,21 +261,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.window_size_triggered((self.width(), self.height()))
             self.worker.toggle_actions()
 
+    def on_vidext_init(self, mode):
+        if mode == M64P_RENDER_OPENGL:
+            self.stack.setCurrentIndex(1)
+        elif mode == M64P_RENDER_VULKAN:
+            self.stack.setCurrentIndex(2)
+
     def on_vidext_set_mode(self, context):
         context.doneCurrent()
         context.create()
         context.moveToThread(self.worker)
         self._initialized = True
 
+    def on_vidext_quit(self):
+        if self.isFullScreen():
+            self.toggle_fs.emit()
+
     def on_toggle_fs(self):
         if self.isFullScreen():
             self.menubar.show()
             self.statusbar.show()
-            self.glwidget.setCursor(Qt.CursorShape.ArrowCursor)
+            if self.stack.currentIndex() == 1:
+                self.glwidget.setCursor(Qt.CursorShape.ArrowCursor)
+            elif self.stack.currentIndex() == 2:
+                self.vkwidget.setCursor(Qt.CursorShape.ArrowCursor)
         else:
             self.menubar.hide()
             self.statusbar.hide()
-            self.glwidget.setCursor(Qt.CursorShape.BlankCursor)
+            if self.stack.currentIndex() == 1:
+                self.glwidget.setCursor(Qt.CursorShape.BlankCursor)
+            elif self.stack.currentIndex() == 2:
+                self.vkwidget.setCursor(Qt.CursorShape.BlankCursor)
         self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
 
     def on_file_open(self, filepath=None, filename=None):
@@ -336,8 +361,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionPlugins.setEnabled(not action)
 
     def on_rom_opened(self):
-        if self.vidext:
-            self.stack.setCurrentIndex(1)
         if not self.cheats:
             self.cheats = Cheat(self)
         self.update_status(self.worker.core.rom_settings.goodname.decode())
@@ -345,8 +368,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QTimer.singleShot(1000, self.wait_for_initialize)
 
     def on_rom_closed(self):
-        if self.vidext and self.isFullScreen():
-            self.toggle_fs.emit()
         self.stack.setCurrentIndex(0)
         self.actionMute.setChecked(False)
         self.actionPause.setChecked(False)
@@ -419,7 +440,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if not file_path.endswith(save_ext):
                         file_path = "%s.%s" % (file_path, save_ext)
                     self.worker.state_save(file_path, save_type)
-
 
     @pyqtSlot()
     def on_actionSaveScreenshot_triggered(self):

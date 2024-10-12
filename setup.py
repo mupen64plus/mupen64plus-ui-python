@@ -28,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class BuildQt(setuptools.Command):
 
-    description = "Build the QT interface"
+    description = "Build the Qt interface"
 
     boolean_options = []
     user_options = []
