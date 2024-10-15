@@ -18,6 +18,7 @@
 
 import os
 import sys
+import platform
 import signal
 import traceback
 
@@ -30,6 +31,7 @@ os.environ["DBUS_FATAL_WARNINGS"] = "0"
 try:
     from PyQt6.QtWidgets import QApplication
     from PyQt6.QtCore import Qt, QLocale, QTranslator
+    from PyQt6.QtGui import QGuiApplication
 except ImportError as err:
     sys.stderr.write("This application needs PyQt6 module%sError:%s%s" % (
         os.linesep, str(err), os.linesep))
@@ -65,8 +67,8 @@ if __name__ == "__main__":
     if translator.load(":i18n/m64py_" + locale, ":/"):
         app.installTranslator(translator)
 
-    sys.stderr.write("M64Py - A frontend for Mupen64Plus version %s\n\n" % (
-        FRONTEND_VERSION))
+    sys.stderr.write("M64Py version %s (%s %s/%s)\n\n" % (
+        FRONTEND_VERSION, platform.system(), platform.release(), QGuiApplication.platformName().title()))
 
     from m64py.frontend.mainwindow import MainWindow
     window = MainWindow((opts, args))

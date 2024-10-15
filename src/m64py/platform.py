@@ -32,7 +32,7 @@ if sys.platform.startswith("linux"):
         "/usr/lib/i386-linux-gnu/mupen64plus",
         "."
     ]
-elif sys.platform.startswith("openbsd"):
+elif "bsd" in sys.platform:
     DLL_EXT = ".so"
     DLL_FILTER = ""
     CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
