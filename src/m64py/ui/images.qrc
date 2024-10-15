@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/">
     <file>images/controller.svg</file>
+    <file>images/controller.png</file>
     <file>images/default.png</file>
     <file>images/front.png</file>
     <file>images/logo.png</file>

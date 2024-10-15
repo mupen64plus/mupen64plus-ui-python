@@ -6,9 +6,6 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
-import urllib
-import zipfile
 import fileinput
 
 import setuptools
@@ -205,8 +202,7 @@ class BuildDmg(setuptools.Command):
 
 class BuildExe(setuptools.Command):
     """
-    Requires PyQt6, rarfile, PyLZMA, PyWin32, PyInstaller and Inno
-    Setup 5.
+    Requires PyQt6, rarfile, WinRAR, PyLZMA, PyWin32, PyInstaller and Inno Setup 6.
     """
 
     description = "Generate a .exe file for distribution"
@@ -214,8 +210,8 @@ class BuildExe(setuptools.Command):
     boolean_options = []
     user_options = []
 
-    arch = "i686-w64-mingw32.static"
     dist_dir = os.path.join(BASE_DIR, "dist", "windows")
+    dest_path = os.path.join(dist_dir, "m64py")
 
     def initialize_options(self):
         pass
@@ -224,53 +220,31 @@ class BuildExe(setuptools.Command):
         pass
 
     def copy_emulator(self):
-        zippath = os.path.join(BASE_DIR, "dist", "windows", "bundle.zip")
-        zip_file = zipfile.ZipFile(zippath)
-        for name in zip_file.namelist():
-            if self.arch in name:
-                dirn = os.path.basename(os.path.dirname(name))
-                filen = os.path.basename(name)
-                if not filen:
-                    continue
-                dest_path = os.path.join(self.dist_dir, "m64py")
-                if dirn == self.arch:
-                    fullpath = os.path.join(dest_path, filen)
-                else:
-                    fullpath = os.path.join(dest_path, dirn, filen)
-                    if not os.path.exists(os.path.join(dest_path, dirn)):
-                        os.makedirs(os.path.join(dest_path, dirn))
-                unpacked = open(fullpath, "wb")
-                unpacked.write(zip_file.read(name))
-                unpacked.close()
-        zip_file.close()
+        src_path = os.path.join(self.dist_dir, "mupen64plus")
+        shutil.copytree(src_path, self.dest_path, dirs_exist_ok=True)
 
     def copy_files(self):
-        dest_path = os.path.join(self.dist_dir, "m64py")
-        rar_dir = os.path.join(os.environ["ProgramFiles(x86)"], "Unrar")
-        if not os.path.isfile(os.path.join(rar_dir, "UnRAR.exe")):
-            tempdir = tempfile.mkdtemp()
-            urllib.request.urlretrieve("http://www.rarlab.com/rar/unrarw64.exe",
-                                       os.path.join(tempdir, "unrar.exe"))
-            subprocess.call([os.path.join(tempdir, "unrar.exe"), "-s"])
-            shutil.rmtree(tempdir)
-        shutil.copy(os.path.join(rar_dir, "UnRAR.exe"), dest_path)
-        shutil.copy(os.path.join(rar_dir, "license.txt"),
-                    os.path.join(dest_path, "doc", "unrar-license.txt"))
+        rar_dir = os.path.join(os.environ["ProgramFiles"], "WinRAR")
+        shutil.copy(os.path.join(rar_dir, "UnRAR.exe"), self.dest_path)
+        shutil.copy(os.path.join(rar_dir, "License.txt"),
+                    os.path.join(self.dest_path, "doc", "unrar-license"))
         for file_name in ["AUTHORS", "CHANGELOG", "COPYING", "LICENSES", "README.rst"]:
-            shutil.copy(os.path.join(BASE_DIR, file_name), dest_path)
+            shutil.copy(os.path.join(BASE_DIR, file_name), self.dest_path)
+        shutil.copy(os.path.join(BASE_DIR, "test", "mupen64plus.v64"), self.dest_path)
+        shutil.copy(os.path.join(self.dest_path, "SDL2.dll"), os.path.join(self.dest_path, "_internal"))
 
     def remove_files(self):
-        dest_path = os.path.join(self.dist_dir, "m64py")
-        for dir_name in ["api", "man6", "applications", "apps"]:
-            shutil.rmtree(os.path.join(dest_path, dir_name), True)
-        for dir_name in ["qml", "translations"]:
-            shutil.rmtree(os.path.join(dest_path, "PyQt6", "Qt", dir_name), True)
-        for file_name in glob.glob(os.path.join(dest_path, "PyQt6", "Qt*.pyd")):
-            if os.path.basename(file_name) not in ["Qt.pyd", "QtCore.pyd", "QtGui.pyd", "QtWidgets.pyd"]:
-                os.remove(file_name)
-        for file_name in glob.glob(os.path.join(dest_path, "Qt6*.dll")):
-            if os.path.basename(file_name) not in ["Qt6Core.dll", "Qt6Gui.dll", "Qt6Widgets.dll"]:
-                os.remove(file_name)
+        for dir_name in ["api", "man6", "usr"]:
+            shutil.rmtree(os.path.join(self.dest_path, dir_name), True)
+        for dir_name in ["translations"]:
+            shutil.rmtree(os.path.join(self.dest_path, "_internal", "PyQt6", "Qt6", dir_name), True)
+        for file_name in glob.glob(os.path.join(self.dest_path, "_internal", "PyQt6", "Qt6", "bin", "Qt*.dll")):
+           if os.path.basename(file_name) not in ["Qt6Core.dll", "Qt6Gui.dll", "Qt6Widgets.dll"]:
+               os.remove(file_name)
+        for file_name in ["qpdf.dll", "qsvg.dll", "qwbmp.dll", "qtga.dll", "qtiff.dll", "qwebp.dll"]:
+            os.remove(os.path.join(self.dest_path, "_internal", "PyQt6", "Qt6", "plugins", "imageformats", file_name))
+        os.remove(os.path.join(self.dest_path, "_internal", "libcrypto-3.dll"))
+        os.remove(os.path.join(self.dest_path, "_internal", "PyQt6", "Qt6", "bin", "opengl32sw.dll"))
 
     def run_build(self):
         import PyInstaller.building.build_main
@@ -278,12 +252,8 @@ class BuildExe(setuptools.Command):
         spec_file = os.path.join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
-        opts = {"distpath": self.dist_dir,
-                "workpath": work_path,
-                "clean_build": True,
-                "upx_dir": None,
-                "debug": False}
-        PyInstaller.building.build_main.main(None, spec_file, True, **opts)
+        PyInstaller.building.build_main.main(None, spec_file, noconfirm=True, distpath=self.dist_dir,
+                                             workpath=work_path, upx_dir=None, clean_build=True)
 
     def run_build_installer(self):
         iss_file = ""
@@ -298,7 +268,7 @@ class BuildExe(setuptools.Command):
             iss_file += line + "\n"
         with open(iss_out, "w") as iss:
             iss.write(iss_file)
-        iscc = os.path.join(os.environ["ProgramFiles(x86)"], "Inno Setup 5", "ISCC.exe")
+        iscc = os.path.join(os.environ["ProgramFiles(x86)"], "Inno Setup 6", "ISCC.exe")
         subprocess.call([iscc, iss_out])
 
     def run(self):
@@ -317,8 +287,7 @@ class BuildZip(BuildExe):
     def run_build_zip(self):
         os.rename(os.path.join(self.dist_dir, "m64py"),
                   os.path.join(self.dist_dir, "m64py-{}".format(FRONTEND_VERSION)))
-        shutil.make_archive(os.path.join(self.dist_dir,
-                                         "m64py-{}-portable".format(FRONTEND_VERSION)),
+        shutil.make_archive(os.path.join(self.dist_dir, "m64py-{}-portable-x86_64".format(FRONTEND_VERSION)),
                             "zip",
                             self.dist_dir, "m64py-{}".format(FRONTEND_VERSION),
                             True)

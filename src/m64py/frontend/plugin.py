@@ -61,10 +61,10 @@ class Plugin(QDialog, Ui_PluginDialog):
         self.items = self.config.parameters[self.config.section].items()
         while self.gridLayout.count():
             item = self.gridLayout.takeAt(0)
-            self.gridLayout.removeWidget(item.glwidget())
+            self.gridLayout.removeWidget(item.widget())
             self.gridLayout.removeItem(item)
-            if item.glwidget() is not None:
-                item.glwidget().hide()
+            if item.widget() is not None:
+                item.widget().hide()
             del item
 
     def add_items(self):

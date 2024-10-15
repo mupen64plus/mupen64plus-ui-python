@@ -4,8 +4,8 @@ from os.path import join
 DIST_DIR = os.environ["DIST_DIR"]
 BASE_DIR = os.environ["BASE_DIR"]
 
-a = Analysis([join(BASE_DIR, 'm64py')], pathex=[join(BASE_DIR, 'src')],
-    hiddenimports=['pickle', 'PyQt6.Qt'],
+a = Analysis([join(BASE_DIR, 'bin', 'm64py')], pathex=[join(BASE_DIR, 'src')],
+    hiddenimports=['pickle'],
     hookspath=None,
     runtime_hooks=None)
 

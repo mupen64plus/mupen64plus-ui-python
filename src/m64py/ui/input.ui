@@ -743,7 +743,7 @@ QGroupBox::title {
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="images.qrc">:/images/controller.svg</pixmap>
+              <pixmap resource="images.qrc">:/images/controller.png</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>

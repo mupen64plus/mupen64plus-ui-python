@@ -3,21 +3,23 @@ AppName=M64Py
 AppVerName=M64Py {VERSION}
 VersionInfoVersion={VERSION}
 AppPublisher=
-AppPublisherURL=http://m64py.sourceforge.net/
+AppPublisherURL=https://m64py.sourceforge.net/
 AppSupportURL=
 AppUpdatesURL=
-DefaultDirName={pf}\M64Py
+DefaultDirName={commonpf}\M64Py
 DefaultGroupName=M64Py
 AllowNoIcons=yes
 OutputDir=.
 Uninstallable=yes
 WindowVisible=no
 AppCopyright=Author: Milan Nikolic <gen2brain@gmail.com>
-OutputBaseFilename=m64py-{VERSION}-setup
+OutputBaseFilename=m64py-{VERSION}-setup-x86_64
 UninstallDisplayIcon={app}\m64py.exe
 LicenseFile=m64py\COPYING
 DisableStartupPrompt=yes
 ChangesAssociations=yes
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
@@ -28,21 +30,20 @@ Source: "m64py\*.ini"; DestDir: "{app}";
 Source: "m64py\*.txt"; DestDir: "{app}";
 Source: "m64py\*.exe"; DestDir: "{app}";
 Source: "m64py\*.dll"; DestDir: "{app}";
-Source: "m64py\*.zip"; DestDir: "{app}";
 Source: "m64py\*.v64"; DestDir: "{app}";
-Source: "m64py\*.pyd"; DestDir: "{app}";
+Source: "m64py\_internal\*"; DestDir: "{app}\_internal"; Flags: recursesubdirs
 Source: "m64py\doc\*"; DestDir: "{app}\doc";
-Source: "m64py\PyQt6\*"; DestDir: "{app}\PyQt6"; Flags: recursesubdirs
 Source: "m64py\AUTHORS"; DestDir: "{app}";
-Source: "m64py\COPYING"; DestDir: "{app}";
-Source: "m64py\README.rst"; DestDir: "{app}";
 Source: "m64py\CHANGELOG"; DestDir: "{app}";
+Source: "m64py\COPYING"; DestDir: "{app}";
+Source: "m64py\LICENSES"; DestDir: "{app}";
+Source: "m64py\README.rst"; DestDir: "{app}";
 
 [Icons]
 Name: {group}\M64Py; Filename: {app}\m64py.exe; Tasks: desktopicon;
-Name: {group}\{cm:ProgramOnTheWeb,m64py}; Filename: http://m64py.sourceforge.net/;
+Name: {group}\{cm:ProgramOnTheWeb,m64py}; Filename: https://m64py.sourceforge.net/;
 Name: {group}\{cm:UninstallProgram,m64py}; Filename: {app}\unins000.exe;
-Name: {userdesktop}\M64Py; Filename: {app}\m64py.exe; Tasks: desktopicon;
+Name: {commondesktop}\M64Py; Filename: {app}\m64py.exe; Tasks: desktopicon;
 
 [Registry]
 Root: HKCR; Subkey: ".v64"; ValueType: string; ValueData: "Mupen64Plus.Document"; Flags: uninsdeletevalue
