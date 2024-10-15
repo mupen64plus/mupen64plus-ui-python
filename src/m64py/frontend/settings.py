@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import QDialog, QFileDialog, QRadioButton, QVBoxLayout
 from m64py.core.defs import *
 from m64py.loader import find_library
 from m64py.core.vidext import MODES
-from m64py.platform import DLL_FILTER
+from m64py.platform import DLL_FILTER, CONFIG_DIR
 from m64py.frontend.plugin import Plugin
 from m64py.frontend.input import Input
 from m64py.ui.settings_ui import Ui_Settings
@@ -40,8 +40,8 @@ class Settings(QDialog, Ui_Settings):
         self.emumode = []
         self.combomap = {}
 
-        self.qset = QSettings("m64py", "m64py")
-        self.qset.setDefaultFormat(QSettings.Format.IniFormat)
+        config_file = os.path.join(CONFIG_DIR, "m64py", "m64py.conf")
+        self.qset = QSettings(config_file, QSettings.Format.IniFormat)
 
         self.add_items()
         self.connect_signals()
@@ -321,10 +321,14 @@ class Settings(QDialog, Ui_Settings):
         self.comboResolution.setEnabled(not self.parent.vidext)
 
     def save_paths(self):
-        self.qset.setValue("Paths/Library", self.pathLibrary.text())
-        self.qset.setValue("Paths/Plugins", self.pathPlugins.text())
-        self.qset.setValue("Paths/Data", self.pathData.text())
-        self.qset.setValue("Paths/ROM", self.pathROM.text())
+        if self.pathLibrary.text():
+            self.qset.setValue("Paths/Library", self.pathLibrary.text())
+        if self.pathPlugins.text():
+            self.qset.setValue("Paths/Plugins", self.pathPlugins.text())
+        if self.pathData.text():
+            self.qset.setValue("Paths/Data", self.pathData.text())
+        if self.pathROM.text():
+            self.qset.setValue("Paths/ROM", self.pathROM.text())
 
     def save_video(self):
         self.core.config.open_section("Video-General")

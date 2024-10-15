@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
 
 if sys.platform.startswith("linux"):
     DLL_EXT = ".so"
     DLL_FILTER = ".so.2"
+    CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
     DEFAULT_DYNLIB = "libmupen64plus.so.2"
     SEARCH_DIRS = [
         "/usr/local/lib/mupen64plus",
@@ -33,6 +35,7 @@ if sys.platform.startswith("linux"):
 elif sys.platform.startswith("openbsd"):
     DLL_EXT = ".so"
     DLL_FILTER = ""
+    CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
     DEFAULT_DYNLIB = "libmupen64plus.so"
     SEARCH_DIRS = [
         "/usr/local/lib/mupen64plus",
@@ -41,6 +44,7 @@ elif sys.platform.startswith("openbsd"):
 elif sys.platform == "darwin":
     DLL_EXT = ".dylib"
     DLL_FILTER = ".dylib"
+    CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
     SEARCH_DIRS = [
         "/usr/local/lib/mupen64plus",
@@ -50,5 +54,6 @@ elif sys.platform == "darwin":
 elif sys.platform == "win32":
     DLL_EXT = ".dll"
     DLL_FILTER = ".dll"
+    CONFIG_DIR = os.environ.get("APPDATA") or os.environ.get("LOCALAPPDATA")
     DEFAULT_DYNLIB = "mupen64plus.dll"
     SEARCH_DIRS = ["."]

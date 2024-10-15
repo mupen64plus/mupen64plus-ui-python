@@ -313,8 +313,8 @@ class BuildZip(BuildExe):
         lines = data.split("\n")
         for line in lines:
             if "QSettings(" in line:
-                line = line.replace("QSettings(\"m64py\", \"m64py\")",
-                                    "QSettings(os.path.join(os.getcwd(), \"m64py.ini\"), QSettings.IniFormat)")
+                line = line.replace("QSettings(config_file, QSettings.Format.IniFormat)",
+                                    "QSettings(os.path.join(os.getcwd(), \"m64py.conf\"), QSettings.Format.IniFormat)")
             settings_file += line + "\n"
         with open(settings_path, "w") as core:
             core.write(settings_file)
