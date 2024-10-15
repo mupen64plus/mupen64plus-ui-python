@@ -44,7 +44,7 @@ elif sys.platform.startswith("openbsd"):
 elif sys.platform == "darwin":
     DLL_EXT = ".dylib"
     DLL_FILTER = ".dylib"
-    CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    CONFIG_DIR = os.path.join(os.path.expanduser("~"), "Library", "Preferences")
     DEFAULT_DYNLIB = "libmupen64plus.dylib"
     SEARCH_DIRS = [
         "/usr/local/lib/mupen64plus",
