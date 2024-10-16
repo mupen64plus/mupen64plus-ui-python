@@ -775,13 +775,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="444"/>
-        <source>Maintain aspect-ratio on resizing</source>
+        <location filename="settings.ui" line="465"/>
+        <source>Pause emulator when window focus is lost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settings.ui" line="447"/>
-        <source>Keep Aspect Ratio</source>
+        <location filename="settings.ui" line="468"/>
+        <source>Pause on Focus Loss</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

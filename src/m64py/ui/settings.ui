@@ -426,6 +426,16 @@ QGroupBox::title {
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkDisableScreenSaver">
+            <property name="toolTip">
+             <string>Disables ScreenSaver when emulator is running</string>
+            </property>
+            <property name="text">
+             <string>Disable ScreenSaver</string>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="checkEnableVidExt">
             <property name="toolTip">
@@ -439,23 +449,23 @@ QGroupBox::title {
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="checkDisableScreenSaver">
-            <property name="toolTip">
-             <string>Disables ScreenSaver when emulator is running</string>
-            </property>
-            <property name="text">
-             <string>Disable ScreenSaver</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QCheckBox" name="checkOSD">
             <property name="text">
              <string>On Screen Display</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="checkPauseOnFocusLoss">
+            <property name="toolTip">
+             <string>Pause emulator when window focus is lost</string>
+            </property>
+            <property name="text">
+             <string>Pause on Focus Loss</string>
             </property>
            </widget>
           </item>

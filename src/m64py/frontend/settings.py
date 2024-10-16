@@ -234,11 +234,7 @@ class Settings(QDialog, Ui_Settings):
 
     def set_video(self):
         self.core.config.open_section("Video-General")
-
         self.set_resolution()
-
-        self.checkEnableVidExt.setChecked(
-            bool(self.get_int_safe("enable_vidext", 1)))
 
         self.checkFullscreen.setChecked(
             bool(self.core.config.get_parameter("Fullscreen")))
@@ -249,8 +245,11 @@ class Settings(QDialog, Ui_Settings):
         self.checkVsync.setToolTip(
             self.get_parameter_help_safe("VerticalSync"))
 
-        disable_screensaver = bool(self.get_int_safe("disable_screensaver", 1))
-        self.checkDisableScreenSaver.setChecked(disable_screensaver)
+        self.checkEnableVidExt.setChecked(
+            bool(self.get_int_safe("enable_vidext", 1)))
+
+        self.checkDisableScreenSaver.setChecked(bool(self.get_int_safe("disable_screensaver", 1)))
+        self.checkPauseOnFocusLoss.setChecked(bool(self.get_int_safe("pause_on_focus_loss", 1)))
 
     def set_core(self):
         self.core.config.open_section("Core")
@@ -341,8 +340,9 @@ class Settings(QDialog, Ui_Settings):
         self.core.config.set_parameter("Fullscreen", self.checkFullscreen.isChecked())
         self.core.config.set_parameter("VerticalSync", self.checkVsync.isChecked())
 
-        self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
         self.qset.setValue("enable_vidext", int(self.checkEnableVidExt.isChecked()))
+        self.qset.setValue("disable_screensaver", int(self.checkDisableScreenSaver.isChecked()))
+        self.qset.setValue("pause_on_focus_loss", int(self.checkPauseOnFocusLoss.isChecked()))
 
     def save_core(self):
         self.core.config.open_section("Core")

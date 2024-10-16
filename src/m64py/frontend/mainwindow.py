@@ -17,8 +17,8 @@
 import os
 
 from PyQt6.QtGui import QKeySequence, QOpenGLContext, QAction, QActionGroup
-from PyQt6.QtWidgets import QMainWindow, QLabel, QFileDialog, QStackedWidget, QSizePolicy, QWidget, QDialog
-from PyQt6.QtCore import Qt, QTimer, QFileInfo, QEvent, QMargins, pyqtSignal, pyqtSlot
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QStackedWidget, QSizePolicy, QWidget, QDialog
+from PyQt6.QtCore import Qt, QTimer, QFileInfo, QEvent, pyqtSignal, pyqtSlot
 
 from m64py.core.defs import *
 from m64py.frontend.dialogs import *
@@ -196,6 +196,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.vidext_init.connect(self.on_vidext_init)
         self.vidext_set_mode.connect(self.on_vidext_set_mode)
         self.vidext_quit.connect(self.on_vidext_quit)
+        QApplication.instance().applicationStateChanged.connect(self.on_app_state_changed)
 
     def create_widgets(self):
         """Creates central widgets."""
@@ -276,6 +277,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_vidext_quit(self):
         if self.isFullScreen():
             self.toggle_fs.emit()
+
+    def on_app_state_changed(self, state):
+        if not bool(self.settings.get_int_safe("pause_on_focus_loss", 1)):
+            return
+        if self.worker.state not in [M64EMU_RUNNING, M64EMU_PAUSED]:
+            return
+        if state == Qt.ApplicationState.ApplicationInactive:
+            self.worker.core.pause()
+        elif state == Qt.ApplicationState.ApplicationActive:
+            self.worker.core.resume()
 
     def on_toggle_fs(self):
         if self.isFullScreen():
