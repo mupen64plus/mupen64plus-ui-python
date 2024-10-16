@@ -146,9 +146,18 @@ class BuildDmg(setuptools.Command):
 
     def remove_files(self):
         dest_path = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents")
-        for dir_name in ["include", "lib"]:
-            shutil.rmtree(os.path.join(dest_path, "Resources", dir_name), True)
-            os.remove(os.path.join(dest_path, "MacOS", dir_name))
+        for dir_name in ["QtNetwork.framework", "QtPdf.framework", "QtSvg.framework"]:
+            shutil.rmtree(os.path.join(dest_path, "Frameworks", "PyQt6", "Qt6", "lib", dir_name), True)
+        for file_name in ["QtNetwork", "QtPdf", "QtSvg"]:
+            os.remove(os.path.join(dest_path, "Frameworks", file_name))
+            os.remove(os.path.join(dest_path, "Resources", file_name))
+        for file_name in ["libqpdf.dylib", "libqsvg.dylib", "libqwbmp.dylib", "libqtga.dylib", "libqtiff.dylib", "libqwebp.dylib"]:
+            os.remove(os.path.join(dest_path, "Frameworks", "PyQt6", "Qt6", "plugins", "imageformats", file_name))
+        for dir_name in ["Frameworks", "Resources"]:
+            os.remove(os.path.join(dest_path, dir_name, "libcrypto.3.dylib"))
+            os.remove(os.path.join(dest_path, dir_name, "libssl.3.dylib"))
+        shutil.rmtree(os.path.join(dest_path, "Resources", "PyQt6", "Qt6", "translations"), True)
+        os.remove(os.path.join(dest_path, "Frameworks", "PyQt6", "Qt6", "translations"))
         os.remove(os.path.join(dest_path, "Resources", "icon-windowed.icns"))
 
     def run_build(self):
@@ -157,12 +166,8 @@ class BuildDmg(setuptools.Command):
         spec_file = os.path.join(self.dist_dir, "m64py.spec")
         os.environ["BASE_DIR"] = BASE_DIR
         os.environ["DIST_DIR"] = self.dist_dir
-        opts = {"distpath": self.dist_dir,
-                "workpath": work_path,
-                "clean_build": True,
-                "upx_dir": None,
-                "debug": False}
-        PyInstaller.building.build_main.main(None, spec_file, True, **opts)
+        PyInstaller.building.build_main.main(None, spec_file, noconfirm=True, distpath=self.dist_dir,
+                                             workpath=work_path, upx_dir=None, clean_build=True)
 
     def run_build_dmg(self):
         src_path = os.path.join(self.dist_dir, "dmg")
@@ -173,8 +178,6 @@ class BuildDmg(setuptools.Command):
         info_plist = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Info.plist")
         shutil.copy(os.path.join(self.dist_dir, "m64py.icns"),
                     os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources"))
-        shutil.copy(os.path.join(self.dist_dir, "m64py.sh"),
-                    os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS"))
         with open(info_plist, "r") as opts:
             data = opts.read()
         plist_file = ""
@@ -184,8 +187,6 @@ class BuildDmg(setuptools.Command):
                 line = line.replace("0.0.0", FRONTEND_VERSION)
             elif "icon-windowed.icns" in line:
                 line = line.replace("icon-windowed.icns", "m64py.icns")
-            elif "MacOS/m64py" in line:
-                line = line.replace("MacOS/m64py", "m64py.sh")
             plist_file += line + "\n"
         with open(info_plist, "w") as opts:
             opts.write(plist_file)
