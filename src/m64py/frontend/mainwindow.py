@@ -82,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stack = None
         self.cheats = None
         self.widgets_height = None
+        self.paused = None
 
         self.glwidget = None
         self.vkwidget = None
@@ -282,6 +283,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not bool(self.settings.get_int_safe("pause_on_focus_loss", 1)):
             return
         if self.worker.state not in [M64EMU_RUNNING, M64EMU_PAUSED]:
+            return
+        if self.paused:
             return
         if state == Qt.ApplicationState.ApplicationInactive:
             self.worker.core.pause()

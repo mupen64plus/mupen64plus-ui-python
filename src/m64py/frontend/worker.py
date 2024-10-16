@@ -257,10 +257,12 @@ class Worker(QThread):
         """Toggles pause."""
         if self.state == M64EMU_RUNNING:
             self.core.pause()
+            self.parent.paused = True
             if bool(self.settings.get_int_safe("disable_screensaver", 1)):
                 SDL_EnableScreenSaver()
         elif self.state == M64EMU_PAUSED:
             self.core.resume()
+            self.parent.paused = False
             if bool(self.settings.get_int_safe("disable_screensaver", 1)):
                 SDL_DisableScreenSaver()
         self.toggle_actions()
