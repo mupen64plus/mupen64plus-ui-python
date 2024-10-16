@@ -249,7 +249,7 @@ class Settings(QDialog, Ui_Settings):
             bool(self.get_int_safe("enable_vidext", 1)))
 
         self.checkDisableScreenSaver.setChecked(bool(self.get_int_safe("disable_screensaver", 1)))
-        self.checkPauseOnFocusLoss.setChecked(bool(self.get_int_safe("pause_on_focus_loss", 1)))
+        self.checkPauseOnFocusLoss.setChecked(bool(self.get_int_safe("pause_on_focus_loss", 0)))
 
     def set_core(self):
         self.core.config.open_section("Core")

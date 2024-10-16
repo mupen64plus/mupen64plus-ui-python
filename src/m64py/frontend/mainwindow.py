@@ -268,6 +268,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.stack.setCurrentIndex(1)
         elif mode == M64P_RENDER_VULKAN:
             self.stack.setCurrentIndex(2)
+        self.stack.currentWidget().activateWindow()
 
     def on_vidext_set_mode(self, context):
         context.doneCurrent()
@@ -289,6 +290,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if state == Qt.ApplicationState.ApplicationInactive:
             self.worker.core.pause()
         elif state == Qt.ApplicationState.ApplicationActive:
+            self.stack.currentWidget().activateWindow()
             self.worker.core.resume()
 
     def on_toggle_fs(self):
