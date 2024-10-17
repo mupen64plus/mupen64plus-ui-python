@@ -46,7 +46,7 @@ PyPi
 
 To install just the Python dependencies:
 
-``pip install -r requirements.txt --user``
+``python -m pip install -r requirements.txt --user``
 
 .. note::
 
@@ -59,13 +59,13 @@ To install just the Python dependencies:
 Install
 =======
 
-First, run ``python setup.py build`` followed by  ``python setup.py install``
+First, run ``python setup.py build`` followed by  ``python -m pip install .``
 to install
 
 .. code::
 
   python setup.py build
-  python setup.py install --user
+  python -m pip install . --user
 
 .. note::
 

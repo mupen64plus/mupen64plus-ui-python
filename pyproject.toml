@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "m64py"
+description = "A frontend for Mupen64Plus"
+dynamic = ["version"]
+readme = "README.rst"
+license = {text = "GNU GPLv3"}
+requires-python = ">=3.9"
+keywords = ["emulator", "nintendo64"]
+authors = [{name = "Milan Nikolic", email = "gen2brain@gmail.com"}]
+dependencies = ["PyQt6", "PySDL2"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Topic :: Games/Entertainment",
+  "Intended Audience :: End Users/Desktop",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: POSIX :: Linux"
+]
+
+[project.urls]
+Homepage = "https://m64py.sourceforge.net"
+Repository = "https://github.com/mupen64plus/mupen64plus-ui-python"
+Issues = "https://github.com/mupen64plus/mupen64plus-ui-python/issues"
+Changelog = "https://raw.githubusercontent.com/mupen64plus/mupen64plus-ui-python/refs/heads/master/CHANGELOG"
+
+[tool.setuptools]
+script-files = ["bin/m64py"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/icons/hicolor/96x96/apps" = ["xdg/net.sourceforge.m64py.M64Py.png"]
+"share/applications" = ["xdg/net.sourceforge.m64py.M64Py.desktop"]
+
+[tool.setuptools.dynamic]
+version = {attr = "m64py.core.defs.FRONTEND_VERSION"}

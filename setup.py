@@ -1,31 +1,27 @@
 #!/usr/bin/env python
 
-import fnmatch
-import glob
 import os
-import shutil
-import subprocess
+import re
+import io
 import sys
+import glob
+import shutil
+import fnmatch
+import subprocess
 import fileinput
 
 import setuptools
+from setuptools.command.build import build
 
-try:
-    from setuptools.modified import newer
-except ImportError:
-    from distutils.dep_util import newer
-
-# Add the src folder to the path
-sys.path.insert(0, os.path.realpath("src"))
-
-from m64py.core.defs import FRONTEND_VERSION
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+FRONTEND_VERSION = re.search(r'FRONTEND_VERSION\s*=\s*[\'"]([^\'"]*)[\'"]',
+    io.open(os.path.join(BASE_DIR, "src", "m64py", "core", "defs.py")).read()).group(1)
 
 
 class BuildQt(setuptools.Command):
 
-    description = "Build the Qt interface"
+    description = "Build the Qt user interface"
 
     boolean_options = []
     user_options = []
@@ -36,15 +32,18 @@ class BuildQt(setuptools.Command):
     def finalize_options(self):
         pass
 
+    def newer(self, source, target):
+        return not os.path.exists(target) or (os.path.getmtime(source) > os.path.getmtime(target))
+
     def compile_rc(self, qrc_file):
         py_file = os.path.splitext(qrc_file)[0] + "_rc.py"
-        if not newer(qrc_file, py_file):
+        if not self.newer(qrc_file, py_file):
             return
         rcc_exe = self.find_executable("rcc")
         if rcc_exe is None:
             self.warn("Unable to find Qt Resource Compiler (rcc)")
             sys.exit(1)
-        if subprocess.call(["rcc", "-g", "python", qrc_file, "-o", py_file]) > 0:
+        if subprocess.call([rcc_exe, "-g", "python", qrc_file, "-o", py_file]) > 0:
             self.warn("Unable to compile resource file {}".format(qrc_file))
             if not os.path.exists(py_file):
                 sys.exit(1)
@@ -54,16 +53,21 @@ class BuildQt(setuptools.Command):
             sys.stdout.write(line)
 
     def compile_ui(self, ui_file):
-        from PyQt6 import uic
         py_file = os.path.splitext(ui_file)[0] + "_ui.py"
-        if not newer(ui_file, py_file):
+        if not self.newer(ui_file, py_file):
             return
-        with open(py_file, "w") as a_file:
-            uic.compileUi(ui_file, a_file)
+        uic_exe = self.find_executable("pyuic6")
+        if uic_exe is None:
+            self.warn("Unable to find Qt User Interface Compiler (pyuic6)")
+            sys.exit(1)
+        if subprocess.call([uic_exe, "-o", py_file, ui_file]) > 0:
+            self.warn("Unable to compile ui file {}".format(ui_file))
+            if not os.path.exists(py_file):
+                sys.exit(1)
 
     def compile_ts(self, ts_file):
         qm_file = os.path.splitext(ts_file)[0] + ".qm"
-        if not newer(ts_file, qm_file):
+        if not self.newer(ts_file, qm_file):
             return
         lr_exe = self.find_executable("lrelease")
         if lr_exe is None:
@@ -75,26 +79,11 @@ class BuildQt(setuptools.Command):
                 sys.exit(1)
 
     def find_executable(self, name):
-        from PyQt6.QtCore import QLibraryInfo
         path = os.getenv("PATH").split(os.pathsep)
-
-        bin_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.BinariesPath)
-        path.insert(0, bin_path)
-        os.environ["PATH"] = os.pathsep.join(path)
-        exe = shutil.which(name)
-        if exe:
-            return exe
-
-        libexec_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.LibraryExecutablesPath)
-        path.insert(0, libexec_path)
-        os.environ["PATH"] = os.pathsep.join(path)
-        exe = shutil.which(name)
-        if exe:
-            return exe
-
         path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
                      "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
                      "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
+
         os.environ["PATH"] = os.pathsep.join(path)
         exe = shutil.which(name)
         if exe:
@@ -334,8 +323,8 @@ class CleanLocal(setuptools.Command):
 
     description = "Clean the local project directory"
 
-    wildcards = ['*.py[co]', '*_ui.py', '*_rc.py', '__pycache__', '*.qm']
-    excludedirs = ['.git', 'build', 'dist']
+    wildcards = ['*.py[co]', '*_ui.py', '*_rc.py', '__pycache__', '*.qm', "build", "*.egg-info"]
+    excludedirs = ['.git', 'dist']
     user_options = []
 
     def initialize_options(self):
@@ -367,30 +356,33 @@ class CleanLocal(setuptools.Command):
                 os.remove(a_path)
 
 
+class BuildCustom(build):
+    sub_commands = [('build_qt', None)] + build.sub_commands
+
+
 setuptools.setup(
-    name="m64py",
-    version=FRONTEND_VERSION,
-    description="A frontend for Mupen64Plus",
-    long_description="A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
-    author="Milan Nikolic",
-    author_email="gen2brain@gmail.com",
-    license="GNU GPLv3",
-    url="https://m64py.sourceforge.net",
-    package_dir={'': "src"},
-    packages=["m64py", "m64py.core", "m64py.frontend", "m64py.ui"],
-    scripts=["bin/m64py"],
-    requires=["PyQt6", "PySDL2"],
-    platforms=["Linux", "Windows", "Darwin"],
-    cmdclass={
-        'build': BuildQt,
+    name = "m64py",
+    version = FRONTEND_VERSION,
+    description = "A frontend for Mupen64Plus",
+    long_description = "A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
+    author = "Milan Nikolic",
+    author_email = "gen2brain@gmail.com",
+    license = "GNU GPLv3",
+    url = "https://m64py.sourceforge.net",
+    package_dir = {"": "src"},
+    packages = setuptools.find_namespace_packages(where="src"),
+    scripts = ["bin/m64py"],
+    requires = ["PyQt6", "PySDL2"],
+    cmdclass = {
+        'build': BuildCustom,
+        'build_qt': BuildQt,
         'build_dmg': BuildDmg,
         'build_exe': BuildExe,
-        'build_qt': BuildQt,
         'build_zip': BuildZip,
         'clean': CleanLocal
     },
-    data_files=[
-        ("share/pixmaps", ["xdg/m64py.png"]),
-        ("share/applications", ["xdg/m64py.desktop"]),
+    data_files = [
+        ("share/icons/hicolor/96x96/apps", ["xdg/net.sourceforge.m64py.M64Py.png"]),
+        ("share/applications", ["xdg/net.sourceforge.m64py.M64Py.desktop"]),
     ]
 )
