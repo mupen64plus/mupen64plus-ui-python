@@ -1,3 +1,11 @@
+v0.3.0  Oct 19, 2024:
+
+    * Migrated to Qt6
+    * Wayland support
+    * Option to pause emulator when focus is lost
+    * Accept drop events
+    * Add pyproject.toml
+
 v0.2.5  Apr 10, 2020:
 
     * GLideN64 plugin is now included in binary releases
