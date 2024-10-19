@@ -277,7 +277,7 @@ class BuildZip(BuildExe):
     def run_build_zip(self):
         os.rename(os.path.join(self.dist_dir, "m64py"),
                   os.path.join(self.dist_dir, "m64py-{}".format(FRONTEND_VERSION)))
-        shutil.make_archive(os.path.join(self.dist_dir, "m64py-{}-portable-x86_64".format(FRONTEND_VERSION)),
+        shutil.make_archive(os.path.join(self.dist_dir, "m64py-{}-x86_64-portable".format(FRONTEND_VERSION)),
                             "zip",
                             self.dist_dir, "m64py-{}".format(FRONTEND_VERSION),
                             True)
