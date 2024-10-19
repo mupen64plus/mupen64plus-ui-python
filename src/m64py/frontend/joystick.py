@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6.QtCore import QObject, pyqtSignal, QTime, QTimer
+from PyQt6.QtCore import QObject, pyqtSignal, QElapsedTimer, QTimer
 
 from sdl2 import SDL_WasInit, SDL_InitSubSystem, SDL_INIT_JOYSTICK
 from sdl2 import SDL_JoystickOpen, SDL_JoystickClose, SDL_NumJoysticks, SDL_JoystickNameForIndex
@@ -104,17 +104,17 @@ class Joystick(QObject):
 
             for i in range(self.num_axes):
                 self.axes[i] = SDL_JoystickGetAxis(self.joystick, i)
-                self.axis_repeat_timers[i] = QTime()
+                self.axis_repeat_timers[i] = QElapsedTimer()
                 self.deadzones[i] = self.joystick_deadzone
                 self.sensitivities[i] = self.joystick_sensitivity
 
             for i in range(self.num_buttons):
                 self.buttons[i] = SDL_JoystickGetButton(self.joystick, i)
-                self.button_repeat_timers[i] = QTime()
+                self.button_repeat_timers[i] = QElapsedTimer()
 
             for i in range(self.num_hats):
                 self.hats[i] = SDL_JoystickGetHat(self.joystick, i)
-                self.hat_repeat_timers[i] = QTime()
+                self.hat_repeat_timers[i] = QElapsedTimer()
 
             self.clear_events()
             self.joystick_timer.start(self.event_timeout)
