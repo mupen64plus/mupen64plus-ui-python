@@ -371,6 +371,7 @@ setuptools.setup(
     url = "https://m64py.sourceforge.net",
     package_dir = {"": "src"},
     packages = setuptools.find_namespace_packages(where="src"),
+    exclude_package_data = {"*": ["*.jpg", "*.png", "*.svg", "*.ts"]},
     scripts = ["bin/m64py"],
     requires = ["PyQt6", "PySDL2"],
     cmdclass = {

@@ -59,12 +59,8 @@ To install just the Python dependencies:
 Install
 =======
 
-First, run ``python setup.py build`` followed by  ``python -m pip install .``
-to install
-
 .. code::
 
-  python setup.py build
   python -m pip install . --user
 
 .. note::

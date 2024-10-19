@@ -32,6 +32,7 @@ Changelog = "https://raw.githubusercontent.com/mupen64plus/mupen64plus-ui-python
 [tool.setuptools]
 script-files = ["bin/m64py"]
 package-dir = {"" = "src"}
+exclude-package-data = { "*" = ["*.jpg", "*.png", "*.svg", "*.ts"]}
 
 [tool.setuptools.packages.find]
 where = ["src"]
