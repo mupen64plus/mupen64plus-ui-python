@@ -164,6 +164,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.qset.setValue("size", (width, height - self.widgets_height))
 
         self.resize(width, height)
+        self.stack.currentWidget().activateWindow()
 
     def set_sizes(self, size):
         """Sets 'Window Size' radio buttons on resize event."""
