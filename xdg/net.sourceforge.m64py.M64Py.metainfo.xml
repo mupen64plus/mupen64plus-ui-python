@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>net.sourceforge.m64py.M64Py</id>
+
+    <name>M64Py</name>
+    <developer_name>Milan Nikolic</developer_name>
+    <summary>A frontend for Mupen64Plus</summary>
+
+    <metadata_license>MIT</metadata_license>
+    <project_license>GPL-3</project_license>
+
+    <description>
+        <p>A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.</p>
+    </description>
+
+    <launchable type="desktop-id">net.sourceforge.m64py.M64Py.desktop</launchable>
+
+    <screenshots>
+        <screenshot type="default">
+            <image>https://m64py.sourceforge.net/screenshots/01.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/02.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/03.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/04.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/05.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/06.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/07.jpg</image>
+        </screenshot>
+        <screenshot>
+            <image>https://m64py.sourceforge.net/screenshots/08.jpg</image>
+        </screenshot>
+    </screenshots>
+
+    <url type="homepage">https://m64py.sourceforge.net</url>
+    <url type="bugtracker">https://github.com/mupen64plus/mupen64plus-ui-python/issues</url>
+
+    <content_rating type="oars-1.1"/>
+
+    <releases>
+        <release version="0.3.0" date="2024-10-19" type="stable">
+            <description>
+                <ul>
+                    <li>Migrated to Qt6</li>
+                    <li>Wayland support</li>
+                    <li>Option to pause emulator when focus is lost</li>
+                    <li>Accept drop events</li>
+                    <li>Add pyproject.toml</li>
+                </ul>
+            </description>
+            <url type="details">https://github.com/mupen64plus/mupen64plus-ui-python/releases/tag/0.3.0</url>
+        </release>
+        <release version="0.2.5" date="2020-04-10" type="stable">
+            <description>
+                <ul>
+                    <li>GLideN64 plugin is now included in binary releases</li>
+                    <li>Fix video extension</li>
+                    <li>Remove DelaySI option</li>
+                    <li>Change setup.py to Setuptools and refactor bits of code</li>
+                    <li>Bug fixes</li>
+                </ul>
+            </description>
+            <url type="details">https://github.com/mupen64plus/mupen64plus-ui-python/releases/tag/0.2.5</url>
+        </release>
+        <release version="0.2.4" date="2017-01-19" type="stable">
+            <description>
+                <ul>
+                    <li>Dropped support for SDL1</li>
+                    <li>PySDL2 is unbundled, not distributed with source anymore</li>
+                    <li>Input bug fixes</li>
+                </ul>
+            </description>
+            <url type="details">https://github.com/mupen64plus/mupen64plus-ui-python/releases/tag/0.2.4</url>
+        </release>
+        <release version="0.2.3" date="2015-05-04" type="stable">
+            <description>
+                <ul>
+                    <li>Migrated to Qt5</li>
+                    <li>Python3 support</li>
+                    <li>Toggle video extension without restart</li>
+                    <li>Add windows portable build</li>
+                </ul>
+            </description>
+            <url type="details">https://github.com/mupen64plus/mupen64plus-ui-python/releases/tag/0.2.3</url>
+        </release>
+        <release version="0.2.2" date="2014-10-18" type="stable">
+            <description>
+                <ul>
+                    <li>Initial Python3 support</li>
+                    <li>Add special SDL2 joystick event system for input config</li>
+                    <li>Add support for non-native rom files in romlist</li>
+                    <li>Many bug fixes, full log http://git.io/yRePKw</li>
+                </ul>
+            </description>
+            <url type="details">https://github.com/mupen64plus/mupen64plus-ui-python/releases/tag/0.2.2</url>
+        </release>
+    </releases>
+
+</component>

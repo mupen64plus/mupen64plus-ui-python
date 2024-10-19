@@ -384,5 +384,6 @@ setuptools.setup(
     data_files = [
         ("share/icons/hicolor/96x96/apps", ["xdg/net.sourceforge.m64py.M64Py.png"]),
         ("share/applications", ["xdg/net.sourceforge.m64py.M64Py.desktop"]),
+        ("share/metainfo", ["xdg/net.sourceforge.m64py.M64Py.metainfo.xml"])
     ]
 )
