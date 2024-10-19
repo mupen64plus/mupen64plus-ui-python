@@ -167,6 +167,8 @@ class BuildDmg(setuptools.Command):
         info_plist = os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Info.plist")
         shutil.copy(os.path.join(self.dist_dir, "m64py.icns"),
                     os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "Resources"))
+        shutil.copy(os.path.join(self.dist_dir, "m64py.sh"),
+                    os.path.join(self.dist_dir, "dmg", "M64Py.app", "Contents", "MacOS"))
         with open(info_plist, "r") as opts:
             data = opts.read()
         plist_file = ""
@@ -176,6 +178,8 @@ class BuildDmg(setuptools.Command):
                 line = line.replace("0.0.0", FRONTEND_VERSION)
             elif "icon-windowed.icns" in line:
                 line = line.replace("icon-windowed.icns", "m64py.icns")
+            elif "<string>m64py</string>" in line:
+                line = line.replace("m64py", "m64py.sh")
             plist_file += line + "\n"
         with open(info_plist, "w") as opts:
             opts.write(plist_file)
