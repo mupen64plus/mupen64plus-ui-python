@@ -30,6 +30,7 @@ if sys.platform.startswith("linux"):
         "/usr/games/lib/mupen64plus",
         "/usr/lib/x86_64-linux-gnu/mupen64plus",
         "/usr/lib/i386-linux-gnu/mupen64plus",
+        "/app/lib/mupen64plus",
         "."
     ]
 elif "bsd" in sys.platform:
