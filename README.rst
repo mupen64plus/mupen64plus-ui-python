@@ -13,7 +13,7 @@
 About
 =====
 
-M64Py is a Qt6 front-end (GUI) for Mupen64Plus, a cross-platform
+M64Py is a Qt6 front-end (GUI) for `Mupen64Plus <https://mupen64plus.org/>`_, a cross-platform
 plugin-based Nintendo 64 emulator. Front-end is written in Python and it
 provides a user-friendly interface over the Mupen64Plus shared library.
 
