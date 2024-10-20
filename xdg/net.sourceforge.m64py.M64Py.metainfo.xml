@@ -3,9 +3,7 @@
     <id>net.sourceforge.m64py.M64Py</id>
 
     <name>M64Py</name>
-    <developer_name>Milan Nikolic</developer_name>
     <summary>A frontend for Mupen64Plus</summary>
-
     <metadata_license>MIT</metadata_license>
     <project_license>GPL-3</project_license>
 
@@ -13,32 +11,28 @@
         <p>A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.</p>
     </description>
 
+    <developer id="com.github.gen2brain">
+        <name>Milan Nikolic</name>
+    </developer>
+
     <launchable type="desktop-id">net.sourceforge.m64py.M64Py.desktop</launchable>
 
     <screenshots>
         <screenshot type="default">
+            <caption>Main window</caption>
             <image>https://m64py.sourceforge.net/screenshots/01.jpg</image>
         </screenshot>
         <screenshot>
+            <caption>ROM list</caption>
             <image>https://m64py.sourceforge.net/screenshots/02.jpg</image>
         </screenshot>
         <screenshot>
+            <caption>Gameplay</caption>
             <image>https://m64py.sourceforge.net/screenshots/03.jpg</image>
         </screenshot>
         <screenshot>
-            <image>https://m64py.sourceforge.net/screenshots/04.jpg</image>
-        </screenshot>
-        <screenshot>
+            <caption>Input settings</caption>
             <image>https://m64py.sourceforge.net/screenshots/05.jpg</image>
-        </screenshot>
-        <screenshot>
-            <image>https://m64py.sourceforge.net/screenshots/06.jpg</image>
-        </screenshot>
-        <screenshot>
-            <image>https://m64py.sourceforge.net/screenshots/07.jpg</image>
-        </screenshot>
-        <screenshot>
-            <image>https://m64py.sourceforge.net/screenshots/08.jpg</image>
         </screenshot>
     </screenshots>
 

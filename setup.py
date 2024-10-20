@@ -16,7 +16,7 @@ from setuptools.command.build import build
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 FRONTEND_VERSION = re.search(r'FRONTEND_VERSION\s*=\s*[\'"]([^\'"]*)[\'"]',
-    io.open(os.path.join(BASE_DIR, "src", "m64py", "core", "defs.py")).read()).group(1)
+                             io.open(os.path.join(BASE_DIR, "src", "m64py", "core", "defs.py")).read()).group(1)
 
 
 class BuildQt(setuptools.Command):
@@ -80,11 +80,12 @@ class BuildQt(setuptools.Command):
 
     def find_executable(self, name):
         path = os.getenv("PATH").split(os.pathsep)
-        path.extend(["/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
+        path.extend(["/libexec",
+                     "/usr/lib64/qt6/bin", "/usr/lib64/qt6/libexec",
                      "/usr/lib/qt6/bin", "/usr/lib/qt6/libexec",
                      "/usr/lib/x86_64-linux-gnu/qt6/bin", "/usr/lib/x86_64-linux-gnu/qt6/libexec"])
-
         os.environ["PATH"] = os.pathsep.join(path)
+
         exe = shutil.which(name)
         if exe:
             return exe
@@ -365,20 +366,20 @@ class BuildCustom(build):
 
 
 setuptools.setup(
-    name = "m64py",
-    version = FRONTEND_VERSION,
-    description = "A frontend for Mupen64Plus",
-    long_description = "A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
-    author = "Milan Nikolic",
-    author_email = "gen2brain@gmail.com",
-    license = "GNU GPLv3",
-    url = "https://m64py.sourceforge.net",
-    package_dir = {"": "src"},
-    packages = setuptools.find_namespace_packages(where="src"),
-    exclude_package_data = {"*": ["*.jpg", "*.png", "*.svg", "*.ts"]},
-    scripts = ["bin/m64py"],
-    requires = ["PyQt6", "PySDL2"],
-    cmdclass = {
+    name="m64py",
+    version=FRONTEND_VERSION,
+    description="A frontend for Mupen64Plus",
+    long_description="A Qt6 front-end (GUI) for Mupen64Plus, a cross-platform plugin-based Nintendo 64 emulator.",
+    author="Milan Nikolic",
+    author_email="gen2brain@gmail.com",
+    license="GNU GPLv3",
+    url="https://m64py.sourceforge.net",
+    package_dir={"": "src"},
+    packages=setuptools.find_namespace_packages(where="src"),
+    exclude_package_data={"*": ["*.jpg", "*.png", "*.svg", "*.ts"]},
+    scripts=["bin/m64py"],
+    requires=["PyQt6", "PySDL2"],
+    cmdclass={
         'build': BuildCustom,
         'build_qt': BuildQt,
         'build_dmg': BuildDmg,
@@ -386,8 +387,8 @@ setuptools.setup(
         'build_zip': BuildZip,
         'clean': CleanLocal
     },
-    data_files = [
-        ("share/icons/hicolor/96x96/apps", ["xdg/net.sourceforge.m64py.M64Py.png"]),
+    data_files=[
+        ("share/icons/hicolor/256x256/apps", ["xdg/net.sourceforge.m64py.M64Py.png"]),
         ("share/applications", ["xdg/net.sourceforge.m64py.M64Py.desktop"]),
         ("share/metainfo", ["xdg/net.sourceforge.m64py.M64Py.metainfo.xml"])
     ]

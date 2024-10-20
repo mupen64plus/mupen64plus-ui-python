@@ -38,7 +38,7 @@ exclude-package-data = { "*" = ["*.jpg", "*.png", "*.svg", "*.ts"]}
 where = ["src"]
 
 [tool.setuptools.data-files]
-"share/icons/hicolor/96x96/apps" = ["xdg/net.sourceforge.m64py.M64Py.png"]
+"share/icons/hicolor/256x256/apps" = ["xdg/net.sourceforge.m64py.M64Py.png"]
 "share/applications" = ["xdg/net.sourceforge.m64py.M64Py.desktop"]
 "share/metainfo" = ["xdg/net.sourceforge.m64py.M64Py.metainfo.xml"]
 
